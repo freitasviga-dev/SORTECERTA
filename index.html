@@ -15,10 +15,16 @@
         .slot.brilhante { box-shadow: 0 0 20px 5px #ffcc00 !important; border: 3px solid #fff !important; transform: scale(1.05); }
         .valor-ganho-slot { position: absolute; top: -20px; left: 0; width: 100%; color: #ffcc00; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
         .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
-        .controles-inferiores { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; margin-top: 10px; }
-        .btn-disparar { width: 100%; background: #2ecc71; border: none; color: white; padding: 14px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; }
+        
+        /* Controles de Aposta */
+        .area-controles { display: flex; flex-direction: column; gap: 10px; align-items: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 16px; }
+        .controle-aposta { display: flex; align-items: center; gap: 15px; }
+        .btn-valor { width: 45px; height: 45px; border-radius: 50%; border: none; background: #ffcc00; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .texto-aposta { font-size: 18px; font-weight: bold; color: #ffcc00; min-width: 80px; }
+        
+        .btn-disparar { width: 80px; height: 80px; border-radius: 50%; background: #2ecc71; border: none; color: white; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .btn-disparar:disabled { background: #555; }
-        .exibicao-saldo-rodape { margin-top: 15px; font-size: 16px; color: #ccc; }
+        .exibicao-saldo-rodape { margin-top: 10px; font-size: 16px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -34,8 +40,13 @@
             <div class="slot" id="s6">🍊</div><div class="slot" id="s7">💰</div><div class="slot" id="s8">🍊</div>
         </div>
 
-        <div class="controles-inferiores">
-            <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()">GIRAR</button>
+        <div class="area-controles">
+            <div class="controle-aposta">
+                <button class="btn-valor" onclick="alterarAposta(-0.20)">-</button>
+                <div class="texto-aposta" id="txtAposta">R$ 0,40</div>
+                <button class="btn-valor" onclick="alterarAposta(0.20)">+</button>
+            </div>
+            <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()">🔄</button>
             <div class="exibicao-saldo-rodape">Saldo: <strong id="txtSaldo">R$ 0,00</strong></div>
         </div>
     </div>
@@ -57,13 +68,18 @@
         const listaSimbolos = ['🐯', '💰', '🧧', '🍀', '🍊'];
         const combinacoes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
+        window.alterarAposta = (valor) => {
+            valorDoGiro = Math.max(0.20, valorDoGiro + valor);
+            document.getElementById('txtAposta').innerText = "R$ " + valorDoGiro.toFixed(2);
+        };
+
         onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snap) => {
             bancaAtual = snap.val() || 0;
             document.getElementById('txtSaldo').innerText = "R$ " + bancaAtual.toFixed(2);
         });
 
         window.executarRodada = () => {
-            // Limpa ganhos anteriores e brilhos
+            if (bancaAtual < valorDoGiro) return;
             document.querySelectorAll('.valor-ganho-slot').forEach(e => e.remove());
             document.querySelectorAll('.slot').forEach(e => e.classList.remove('brilhante'));
 
@@ -78,10 +94,8 @@
         function finalizarRodada() {
             let res = Array.from({length: 9}, () => listaSimbolos[Math.floor(Math.random() * listaSimbolos.length)]);
             res.forEach((s, i) => renderizarSlot(i, s));
-
-            let ganhou = false;
+            
             let ganhoTotal = 0;
-
             combinacoes.forEach(linha => {
                 if (res[linha[0]] === res[linha[1]] && res[linha[1]] === res[linha[2]]) {
                     let valor = valorDoGiro * 2;
@@ -89,15 +103,12 @@
                     linha.forEach(pos => {
                         let el = document.getElementById(`s${pos}`);
                         el.classList.add('brilhante');
-                        if(!el.querySelector('.valor-ganho-slot')) {
-                            el.innerHTML += `<div class="valor-ganho-slot">+R$${valor.toFixed(2)}</div>`;
-                        }
+                        if(!el.querySelector('.valor-ganho-slot')) el.innerHTML += `<div class="valor-ganho-slot">+R$${valor.toFixed(2)}</div>`;
                     });
-                    ganhou = true;
                 }
             });
 
-            if(ganhou) {
+            if(ganhoTotal > 0) {
                 bancaAtual += ganhoTotal;
                 set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), bancaAtual);
             }
