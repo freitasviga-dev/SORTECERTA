@@ -10,18 +10,20 @@
         .container-jogo { width: 100%; max-width: 420px; background: linear-gradient(180deg, #8b0000 0%, #b81414 50%, #4a0000 100%); border: 4px solid #ffcc00; border-radius: 24px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); text-align: center; }
         .topo-id-container { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0, 0, 0, 0.4); padding: 6px 12px; border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(255, 204, 0, 0.3); }
         .topo-id { font-size: 11px; color: #ffcc00; font-weight: bold; }
-        .grade-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #220000; padding: 12px; border-radius: 16px; border: 3px solid #660000; margin-bottom: 20px; }
+        .grade-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #220000; padding: 12px; border-radius: 16px; border: 3px solid #660000; margin-bottom: 10px; }
         .slot { background: linear-gradient(145deg, #ffffff, #dddddd); height: 95px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 42px; position: relative; transition: all 0.3s ease; }
         .slot.brilhante { box-shadow: 0 0 20px 5px #ffcc00 !important; border: 3px solid #fff !important; transform: scale(1.05); }
-        .valor-ganho-slot { position: absolute; top: -20px; left: 0; width: 100%; color: #ffcc00; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
-        .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
         
-        /* Controles de Aposta */
+        /* Efeito de subir o ganho */
+        #displayGanhoRodada { height: 30px; font-size: 20px; font-weight: bold; color: #2ecc71; margin-bottom: 10px; }
+        .animacao-ganho { animation: subirESumir 2s ease-out forwards; }
+        @keyframes subirESumir { 0% { opacity: 0; transform: translateY(20px); } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px); } }
+
+        .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
         .area-controles { display: flex; flex-direction: column; gap: 10px; align-items: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 16px; }
         .controle-aposta { display: flex; align-items: center; gap: 15px; }
         .btn-valor { width: 45px; height: 45px; border-radius: 50%; border: none; background: #ffcc00; font-size: 20px; font-weight: bold; cursor: pointer; }
         .texto-aposta { font-size: 18px; font-weight: bold; color: #ffcc00; min-width: 80px; }
-        
         .btn-disparar { width: 80px; height: 80px; border-radius: 50%; background: #2ecc71; border: none; color: white; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .btn-disparar:disabled { background: #555; }
         .exibicao-saldo-rodape { margin-top: 10px; font-size: 16px; color: #ccc; }
@@ -39,6 +41,8 @@
             <div class="slot" id="s3">🧧</div><div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div><div class="slot" id="s5">🧧</div>
             <div class="slot" id="s6">🍊</div><div class="slot" id="s7">💰</div><div class="slot" id="s8">🍊</div>
         </div>
+        
+        <div id="displayGanhoRodada"></div>
 
         <div class="area-controles">
             <div class="controle-aposta">
@@ -68,8 +72,8 @@
         const listaSimbolos = ['🐯', '💰', '🧧', '🍀', '🍊'];
         const combinacoes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
-        window.alterarAposta = (valor) => {
-            valorDoGiro = Math.max(0.20, valorDoGiro + valor);
+        window.alterarAposta = (v) => {
+            valorDoGiro = Math.max(0.20, valorDoGiro + v);
             document.getElementById('txtAposta').innerText = "R$ " + valorDoGiro.toFixed(2);
         };
 
@@ -80,7 +84,7 @@
 
         window.executarRodada = () => {
             if (bancaAtual < valorDoGiro) return;
-            document.querySelectorAll('.valor-ganho-slot').forEach(e => e.remove());
+            document.getElementById('displayGanhoRodada').innerText = "";
             document.querySelectorAll('.slot').forEach(e => e.classList.remove('brilhante'));
 
             document.getElementById('btnDisparar').disabled = true;
@@ -98,19 +102,19 @@
             let ganhoTotal = 0;
             combinacoes.forEach(linha => {
                 if (res[linha[0]] === res[linha[1]] && res[linha[1]] === res[linha[2]]) {
-                    let valor = valorDoGiro * 2;
-                    ganhoTotal += valor;
-                    linha.forEach(pos => {
-                        let el = document.getElementById(`s${pos}`);
-                        el.classList.add('brilhante');
-                        if(!el.querySelector('.valor-ganho-slot')) el.innerHTML += `<div class="valor-ganho-slot">+R$${valor.toFixed(2)}</div>`;
-                    });
+                    ganhoTotal += (valorDoGiro * 2);
+                    linha.forEach(pos => document.getElementById(`s${pos}`).classList.add('brilhante'));
                 }
             });
 
             if(ganhoTotal > 0) {
                 bancaAtual += ganhoTotal;
                 set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), bancaAtual);
+                
+                const display = document.getElementById('displayGanhoRodada');
+                display.innerText = "Ganhou R$ " + ganhoTotal.toFixed(2);
+                display.classList.add('animacao-ganho');
+                setTimeout(() => display.classList.remove('animacao-ganho'), 2000);
             }
             document.getElementById('btnDisparar').disabled = false;
         }
