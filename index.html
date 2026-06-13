@@ -10,18 +10,11 @@
         .container-jogo { width: 100%; max-width: 420px; background: linear-gradient(180deg, #8b0000 0%, #b81414 50%, #4a0000 100%); border: 4px solid #ffcc00; border-radius: 24px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,204,0,0.4); text-align: center; position: relative; }
         .topo-id-container { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0, 0, 0, 0.4); padding: 6px 12px; border-radius: 50px; margin-bottom: 15px; border: 1px solid rgba(255, 204, 0, 0.3); }
         .topo-id { font-size: 11px; color: #ffcc00; letter-spacing: 1px; font-weight: bold; }
-        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
+        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
         .painel-status { background: rgba(0, 0, 0, 0.6); border: 2px solid #ffcc00; border-radius: 12px; padding: 8px; margin-bottom: 15px; font-weight: bold; color: #ffcc00; font-size: 14px; min-height: 38px; display: flex; align-items: center; justify-content: center; }
         .grade-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #220000; padding: 12px; border-radius: 16px; border: 3px solid #660000; margin-bottom: 15px; }
         .slot { background: linear-gradient(145deg, #ffffff, #dddddd); height: 95px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 42px; position: relative; box-shadow: inset 0 5px 10px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3); transition: all 0.3s ease; }
-        
-        /* Efeito de Brilho apenas nos vencedores */
-        .slot.brilhante {
-            box-shadow: 0 0 25px 8px #ffcc00 !important;
-            border: 3px solid #fff !important;
-            transform: scale(1.05);
-        }
-
+        .slot.brilhante { box-shadow: 0 0 25px 8px #ffcc00 !important; border: 3px solid #fff !important; transform: scale(1.05); }
         .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
         .display-ganho-central { background: #000; border-radius: 12px; padding: 8px 10px; margin-bottom: 15px; border-bottom: 3px solid #ffcc00; }
         .display-ganho-central h1 { color: #ffcc00; font-size: 26px; }
@@ -35,10 +28,10 @@
 
     <div class="container-jogo">
         <div class="topo-id-container">
-            <div class="topo-id">ID: <span id="lblIdDispositivo">CONECTANDO...</span></div>
+            <div class="topo-id">ID: <span id="lblIdDispositivo">---</span></div>
             <button class="btn-copiar" id="btnCopiarId" onclick="copiarIdDispositivo()">Copiar</button>
         </div>
-        <div class="painel-status" id="displayMensagem">Carregando...</div>
+        <div class="painel-status" id="displayMensagem">Fortune Tiger</div>
 
         <div class="grade-slots">
             <div class="slot" id="s0">🍊</div><div class="slot" id="s1">🍀</div><div class="slot" id="s2">🍊</div>
@@ -52,7 +45,7 @@
         </div>
 
         <div class="controles-inferiores">
-            <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()" disabled>CONECTANDO</button>
+            <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()" disabled>CONECTANDO...</button>
             <div class="exibicao-saldo-rodape">Saldo: <strong id="txtSaldo">R$ 0,00</strong></div>
         </div>
     </div>
@@ -61,7 +54,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // TELA CHEIA E BLOQUEIO ZOOM
         document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => {}); }, { once: true });
         
         const firebaseConfig = { apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio", authDomain: "sortecerta-75b77.firebaseapp.com", databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com", projectId: "sortecerta-75b77", storageBucket: "sortecerta-75b77.firebasestorage.app", messagingSenderId: "989209096967", appId: "1:989209096967:web:e58c112de75fb813068ba2" };
@@ -86,10 +78,7 @@
 
         window.executarRodada = () => {
             if (bancaAtual < valorDoGiro) return;
-            
-            // Limpa efeitos anteriores
             for(let i=0; i<9; i++) document.getElementById(`s${i}`).classList.remove('brilhante');
-            
             document.getElementById('btnDisparar').disabled = true;
             let count = 0;
             const loop = setInterval(() => {
@@ -101,7 +90,6 @@
         function finalizarRodada() {
             let res = Array.from({length: 9}, () => listaSimbolos[Math.floor(Math.random() * listaSimbolos.length)]);
             res.forEach((s, i) => renderizarSlot(i, s));
-
             let ganhou = false;
             combinacoes.forEach(linha => {
                 if (res[linha[0]] === res[linha[1]] && res[linha[1]] === res[linha[2]]) {
@@ -109,7 +97,6 @@
                     ganhou = true;
                 }
             });
-
             if(ganhou) {
                 bancaAtual += (valorDoGiro * 2);
                 set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), bancaAtual);
@@ -121,6 +108,8 @@
         function renderizarSlot(id, s) {
             document.getElementById(`s${id}`).innerHTML = s === '🐯' ? `🐯<span class="label-wild">WILD</span>` : s;
         }
+
+        window.copiarIdDispositivo = () => navigator.clipboard.writeText(idDispositivo);
     </script>
 </body>
 </html>
