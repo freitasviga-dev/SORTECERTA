@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fortune Tiger - Oficial</title>
     <style>
         * {
@@ -11,6 +11,8 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
+            /* BLOQUEIO COMPLEMENTAR DE ZOOM VIA TOQUE */
+            touch-action: manipulation;
         }
 
         body {
@@ -21,7 +23,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden; /* Evita rolagens desnecessárias na tela cheia */
         }
 
         .container-jogo {
@@ -130,7 +132,7 @@
             border-radius: 4px;
         }
 
-        /* Exibição do Último Ganho (Subiu para o destaque central) */
+        /* Exibição do Último Ganho */
         .display-ganho-central {
             background: #000;
             border-radius: 12px;
@@ -220,7 +222,7 @@
             opacity: 0.6;
         }
 
-        /* Exibição do Saldo com Leve Destaque (Desceu para o rodapé) */
+        /* Exibição do Saldo */
         .exibicao-saldo-rodape {
             margin-top: 12px;
             font-size: 13px;
@@ -333,9 +335,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ==========================================
-        // CONFIGURAÇÕES DO SEU FIREBASE (ATUALIZADO!)
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             authDomain: "sortecerta-75b77.firebaseapp.com",
