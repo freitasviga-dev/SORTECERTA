@@ -1,11 +1,8 @@
-Para adicionar esse efeito, vamos criar uma classe CSS chamada .brilhante com uma animação de "glow" (brilho) e aplicar essa classe aos elementos apenas quando houver uma combinação vencedora detectada pela sua lógica.
-Aqui está o código completo:
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fortune Tiger - Oficial</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; touch-action: manipulation; }
@@ -13,16 +10,16 @@ Aqui está o código completo:
         .container-jogo { width: 100%; max-width: 420px; background: linear-gradient(180deg, #8b0000 0%, #b81414 50%, #4a0000 100%); border: 4px solid #ffcc00; border-radius: 24px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,204,0,0.4); text-align: center; position: relative; }
         .topo-id-container { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0, 0, 0, 0.4); padding: 6px 12px; border-radius: 50px; margin-bottom: 15px; border: 1px solid rgba(255, 204, 0, 0.3); }
         .topo-id { font-size: 11px; color: #ffcc00; letter-spacing: 1px; font-weight: bold; }
-        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
         .painel-status { background: rgba(0, 0, 0, 0.6); border: 2px solid #ffcc00; border-radius: 12px; padding: 8px; margin-bottom: 15px; font-weight: bold; color: #ffcc00; font-size: 14px; min-height: 38px; display: flex; align-items: center; justify-content: center; }
         .grade-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #220000; padding: 12px; border-radius: 16px; border: 3px solid #660000; margin-bottom: 15px; }
         .slot { background: linear-gradient(145deg, #ffffff, #dddddd); height: 95px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 42px; position: relative; box-shadow: inset 0 5px 10px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3); transition: all 0.3s ease; }
         
-        /* EFEITO BRILHANTE ADICIONADO */
-        .brilhante {
-            box-shadow: 0 0 20px 5px #ffcc00 !important;
+        /* Efeito de Brilho apenas nos vencedores */
+        .slot.brilhante {
+            box-shadow: 0 0 25px 8px #ffcc00 !important;
+            border: 3px solid #fff !important;
             transform: scale(1.05);
-            border: 2px solid #fff;
         }
 
         .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
@@ -30,8 +27,8 @@ Aqui está o código completo:
         .display-ganho-central h1 { color: #ffcc00; font-size: 26px; }
         .controles-inferiores { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #8b0000; }
         .btn-disparar { width: 100%; background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); border: none; color: white; padding: 14px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; }
-        .btn-disparar:disabled { background: #555 !important; cursor: not-allowed; }
-        .exibicao-saldo-rodape { margin-top: 12px; color: #ccc; }
+        .btn-disparar:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
+        .exibicao-saldo-rodape { margin-top: 12px; font-size: 13px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -41,13 +38,19 @@ Aqui está o código completo:
             <div class="topo-id">ID: <span id="lblIdDispositivo">CONECTANDO...</span></div>
             <button class="btn-copiar" id="btnCopiarId" onclick="copiarIdDispositivo()">Copiar</button>
         </div>
-        <div class="painel-status" id="displayMensagem">Toque para ativar tela cheia</div>
+        <div class="painel-status" id="displayMensagem">Carregando...</div>
+
         <div class="grade-slots">
             <div class="slot" id="s0">🍊</div><div class="slot" id="s1">🍀</div><div class="slot" id="s2">🍊</div>
             <div class="slot" id="s3">🧧</div><div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div><div class="slot" id="s5">🧧</div>
             <div class="slot" id="s6">🍊</div><div class="slot" id="s7">💰</div><div class="slot" id="s8">🍊</div>
         </div>
-        <div class="display-ganho-central"><span>Último Ganho</span><h1 id="txtGanhoTotal">R$ 0,00</h1></div>
+
+        <div class="display-ganho-central">
+            <span>Último Ganho</span>
+            <h1 id="txtGanhoTotal">R$ 0,00</h1>
+        </div>
+
         <div class="controles-inferiores">
             <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()" disabled>CONECTANDO</button>
             <div class="exibicao-saldo-rodape">Saldo: <strong id="txtSaldo">R$ 0,00</strong></div>
@@ -58,56 +61,66 @@ Aqui está o código completo:
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Lógica de Tela Cheia e Zoom
+        // TELA CHEIA E BLOQUEIO ZOOM
         document.body.addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => {}); }, { once: true });
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => { let now = Date.now(); if (now - lastTouchEnd <= 300) e.preventDefault(); lastTouchEnd = now; }, { passive: false });
-
-        const firebaseConfig = { /* Sua config Firebase aqui */ };
+        
+        const firebaseConfig = { apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio", authDomain: "sortecerta-75b77.firebaseapp.com", databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com", projectId: "sortecerta-75b77", storageBucket: "sortecerta-75b77.firebasestorage.app", messagingSenderId: "989209096967", appId: "1:989209096967:web:e58c112de75fb813068ba2" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let bancaAtual = 100.00;
+        let idDispositivo = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('usuario_tracker_id', idDispositivo);
+        document.getElementById('lblIdDispositivo').innerText = idDispositivo;
+
+        let bancaAtual = 0.00;
         let valorDoGiro = 0.40;
         const listaSimbolos = ['🐯', '💰', '🧧', '🍀', '🍊'];
-        const combinacoesLinhas = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+        const combinacoes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
-        window.executarRodada = function() {
-            const btn = document.getElementById('btnDisparar');
-            btn.disabled = true;
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snap) => {
+            bancaAtual = snap.val() || 0;
+            document.getElementById('txtSaldo').innerText = "R$ " + bancaAtual.toFixed(2);
+            document.getElementById('btnDisparar').disabled = false;
+            document.getElementById('btnDisparar').innerText = "GIRAR";
+        });
+
+        window.executarRodada = () => {
+            if (bancaAtual < valorDoGiro) return;
             
-            // Remove o brilho de rodadas anteriores
+            // Limpa efeitos anteriores
             for(let i=0; i<9; i++) document.getElementById(`s${i}`).classList.remove('brilhante');
-
-            let passagens = 0;
+            
+            document.getElementById('btnDisparar').disabled = true;
+            let count = 0;
             const loop = setInterval(() => {
                 for(let i=0; i<9; i++) renderizarSlot(i, listaSimbolos[Math.floor(Math.random() * listaSimbolos.length)]);
-                if(++passagens > 10) {
-                    clearInterval(loop);
-                    processarResultado();
-                }
-            }, 80);
-        }
+                if(++count > 10) { clearInterval(loop); finalizarRodada(); }
+            }, 60);
+        };
 
-        function processarResultado() {
+        function finalizarRodada() {
             let res = Array.from({length: 9}, () => listaSimbolos[Math.floor(Math.random() * listaSimbolos.length)]);
             res.forEach((s, i) => renderizarSlot(i, s));
-            
-            // Aplica o efeito brilhante nas combinações vencedoras
-            combinacoesLinhas.forEach(linha => {
-                const [a, b, c] = [res[linha[0]], res[linha[1]], res[linha[2]]];
-                if (a === b && b === c) {
+
+            let ganhou = false;
+            combinacoes.forEach(linha => {
+                if (res[linha[0]] === res[linha[1]] && res[linha[1]] === res[linha[2]]) {
                     linha.forEach(pos => document.getElementById(`s${pos}`).classList.add('brilhante'));
+                    ganhou = true;
                 }
             });
+
+            if(ganhou) {
+                bancaAtual += (valorDoGiro * 2);
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), bancaAtual);
+                document.getElementById('txtGanhoTotal').innerText = "R$ " + (valorDoGiro * 2).toFixed(2);
+            }
             document.getElementById('btnDisparar').disabled = false;
         }
 
-        function renderizarSlot(id, simbolo) {
-            document.getElementById(`s${id}`).innerHTML = simbolo === '🐯' ? `🐯<span class="label-wild">WILD</span>` : simbolo;
+        function renderizarSlot(id, s) {
+            document.getElementById(`s${id}`).innerHTML = s === '🐯' ? `🐯<span class="label-wild">WILD</span>` : s;
         }
     </script>
 </body>
 </html>
-
-```
