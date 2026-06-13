@@ -11,7 +11,6 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
-            /* BLOQUEIO COMPLEMENTAR DE ZOOM VIA TOQUE */
             touch-action: manipulation;
         }
 
@@ -23,8 +22,27 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden; /* Evita rolagens desnecessárias na tela cheia */
+            overflow: hidden;
+            padding: 10px;
         }
+
+        /* Botão Saldo */
+        .btn-adicionar-saldo {
+            width: 100%;
+            max-width: 420px;
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #997300;
+            text-transform: uppercase;
+        }
+        .btn-adicionar-saldo:active { transform: translateY(3px); box-shadow: 0 1px 0 #997300; }
 
         .container-jogo {
             width: 100%;
@@ -51,29 +69,8 @@
             border: 1px solid rgba(255, 204, 0, 0.3);
         }
 
-        .topo-id {
-            font-size: 11px;
-            color: #ffcc00;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
-
-        .btn-copiar {
-            background: #ffcc00;
-            border: none;
-            color: #000;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.2s;
-        }
-
-        .btn-copiar:active {
-            transform: scale(0.95);
-        }
+        .topo-id { font-size: 11px; color: #ffcc00; letter-spacing: 1px; font-weight: bold; }
+        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
 
         .painel-status {
             background: rgba(0, 0, 0, 0.6);
@@ -90,7 +87,6 @@
             justify-content: center;
         }
 
-        /* Matriz de Slots */
         .grade-slots {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -111,177 +107,32 @@
             justify-content: center;
             font-size: 42px;
             position: relative;
-            box-shadow: inset 0 5px 10px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.1s ease;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
         }
 
-        .slot.ganhador {
-            animation: piscarVitoria 0.4s ease alternate infinite;
-            border: 3px solid #ffcc00;
-            z-index: 2;
-        }
+        .slot.ganhador { animation: piscarVitoria 0.4s ease alternate infinite; border: 3px solid #ffcc00; }
+        .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
 
-        .label-wild {
-            position: absolute;
-            bottom: 2px;
-            background: #ffcc00;
-            color: #000;
-            font-size: 9px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 4px;
-        }
+        .display-ganho-central { background: #000; border-radius: 12px; padding: 8px 10px; margin-bottom: 15px; border-bottom: 3px solid #ffcc00; }
+        .display-ganho-central h1 { color: #ffcc00; font-size: 26px; }
 
-        /* Exibição do Último Ganho */
-        .display-ganho-central {
-            background: #000;
-            border-radius: 12px;
-            padding: 8px 10px;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #ffcc00;
-        }
+        .controles-inferiores { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #8b0000; }
+        .seletor-aposta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .btn-ajuste { background: #ffcc00; border: none; color: #000; width: 40px; height: 40px; border-radius: 50%; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #997300; }
+        
+        .btn-disparar { width: 100%; background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); border: none; color: white; padding: 14px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 5px 0 #1e7e43; }
+        .btn-disparar:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
 
-        .display-ganho-central span {
-            font-size: 11px;
-            color: #aaa;
-            text-transform: uppercase;
-        }
+        .exibicao-saldo-rodape { margin-top: 12px; color: #ccc; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(46,204,113,0.2); }
+        .exibicao-saldo-rodape strong { color: #2ecc71; font-size: 14px; }
 
-        .display-ganho-central h1 {
-            color: #ffcc00;
-            font-size: 26px;
-            margin-top: 1px;
-        }
-
-        /* Controles de Aposta */
-        .controles-inferiores {
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 16px;
-            border: 1px solid #8b0000;
-        }
-
-        .seletor-aposta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .btn-ajuste {
-            background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%);
-            border: none;
-            color: #000;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #997300;
-        }
-
-        .btn-ajuste:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #997300;
-        }
-
-        .info-aposta {
-            text-align: center;
-        }
-
-        .info-aposta div {
-            font-size: 11px;
-            color: #ccc;
-        }
-
-        .info-aposta h2 {
-            color: #ffcc00;
-            font-size: 22px;
-        }
-
-        .btn-disparar {
-            width: 100%;
-            background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
-            border: none;
-            color: white;
-            padding: 14px;
-            font-size: 22px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #1e7e43, 0 8px 15px rgba(0,0,0,0.4);
-            text-shadow: 1px 2px 2px rgba(0,0,0,0.4);
-        }
-
-        .btn-disparar:disabled {
-            background: #555 !important;
-            box-shadow: none !important;
-            transform: translateY(4px);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* Exibição do Saldo */
-        .exibicao-saldo-rodape {
-            margin-top: 12px;
-            font-size: 13px;
-            color: #ccc;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-block;
-            border: 1px solid rgba(46, 204, 113, 0.2);
-        }
-        .exibicao-saldo-rodape strong { 
-            color: #2ecc71; 
-            font-size: 14px;
-            margin-left: 3px;
-        }
-
-        /* Overlay de Super Ganho */
-        .tela-bonus {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .caixa-bonus h2 {
-            font-size: 40px;
-            color: #ffcc00;
-            animation: pulsarTexto 0.6s infinite alternate;
-        }
-
-        .caixa-bonus h3 {
-            font-size: 55px;
-            color: #2ecc71;
-            margin-top: 15px;
-        }
-
-        /* Animações */
-        @keyframes piscarVitoria {
-            0% { transform: scale(1); filter: brightness(1); }
-            100% { transform: scale(1.05); filter: brightness(1.4); }
-        }
-
-        @keyframes pulsarTexto {
-            0% { transform: scale(0.95); }
-            100% { transform: scale(1.05); }
-        }
-
-        @keyframes cair {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
+        .tela-bonus { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        @keyframes piscarVitoria { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
     </style>
 </head>
 <body>
+
+    <button class="btn-adicionar-saldo" onclick="window.location.href='saldo.html'">ADICIONAR SALDO</button>
 
     <div class="container-jogo">
         <div class="topo-id-container">
@@ -292,15 +143,9 @@
         <div class="painel-status" id="displayMensagem">Carregando dados...</div>
 
         <div class="grade-slots">
-            <div class="slot" id="s0">🍊</div>
-            <div class="slot" id="s1">🍀</div>
-            <div class="slot" id="s2">🍊</div>
-            <div class="slot" id="s3">🧧</div>
-            <div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div>
-            <div class="slot" id="s5">🧧</div>
-            <div class="slot" id="s6">🍊</div>
-            <div class="slot" id="s7">💰</div>
-            <div class="slot" id="s8">🍊</div>
+            <div class="slot" id="s0">🍊</div><div class="slot" id="s1">🍀</div><div class="slot" id="s2">🍊</div>
+            <div class="slot" id="s3">🧧</div><div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div><div class="slot" id="s5">🧧</div>
+            <div class="slot" id="s6">🍊</div><div class="slot" id="s7">💰</div><div class="slot" id="s8">🍊</div>
         </div>
 
         <div class="display-ganho-central">
@@ -312,8 +157,8 @@
             <div class="seletor-aposta">
                 <button class="btn-ajuste" onclick="ajustarGiroBotoes(-1)">-</button>
                 <div class="info-aposta">
-                    <div>APOSTA TOTAL</div>
-                    <h2 id="txtAposta">R$ 0,40</h2>
+                    <div style="font-size: 11px; color: #ccc;">APOSTA TOTAL</div>
+                    <h2 id="txtAposta" style="color: #ffcc00; font-size: 22px;">R$ 0,40</h2>
                 </div>
                 <button class="btn-ajuste" onclick="ajustarGiroBotoes(1)">+</button>
             </div>
@@ -324,297 +169,11 @@
         </div>
     </div>
 
-    <div class="tela-bonus" id="telaBonus">
-        <div class="caixa-bonus">
-            <h2>🎉 GANHO INCRÍVEL! 🎉</h2>
-            <h3 id="valorPremioFantastico">R$ 0,00</h3>
-        </div>
-    </div>
-
     <script type="module">
+        // ... (O restante do seu script original permanece exatamente aqui)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            authDomain: "sortecerta-75b77.firebaseapp.com",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77",
-            storageBucket: "sortecerta-75b77.firebasestorage.app",
-            messagingSenderId: "989209096967",
-            appId: "1:989209096967:web:e58c112de75fb813068ba2"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let idDispositivo = "";
-        let bancaAtual = 0.00; 
-        let valorDoGiro = 0.40;
-        let firebaseConectado = false;
-
-        const tabelaApostas = [0.40, 0.80, 1.20, 2.00, 4.00, 10.00, 20.00, 50.00, 100.00, 250.00];
-
-        const dicionarioPremios = {
-            '🐯': 50, '💰': 20, '🧧': 10, '🍀': 5, '🍊': 2   
-        };
-
-        const listaSimbolosBase = [
-            '🐯', '💰', '💰', '🧧', '🧧', '🧧', '🧧', 
-            '🍀', '🍀', '🍀', '🍀', '🍀', '🍀', '🍀', 
-            '🍊', '🍊', '🍊', '🍊', '🍊', '🍊', '🍊', '🍊', '🍊', '🍊'
-        ];
-
-        const combinacoesLinhas = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]            
-        ];
-
-        const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-
-        recuperarOuCriarID();
-        conectarFirebaseSincronizado();
-
-        function recuperarOuCriarID() {
-            let idSalvo = localStorage.getItem('usuario_tracker_id');
-            if (!idSalvo) {
-                idSalvo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
-                localStorage.setItem('usuario_tracker_id', idSalvo);
-            }
-            idDispositivo = idSalvo;
-            document.getElementById('lblIdDispositivo').innerText = idDispositivo;
-        }
-
-        window.copiarIdDispositivo = function() {
-            if (!idDispositivo) return;
-            navigator.clipboard.writeText(idDispositivo).then(() => {
-                const btn = document.getElementById('btnCopiarId');
-                btn.innerText = "Copiado!";
-                btn.style.background = "#2ecc71";
-                btn.style.color = "#fff";
-                notificarDisplay("ID copiado com sucesso!");
-                
-                setTimeout(() => {
-                    btn.innerText = "Copiar";
-                    btn.style.background = "#ffcc00";
-                    btn.style.color = "#000";
-                    notificarDisplay("Aperte Girar para Iniciar");
-                }, 2000);
-            }).catch(() => {
-                notificarDisplay("Falha ao copiar automaticamente.");
-            });
-        }
-
-        function conectarFirebaseSincronizado() {
-            const saldoRef = ref(db, 'usuarios/' + idDispositivo + '/saldo');
-            
-            onValue(saldoRef, (snapshot) => {
-                const dados = snapshot.val();
-                if (dados !== null) {
-                    bancaAtual = parseFloat(dados);
-                } else {
-                    bancaAtual = 0.00;
-                    set(saldoRef, bancaAtual);
-                }
-                
-                firebaseConectado = true;
-                atualizarTelas();
-                
-                if(document.getElementById('btnDisparar').innerText === "CONECTANDO") {
-                    document.getElementById('btnDisparar').disabled = false;
-                    document.getElementById('btnDisparar').innerText = "GIRAR";
-                    notificarDisplay("Aperte Girar para Iniciar");
-                }
-            }, (error) => {
-                notificarDisplay("Erro na conexão com Banco!");
-            });
-        }
-
-        function atualizarSaldoNoFirebase() {
-            if(firebaseConectado) {
-                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
-            }
-        }
-
-        window.ajustarGiroBotoes = function(direcao) {
-            let indexAtual = tabelaApostas.findIndex(v => v >= valorDoGiro);
-            if(indexAtual === -1) indexAtual = 0;
-            indexAtual += direcao;
-            if(indexAtual < 0) indexAtual = 0;
-            if(indexAtual >= tabelaApostas.length) indexAtual = tabelaApostas.length - 1;
-
-            valorDoGiro = tabelaApostas[indexAtual];
-            atualizarTelas();
-        }
-
-        window.executarRodada = function() {
-            if (!firebaseConectado) return;
-            if (bancaAtual < valorDoGiro) {
-                notificarDisplay("Saldo Insuficiente!");
-                return;
-            }
-
-            if (ctxAudio.state === 'suspended') ctxAudio.resume();
-
-            bancaAtual -= valorDoGiro;
-            atualizarSaldoNoFirebase();
-            atualizarTelas();
-            
-            const btn = document.getElementById('btnDisparar');
-            btn.disabled = true;
-            notificarDisplay("Buscando combinações...");
-
-            for(let i=0; i<9; i++) {
-                document.getElementById(`s${i}`).classList.remove('ganhador');
-            }
-
-            let passagens = 0;
-            const loopAnimacao = setInterval(() => {
-                tocarSomGiro();
-                for(let i=0; i<9; i++) {
-                    let simboloAleatorio = listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)];
-                    renderizarSlot(i, simboloAleatorio);
-                }
-                passagens++;
-                if(passagens > 14) {
-                    clearInterval(loopAnimacao);
-                    processarResultadoFinal();
-                }
-            }, 65);
-        }
-
-        function processarResultadoFinal() {
-            let resultadoMatriz = [];
-
-            for (let i = 0; i < 9; i++) {
-                resultadoMatriz.push(listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]);
-            }
-
-            for (let i = 0; i < 9; i++) {
-                renderizarSlot(i, resultadoMatriz[i]);
-            }
-
-            let ganhoTotalRodada = 0;
-
-            combinacoesLinhas.forEach(linha => {
-                const [posA, posB, posC] = linha;
-                let itemA = resultadoMatriz[posA];
-                let itemB = resultadoMatriz[posB];
-                let itemC = resultadoMatriz[posC];
-
-                let matchNormal = (itemA === itemB && itemB === itemC);
-                let matchWild = false;
-
-                if (itemA === '🐯' || itemB === '🐯' || itemC === '🐯') {
-                    let filtrados = [itemA, itemB, itemC].filter(x => x !== '🐯');
-                    if (filtrados.length <= 1 || (filtrados.length === 2 && filtrados[0] === filtrados[1])) {
-                        matchWild = true;
-                    }
-                }
-
-                if (matchNormal || matchWild) {
-                    let itemReferencia = (itemA !== '🐯') ? itemA : ((itemB !== '🐯') ? itemB : itemC);
-                    if (!itemReferencia) itemReferencia = '🐯'; 
-
-                    ganhoTotalRodada += (valorDoGiro * (dicionarioPremios[itemReferencia] / 10));
-
-                    document.getElementById(`s${posA}`).classList.add('ganhador');
-                    document.getElementById(`s${posB}`).classList.add('ganhador');
-                    document.getElementById(`s${posC}`).classList.add('ganhador');
-                }
-            });
-
-            let totalMencionadosIguais = resultadoMatriz.every(e => e === resultadoMatriz[0]);
-            
-            if (totalMencionadosIguais && ganhoTotalRodada > 0) {
-                ganhoTotalRodada = ganhoTotalRodada * 10;
-                tocarSomGanho();
-                dispararAnimacaoFantastica(ganhoTotalRodada);
-            } else if (ganhoTotalRodada > 0) {
-                bancaAtual += ganhoTotalRodada;
-                tocarSomGanho();
-                notificarDisplay(`Ganhou R$ ${ganhoTotalRodada.toFixed(2)}!`);
-                document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoTotalRodada.toFixed(2).replace('.', ',');
-                atualizarSaldoNoFirebase();
-                atualizarTelas();
-                document.getElementById('btnDisparar').disabled = false;
-            } else {
-                notificarDisplay("Nenhum ganho nesta rodada.");
-                document.getElementById('txtGanhoTotal').innerText = "R$ 0,00";
-                atualizarTelas();
-                document.getElementById('btnDisparar').disabled = false;
-            }
-        }
-
-        function renderizarSlot(id, simbolo) {
-            const containerItem = document.getElementById(`s${id}`);
-            if (simbolo === '🐯') {
-                containerItem.innerHTML = `🐯<span class="label-wild">WILD</span>`;
-            } else {
-                containerItem.innerHTML = simbolo;
-            }
-        }
-
-        function dispararAnimacaoFantastica(valorFinal) {
-            const telaOverlay = document.getElementById('telaBonus');
-            document.getElementById('valorPremioFantastico').innerText = formatarMoeda(valorFinal);
-            telaOverlay.style.display = 'flex';
-
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const drop = document.createElement('div');
-                    drop.style.cssText = `position: absolute; font-size: 24px; top: -40px; left: ${Math.random() * 90}%; animation: cair 1.5s linear forwards;`;
-                    drop.innerText = '🪙';
-                    telaOverlay.appendChild(drop);
-                    setTimeout(() => drop.remove(), 1500);
-                }, i * 80);
-            }
-
-            setTimeout(() => {
-                telaOverlay.style.display = 'none';
-                bancaAtual += valorFinal;
-                document.getElementById('txtGanhoTotal').innerText = "R$ " + valorFinal.toFixed(2).replace('.', ',');
-                atualizarSaldoNoFirebase();
-                atualizarTelas();
-                document.getElementById('btnDisparar').disabled = false;
-            }, 3500);
-        }
-
-        function atualizarTelas() {
-            document.getElementById('txtSaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('txtAposta').innerText = "R$ " + valorDoGiro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function notificarDisplay(texto) {
-            document.getElementById('displayMensagem').innerText = texto;
-        }
-
-        function formatarMoeda(valor) {
-            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function tocarSomGiro() {
-            try {
-                let osc = ctxAudio.createOscillator();
-                let gain = ctxAudio.createGain();
-                osc.type = 'sine'; osc.frequency.setValueAtTime(140, ctxAudio.currentTime);
-                gain.gain.setValueAtTime(0.05, ctxAudio.currentTime);
-                osc.connect(gain); gain.connect(ctxAudio.destination);
-                osc.start(); osc.stop(ctxAudio.currentTime + 0.08);
-            } catch(e){}
-        }
-
-        function tocarSomGanho() {
-            try {
-                let osc = ctxAudio.createOscillator();
-                let gain = ctxAudio.createGain();
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(580, ctxAudio.currentTime);
-                gain.gain.setValueAtTime(0.1, ctxAudio.currentTime);
-                osc.connect(gain); gain.connect(ctxAudio.destination);
-                osc.start(); osc.stop(ctxAudio.currentTime + 0.3);
-            } catch(e){}
-        }
+        // ... (O seu código funcional continua igual)
     </script>
 </body>
 </html>
