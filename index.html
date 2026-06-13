@@ -8,25 +8,19 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; user-select: none; touch-action: manipulation; }
         body { background: radial-gradient(circle, #2c0202 0%, #0f0101 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; overflow-y: auto; }
 
-        .btn-saldo { width: 100%; max-width: 420px; background: #ffcc00; color: #000; border: none; padding: 15px; font-weight: bold; border-radius: 12px; margin-bottom: 20px; cursor: pointer; box-shadow: 0 5px 0 #997300; text-transform: uppercase; transition: 0.2s; }
-        .btn-saldo:active { transform: translateY(3px); box-shadow: 0 2px 0 #997300; }
-
+        .btn-saldo { width: 100%; max-width: 420px; background: #ffcc00; color: #000; border: none; padding: 15px; font-weight: bold; border-radius: 12px; margin-bottom: 20px; cursor: pointer; box-shadow: 0 5px 0 #997300; text-transform: uppercase; }
         .container-jogo { width: 100%; max-width: 420px; background: linear-gradient(180deg, #8b0000 0%, #b81414 50%, #4a0000 100%); border: 4px solid #ffcc00; border-radius: 20px; padding: 20px; text-align: center; position: relative; }
-        
         .grade-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #220000; padding: 10px; border-radius: 12px; border: 4px solid #660000; margin-bottom: 20px; }
         .slot { background: #fff; height: 90px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
-
+        
         .area-controles { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 16px; }
         .linha-aposta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        
-        .btn-mini { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ffcc00; background: transparent; color: #ffcc00; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .txt-valor { font-size: 20px; font-weight: bold; }
-
+        .btn-mini { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ffcc00; background: transparent; color: #ffcc00; font-size: 24px; cursor: pointer; }
         .linha-acao { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .btn-round { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffcc00; background: transparent; color: #ffcc00; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-round { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ffcc00; background: transparent; color: #ffcc00; font-size: 20px; cursor: pointer; }
         .btn-girar { flex-grow: 1; height: 60px; background: #2ecc71; border: none; color: white; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; }
         
-        #overlayGanho { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: #ffcc00; border-radius: 16px; z-index: 10; }
+        #overlayGanho { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #ffcc00; border-radius: 16px; z-index: 10; }
         .exibicao-saldo { margin-top: 15px; font-size: 16px; color: #ffcc00; font-weight: bold; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; }
     </style>
 </head>
@@ -45,7 +39,7 @@
         <div class="area-controles">
             <div class="linha-aposta">
                 <button class="btn-mini" onclick="ajustarAposta(-1)">-</button>
-                <div class="txt-valor" id="txtAposta">R$ 0,40</div>
+                <div class="txt-valor" id="txtAposta" style="font-size:20px; font-weight:bold;">R$ 0,40</div>
                 <button class="btn-mini" onclick="ajustarAposta(1)">+</button>
             </div>
             <div class="linha-acao">
@@ -59,44 +53,60 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         
         const db = getDatabase(initializeApp({ /* COLOQUE SEU CONFIG AQUI */ }));
-        let id = localStorage.getItem('usuario_tracker_id') || 'TIGER-12345';
-        
-        let aposta = 0.40, turbo = false;
-        
-        onValue(ref(db, 'usuarios/' + id + '/saldo'), (s) => {
-            document.getElementById('txtSaldo').innerText = "R$ " + parseFloat(s.val() || 0).toFixed(2);
+        let id = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(Math.random()*99999);
+        localStorage.setItem('usuario_tracker_id', id);
+
+        let aposta = 0.40, turbo = false, saldo = 0;
+        const simbolos = ['🐯','💰','🧧','🍀','🍊'];
+        const premios = { '🐯': 5, '💰': 3, '🧧': 2, '🍀': 1.5, '🍊': 1 };
+
+        onValue(ref(db, 'usuarios/' + id + '/saldo'), (s) => { 
+            saldo = parseFloat(s.val() || 0); 
+            document.getElementById('txtSaldo').innerText = "R$ " + saldo.toFixed(2); 
         });
 
         window.toggleTurbo = () => { turbo = !turbo; document.getElementById('btnTurbo').style.background = turbo ? '#2ecc71' : 'transparent'; };
-        
         window.ajustarAposta = (d) => {
             let nova = Math.round((aposta + (d * 0.40)) * 100) / 100;
-            if (nova < 0.40) return alert("BET MÍNIMA");
-            if (nova > 250) return alert("BET MÁXIMA");
+            if(nova < 0.40) return alert("BET MÍNIMA");
+            if(nova > 250) return alert("BET MÁXIMA");
             aposta = nova;
             document.getElementById('txtAposta').innerText = "R$ " + aposta.toFixed(2);
         };
 
-        window.abrirGirosAuto = () => { let q = prompt("Quantos giros?"); if(q) alert("Iniciando " + q + " giros."); };
-
         window.girar = () => {
+            if(saldo < aposta) return alert("SALDO INSUFICIENTE");
             document.getElementById('btnGirar').disabled = true;
+            saldo -= aposta;
+            
             let i = 0;
             let l = setInterval(() => {
-                for(let j=0; j<9; j++) document.getElementById('s'+j).innerText = ['🐯','💰','🧧','🍀','🍊'][Math.floor(Math.random()*5)];
-                if(i++ > 10) { clearInterval(l); mostrarGanho(); }
+                for(let j=0; j<9; j++) document.getElementById('s'+j).innerText = simbolos[Math.floor(Math.random()*5)];
+                if(i++ > 15) { clearInterval(l); calcularResultado(); }
             }, turbo ? 30 : 100);
         };
 
-        function mostrarGanho() {
-            let o = document.getElementById('overlayGanho');
-            o.innerText = "R$ " + (Math.random() > 0.5 ? (aposta * 2).toFixed(2) : "0,00");
-            o.style.display = 'flex';
-            setTimeout(() => { o.style.display = 'none'; document.getElementById('btnGirar').disabled = false; }, 1000);
+        function calcularResultado() {
+            let grade = Array.from(document.querySelectorAll('.slot')).map(s => s.innerText);
+            let ganho = 0;
+            // Exemplo de lógica simples: se 3 iguais na linha do meio
+            if(grade[3] === grade[4] && grade[4] === grade[5]) ganho = aposta * premios[grade[4]];
+            
+            if(ganho > 0) {
+                saldo += ganho;
+                document.getElementById('overlayGanho').innerText = "R$ " + ganho.toFixed(2);
+                document.getElementById('overlayGanho').style.display = 'flex';
+                setTimeout(() => document.getElementById('overlayGanho').style.display = 'none', 1500);
+            }
+            
+            set(ref(db, 'usuarios/' + id + '/saldo'), saldo);
+            document.getElementById('btnGirar').disabled = false;
         }
+        
+        window.abrirGirosAuto = () => alert("Menu de Giros Automáticos");
     </script>
 </body>
 </html>
