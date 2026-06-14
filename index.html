@@ -3,106 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SorteCerta - O Melhor Cassino Online</title>
+    <title>SorteCerta - O Melhor Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-main: #0a0a0c;
-            --bg-card: #18181b;
-            --gold: #ffcc00;
+            --bg-card: rgba(24, 24, 27, 0.7);
+            --gold: #f1c40f;
             --gold-dark: #b8860b;
-            --green: #00b37e;
+            --green: #00e676;
+            --red: #e74c3c;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 70px; overflow-x: hidden; }
+        body { 
+            background-color: var(--bg-main); 
+            background-image: radial-gradient(circle at 50% 0%, #2a1a00 0%, transparent 60%);
+            color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; 
+        }
 
-        /* HEADER FIXO */
+        /* --- MANUTENÇÃO BLOQUEADORA --- */
+        #telaManutencao {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.98); z-index: 999999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: #fff; text-align: center; backdrop-filter: blur(15px);
+        }
+        #telaManutencao i { font-size: 70px; color: var(--red); margin-bottom: 25px; animation: pulse 1s infinite; }
+        #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+        #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; }
+
+        /* --- HEADER PREMIUM --- */
         .navbar {
-            position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid #27272a;
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 10px;
+            position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        .brand { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; text-decoration: none; }
-        .brand i { color: var(--gold); font-size: 20px; }
         
-        /* PAINEL DE SALDO E BOTÕES TOPO */
-        .user-panel { display: flex; align-items: center; gap: 8px; background: #121214; padding: 4px; border-radius: 50px; border: 1px solid #27272a; }
-        .balance { font-weight: bold; color: var(--green); font-size: 12px; margin-left: 6px; white-space: nowrap; }
+        .brand-logo { display: flex; align-items: center; }
+        /* Substitua o src pelo link da sua logo. Tamanho sugerido: altura máxima de 35px */
+        .brand-logo img { height: 32px; object-fit: contain; } 
         
-        .action-buttons { display: flex; gap: 5px; }
-        .btn-withdraw { background: transparent; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; display: flex; align-items: center; gap: 4px; text-transform: uppercase; }
-        .btn-deposit { background: var(--green); color: #000; font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; display: flex; align-items: center; gap: 4px; text-transform: uppercase; }
+        .audio-ctrl { color: var(--text-muted); font-size: 18px; margin-right: 10px; cursor: pointer; transition: 0.2s; }
+        .audio-ctrl:active { transform: scale(0.8); }
 
-        .container { max-width: 800px; margin: 70px auto 0; padding: 15px; }
+        .user-panel { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); }
+        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 8px; }
+        .balance-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; }
+        .balance { font-weight: 900; color: var(--green); font-size: 14px; white-space: nowrap; line-height: 1; }
+        
+        .action-buttons { display: flex; gap: 6px; }
+        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 12px; border-radius: 20px; font-size: 11px; text-decoration: none; text-transform: uppercase; transition: 0.2s; }
+        .btn-deposit { background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; padding: 6px 12px; border-radius: 20px; font-size: 11px; text-decoration: none; text-transform: uppercase; box-shadow: 0 0 15px rgba(0, 230, 118, 0.3); animation: softPulse 2s infinite; }
 
-        /* BANNER PRINCIPAL */
+        .container { max-width: 800px; margin: 80px auto 0; padding: 15px; }
+
+        /* --- BANNER NEON --- */
         .hero-banner {
-            width: 100%; border-radius: 16px; background: linear-gradient(135deg, #4a0000 0%, #8b0000 100%);
-            padding: 30px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: center;
+            width: 100%; border-radius: 20px; background: linear-gradient(135deg, #2a0000 0%, #4a0000 100%);
+            padding: 35px 25px; position: relative; overflow: hidden; margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(255, 69, 0, 0.3);
+            display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255, 69, 0, 0.2);
         }
-        .hero-banner::after { content: '🐯'; position: absolute; right: -10px; bottom: -20px; font-size: 120px; opacity: 0.3; transform: rotate(-15deg); }
-        .hero-banner h1 { font-size: 26px; color: var(--gold); margin-bottom: 5px; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .hero-banner p { font-size: 13px; color: #fff; margin-bottom: 15px; z-index: 2; max-width: 70%; }
-        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; z-index: 2; width: max-content; text-transform: uppercase; font-size: 13px; box-shadow: 0 4px 0 #8a6508; transition: 0.1s; }
-        .btn-play-now:active { transform: translateY(4px); box-shadow: 0 0 0 #8a6508; }
+        .hero-banner::after { content: '🐯'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.15; transform: rotate(-15deg); filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.8)); }
+        .hero-banner h1 { font-size: 28px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.5); }
+        .hero-banner p { font-size: 14px; color: #eee; margin-bottom: 20px; z-index: 2; max-width: 65%; font-weight: 500; }
+        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; }
+        .btn-play-now:active { transform: translateY(5px); box-shadow: 0 0 0 #8a6508; }
 
-        /* CATEGORIAS HORIZONTAIS */
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 15px; }
+        /* --- CATEGORIAS VIVAS --- */
+        .categories { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; margin-bottom: 20px; }
         .categories::-webkit-scrollbar { display: none; }
-        .cat-btn { text-decoration: none; background: var(--bg-card); border: 1px solid #27272a; color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; }
-        .cat-btn.active, .cat-btn:active { background: rgba(255, 204, 0, 0.1); color: var(--gold); border-color: var(--gold); }
+        .cat-btn { text-decoration: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.3s; backdrop-filter: blur(5px); }
+        .cat-btn.active { background: rgba(241, 196, 15, 0.15); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2); }
 
-        /* GRID DE JOGOS */
-        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .section-title i { color: var(--gold); }
+        /* --- GRID DE JOGOS (GLASSMORPHISM) --- */
+        .section-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title i { color: var(--gold); font-size: 20px; }
         
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 30px; }
-        .game-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; position: relative; text-decoration: none; border: 1px solid #27272a; transition: 0.2s; }
-        .game-card:active { transform: scale(0.95); }
-        .game-cover { width: 100%; height: 120px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 50px; position: relative; }
-        .game-info { padding: 8px; text-align: center; }
-        .game-name { font-size: 12px; font-weight: bold; color: #fff; }
-        .game-provider { font-size: 10px; color: var(--text-muted); }
-        .hot-badge { position: absolute; top: 5px; right: 5px; background: #e74c3c; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        
+        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; text-decoration: none; border: 1px solid var(--border-color); transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); }
+        .game-card:active { transform: scale(0.92); border-color: var(--gold); }
+        .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
+        
+        /* Sombras internas para dar profundidade às capas */
+        .gc-tiger { background: radial-gradient(circle, #8b0000, #330000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-aviator { background: radial-gradient(circle, #1e3c72, #0a1930); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-mines { background: radial-gradient(circle, #0f2027, #000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-roulette { background: radial-gradient(circle, #11998e, #063d38); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-ox { background: radial-gradient(circle, #8e44ad, #2c0b3d); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-dragon { background: radial-gradient(circle, #d35400, #5a2400); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); filter: grayscale(0.5); }
 
-        /* MENU MOBILE INFERIOR (LIMPO) */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(24, 24, 27, 0.95);
-            backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-evenly;
-            padding: 12px 0; z-index: 1000;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: bold; gap: 5px; transition: 0.2s; width: 45%; }
-        .nav-item i { font-size: 22px; }
-        .nav-item.active, .nav-item:active { color: var(--gold); }
+        .game-info { padding: 10px; text-align: center; background: rgba(0,0,0,0.6); }
+        .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; }
+        .game-provider { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
+        
+        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; }
 
-        /* PROVA SOCIAL (POPUP DE GANHOS) */
+        /* --- PROVA SOCIAL (POPUP DE GANHOS) --- */
         .live-win-popup {
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: rgba(0, 0, 0, 0.8); border: 1px solid var(--green); border-radius: 50px;
-            padding: 8px 16px; display: flex; align-items: center; gap: 10px; opacity: 0;
-            transition: all 0.5s ease; z-index: 999; box-shadow: 0 5px 15px rgba(0, 179, 126, 0.2);
-            width: 90%; max-width: 350px;
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 12, 0.95); border: 1px solid var(--green); border-radius: 50px;
+            padding: 8px 20px; display: flex; align-items: center; gap: 12px; opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
+            box-shadow: 0 10px 25px rgba(0, 230, 118, 0.2); width: max-content; max-width: 90%;
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .live-win-icon { background: var(--green); color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .live-win-text { font-size: 11px; color: #fff; }
-        .live-win-amount { color: var(--green); font-weight: bold; }
+        .live-win-icon { background: var(--green); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .live-win-text { font-size: 12px; color: #ddd; line-height: 1.3; }
+        .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; }
+
+        /* --- MENU INFERIOR FOCADO --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item i { font-size: 24px; transition: 0.2s; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
+
+        /* --- ANIMAÇÕES --- */
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
+        @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     </style>
 </head>
 <body>
 
+    <div id="telaManutencao">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h2>SISTEMA EM MANUTENÇÃO</h2>
+        <p>Estamos realizando uma atualização programada em nossos servidores. Seu saldo e dados estão 100% seguros.</p>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
     <nav class="navbar">
-        <a href="index.html" class="brand"><i class="fa-solid fa-crown"></i> SorteCerta</a>
-        <div class="user-panel">
-            <span class="balance" id="displaySaldo">R$ 0,00</span>
-            <div class="action-buttons">
-                <a href="saque.html" class="btn-withdraw">Sacar</a>
-                <a href="saldo.html" class="btn-deposit">Depositar</a>
+        <a href="index.html" class="brand-logo">
+            <span style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
+        </a>
+        
+        <div style="display: flex; align-items: center;">
+            <i class="fa-solid fa-volume-xmark audio-ctrl" id="btnAudio" onclick="toggleAudio()"></i>
+            <div class="user-panel">
+                <div class="balance-box">
+                    <span class="balance-label">Saldo Disponível</span>
+                    <span class="balance" id="displaySaldo">R$ 0,00</span>
+                </div>
+                <div class="action-buttons">
+                    <a href="saque.html" class="btn-withdraw">Sacar</a>
+                    <a href="saldo.html" class="btn-deposit">Depositar</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -111,22 +171,22 @@
         
         <div class="hero-banner">
             <h1>Fortune Tiger</h1>
-            <p>O tigre está pagando muito hoje! Multiplique sua banca em até 2500x.</p>
+            <p>O tigre está multiplicando bancas! Aproveite o RTP alto de hoje e faça sua sorte.</p>
             <a href="tiger.html" class="btn-play-now">Jogar Agora</a>
         </div>
 
         <div class="categories">
             <a href="index.html" class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</a>
-            <a href="aviator.html" class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash</a>
-            <a href="roleta.html" class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta Turbo</a>
+            <a href="aviator.html" class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</a>
+            <a href="roleta.html" class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</a>
         </div>
 
-        <h2 class="section-title"><i class="fa-solid fa-star"></i> Mais Jogados</h2>
+        <h2 class="section-title"><i class="fa-solid fa-star"></i> Cassino Originals</h2>
         
         <div class="games-grid">
             <a href="tiger.html" class="game-card">
-                <div class="hot-badge">QUENTE</div>
-                <div class="game-cover" style="background: linear-gradient(45deg, #8b0000, #ff4500);">🐯</div>
+                <div class="hot-badge">98% RTP</div>
+                <div class="game-cover gc-tiger">🐯</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Tiger</div>
                     <div class="game-provider">PG Soft</div>
@@ -134,15 +194,15 @@
             </a>
 
             <a href="aviator.html" class="game-card">
-                <div class="game-cover" style="background: linear-gradient(45deg, #1e3c72, #2a5298);">✈️</div>
+                <div class="game-cover gc-aviator">✈️</div>
                 <div class="game-info">
-                    <div class="game-name">Aviator</div>
+                    <div class="game-name">Aviator Pro</div>
                     <div class="game-provider">Spribe</div>
                 </div>
             </a>
 
             <a href="mines.html" class="game-card">
-                <div class="game-cover" style="background: linear-gradient(45deg, #0f2027, #203a43);">💣</div>
+                <div class="game-cover gc-mines">💣</div>
                 <div class="game-info">
                     <div class="game-name">Mines</div>
                     <div class="game-provider">Spribe</div>
@@ -150,26 +210,27 @@
             </a>
 
             <a href="roleta.html" class="game-card">
-                <div class="game-cover" style="background: linear-gradient(45deg, #11998e, #38ef7d);">🎡</div>
+                <div class="hot-badge">NOVO</div>
+                <div class="game-cover gc-roulette">🎡</div>
                 <div class="game-info">
                     <div class="game-name">Roleta Turbo</div>
-                    <div class="game-provider">SorteCerta</div>
+                    <div class="game-provider">Originals</div>
                 </div>
             </a>
             
             <a href="ox.html" class="game-card">
-                <div class="game-cover" style="background: linear-gradient(45deg, #8e44ad, #c0392b);">🐂</div>
+                <div class="game-cover gc-ox">🐂</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Ox</div>
                     <div class="game-provider">PG Soft</div>
                 </div>
             </a>
 
-            <a href="#" class="game-card" onclick="alert('O Fortune Dragon será liberado em breve na próxima atualização!')">
-                <div class="game-cover" style="background: linear-gradient(45deg, #d35400, #f39c12);">🐉</div>
+            <a href="#" class="game-card" onclick="alert('O Fortune Dragon está passando por auditoria e será liberado em breve!')">
+                <div class="game-cover gc-dragon">🐉</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Dragon</div>
-                    <div class="game-provider">PG Soft</div>
+                    <div class="game-provider">Em Breve</div>
                 </div>
             </a>
         </div>
@@ -177,10 +238,10 @@
     </div>
 
     <div class="live-win-popup" id="liveWin">
-        <div class="live-win-icon"><i class="fa-solid fa-check"></i></div>
+        <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
-            Vitória Excepcional!<br>
-            <span id="winUser">***vitor</span> ganhou <span class="live-win-amount" id="winAmount">R$ 500,00</span>
+            <span id="winUser" style="font-weight: bold; color: #fff;">***vitor</span> acabou de ganhar<br>
+            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Tiger</span>
         </div>
     </div>
 
@@ -190,50 +251,107 @@
             <span>Cassino</span>
         </a>
         <a href="perfil.html" class="nav-item">
-            <i class="fa-solid fa-user"></i>
-            <span>Perfil</span>
+            <i class="fa-solid fa-user-astronaut"></i>
+            <span>Minha Conta</span>
         </a>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // 1. GERAÇÃO DE ID E REGISTRO AUTOMÁTICO NO BANCO (CRIA PERFIL SE NÃO EXISTIR)
         let idDispositivo = localStorage.getItem('usuario_tracker_id');
-        if(idDispositivo) {
-            onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-                const saldo = snapshot.val() || 0;
-                document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            });
+        if (!idDispositivo) {
+            idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('usuario_tracker_id', idDispositivo);
         }
 
-        const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger"];
+        const userRef = ref(db, 'usuarios/' + idDispositivo);
+        get(userRef).then((snapshot) => {
+            if (!snapshot.exists()) {
+                // Cria a conta do cara automaticamente
+                set(userRef, { saldo: 0, modo: 'normal', forcarGanho: 0 });
+            }
+        });
+
+        // 2. PUXAR SALDO EM TEMPO REAL
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            const saldo = snapshot.val() || 0;
+            document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
+
+        // 3. ESCUTA DO BOTÃO DE MANUTENÇÃO (TRAVA O SITE SE ADMIN MANDAR)
+        onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
+            const isManutencao = snapshot.val() || false;
+            const tela = document.getElementById('telaManutencao');
+            if (isManutencao) {
+                tela.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Impede rolagem
+            } else {
+                tela.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // 4. LÓGICA DE ÁUDIO AMBIENTE (INTERAÇÃO DO USUÁRIO)
+        const bgMusic = document.getElementById('bgMusic');
+        const btnAudio = document.getElementById('btnAudio');
+        let audioStarted = false;
+
+        bgMusic.volume = 0.2; // Volume baixo para não assustar
+
+        // Inicia música no primeiro toque em qualquer lugar da tela
+        document.body.addEventListener('click', () => {
+            if (!audioStarted) {
+                bgMusic.play().catch(e => console.log("Áudio bloqueado pelo navegador."));
+                audioStarted = true;
+                btnAudio.className = 'fa-solid fa-volume-high audio-ctrl';
+            }
+        }, { once: true });
+
+        // Controle de Mute manual pelo botão no topo
+        window.toggleAudio = function() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                btnAudio.className = 'fa-solid fa-volume-high audio-ctrl';
+            } else {
+                bgMusic.pause();
+                btnAudio.className = 'fa-solid fa-volume-xmark audio-ctrl';
+            }
+        }
+
+        // 5. LÓGICA DO POPUP DE GANHOS (PROVA SOCIAL DINÂMICA)
+        const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger", "***chef"];
+        const jogosFake = ["Tiger", "Aviator", "Roleta", "Ox", "Mines"];
         
         function mostrarGanhoFalso() {
             const popup = document.getElementById('liveWin');
             const nome = nomesFake[Math.floor(Math.random() * nomesFake.length)];
-            const valor = (Math.random() * (1500 - 50) + 50).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const jogo = jogosFake[Math.floor(Math.random() * jogosFake.length)];
+            const valor = (Math.random() * (2500 - 50) + 50).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
             document.getElementById('winUser').innerText = nome;
-            document.getElementById('winAmount').innerText = valor;
+            document.getElementById('winGame').innerText = jogo;
+            document.getElementById('winAmount').innerText = "R$ " + valor;
             
             popup.classList.add('show');
             
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 4000);
+            // Esconde depois de 4 segundos
+            setTimeout(() => { popup.classList.remove('show'); }, 4000);
         }
 
-        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (15000 - 8000 + 1) + 8000));
+        // Fica mostrando popups aleatoriamente a cada 7 a 15 segundos
+        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (15000 - 7000 + 1) + 7000));
     </script>
 </body>
 </html>
