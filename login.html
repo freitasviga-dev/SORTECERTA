@@ -62,7 +62,6 @@
         .security-seal span { font-size: 10px; color: #666; display: flex; align-items: center; gap: 5px; font-weight: 700; text-transform: uppercase; }
         .security-seal i { color: #888; }
 
-        /* Efeito de brilho de fundo */
         .bg-glow { position: absolute; width: 200px; height: 200px; background: rgba(241, 196, 15, 0.15); filter: blur(80px); border-radius: 50%; top: -50px; left: -50px; z-index: 1; }
     </style>
 </head>
@@ -77,7 +76,7 @@
             <label class="input-label">Celular (Com DDD)</label>
             <div class="input-wrapper">
                 <i class="fa-solid fa-phone"></i>
-                <input type="tel" id="inputPhone" class="input-custom" placeholder="Ex: 83999999999" maxlength="11">
+                <input type="tel" id="inputPhone" class="input-custom" placeholder="Ex: 83999999999" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
         </div>
 
@@ -89,7 +88,10 @@
             </div>
         </div>
 
-        <button class="btn-submit" id="btnAcesso" onclick="processarAcesso()">Acessar Conta</button>
+        <button class="btn-submit" id="btnAcesso" onclick="processarAcesso()">Entrar / Cadastrar</button>
+        <div style="font-size: 10px; color: #777; text-align: center; margin-top: 12px; font-weight: bold; text-transform: uppercase;">
+            <i class="fa-solid fa-bolt" style="color: var(--gold);"></i> Se não tiver conta, ela é criada na hora!
+        </div>
         
         <div class="system-msg" id="msgDisplay"></div>
 
@@ -103,7 +105,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
@@ -112,25 +113,27 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Animação dos ícones nos inputs
         document.querySelectorAll('.input-custom').forEach(input => {
             input.addEventListener('focus', function() { this.previousElementSibling.classList.add('active'); });
             input.addEventListener('blur', function() { this.previousElementSibling.classList.remove('active'); });
         });
 
-        // LÓGICA DE LOGIN OU CADASTRO HÍBRIDO
         window.processarAcesso = async function() {
             const phone = document.getElementById('inputPhone').value.trim();
             const pass = document.getElementById('inputPass').value.trim();
             const msg = document.getElementById('msgDisplay');
             const btn = document.getElementById('btnAcesso');
 
-            // Validação simples
-            if(phone.length < 10) {
-                msg.style.color = '#e74c3c'; msg.innerText = "Digite um número de telefone válido com DDD."; return;
+            // --- TRAVA 2: EXATAMENTE 11 NÚMEROS ---
+            if(phone.length !== 11) {
+                msg.style.color = '#e74c3c'; 
+                msg.innerText = "Erro: Digite exatamente 11 números (DDD + 9 + Número)."; 
+                return;
             }
             if(pass.length < 4) {
-                msg.style.color = '#e74c3c'; msg.innerText = "Sua senha deve ter no mínimo 4 caracteres."; return;
+                msg.style.color = '#e74c3c'; 
+                msg.innerText = "Sua senha deve ter no mínimo 4 caracteres."; 
+                return;
             }
 
             btn.innerText = "Processando...";
@@ -143,7 +146,6 @@
                 const snapshot = await get(userRef);
 
                 if (snapshot.exists()) {
-                    // CONTA JÁ EXISTE: FAZ O LOGIN
                     const dados = snapshot.val();
                     if (dados.senha === pass) {
                         localStorage.setItem('usuario_tracker_id', phone);
@@ -153,10 +155,9 @@
                     } else {
                         msg.style.color = '#e74c3c';
                         msg.innerText = "Senha incorreta. Tente novamente.";
-                        btn.innerText = "Acessar Conta";
+                        btn.innerText = "Entrar / Cadastrar";
                     }
                 } else {
-                    // CONTA NÃO EXISTE: CADASTRO AUTOMÁTICO
                     await set(userRef, { 
                         saldo: 0.00, 
                         senha: pass, 
@@ -172,7 +173,7 @@
             } catch (error) {
                 msg.style.color = '#e74c3c';
                 msg.innerText = "Erro de conexão com o servidor.";
-                btn.innerText = "Acessar Conta";
+                btn.innerText = "Entrar / Cadastrar";
             }
         }
     </script>
