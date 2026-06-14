@@ -203,7 +203,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // IMPORTANTE: Adicionado a função PUSH aqui para o histórico funcionar
         import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // --- SISTEMA DE LOGIN ---
@@ -297,13 +296,19 @@
                 const u = data[id];
                 let saldo = parseFloat(u.saldo || 0).toFixed(2);
                 let isInfluenciador = u.modo === 'influenciador';
+                let senha = u.senha || 'Sem senha'; // Puxa a senha do jogador
                 
                 let badgeClass = isInfluenciador ? 'status-admin' : 'status-normal';
                 let badgeText = isInfluenciador ? '<i class="fa-solid fa-star"></i> Admin/Live' : 'Normal Automático';
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><span class="id-badge">${id}</span></td>
+                        <td>
+                            <span class="id-badge">${id}</span>
+                            <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-key" style="font-size: 9px; margin-right: 3px;"></i> ${senha}
+                            </div>
+                        </td>
                         <td style="color:var(--green); font-weight:bold; font-size:16px;">R$ ${saldo}</td>
                         <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
                         <td style="text-align: right;">
