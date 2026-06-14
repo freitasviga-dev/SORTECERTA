@@ -59,12 +59,16 @@
 
         /* MÉTRICAS (CAIXAS TOPO) */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--gold); }
+        .metric-card { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--gold); position: relative; }
         .metric-card.green { border-top-color: var(--green); }
         .metric-card.red { border-top-color: var(--red); }
         .metric-card.blue { border-top-color: var(--blue); }
         .m-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .m-value { font-size: 32px; font-weight: 900; color: #fff; }
+        
+        /* BOTÃO DE ZERAR O COFRE */
+        .btn-zerar-cofre { margin-top: 15px; width: 100%; background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-zerar-cofre:hover { background: var(--gold); color: #000; }
 
         /* GESTÃO DE USUÁRIOS */
         .panel-section { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 30px; }
@@ -140,6 +144,9 @@
             <div class="metric-card">
                 <div class="m-title"><i class="fa-solid fa-vault" style="color:var(--gold)"></i> Lucro da Casa (RTP)</div>
                 <div class="m-value" id="displayCaixaGlobal">R$ 0,00</div>
+                <button class="btn-zerar-cofre" onclick="zerarCofrePrompt()">
+                    <i class="fa-solid fa-rotate-left"></i> Zerar Saldo
+                </button>
             </div>
             <div class="metric-card green">
                 <div class="m-title"><i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Total Depositado</div>
@@ -246,6 +253,15 @@
         });
 
         window.toggleManutencao = () => { set(ref(db, 'sistema/manutencao'), !isManutencao); };
+
+        // ZERAR O COFRE (NOVA FUNÇÃO)
+        window.zerarCofrePrompt = () => {
+            if(confirm("⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR o lucro da casa?\n\nO Cofre Global (RTP) voltará para R$ 0,00 e o algoritmo passará a focar na recuperação de caixa.")) {
+                set(ref(db, 'sistema/caixa_global'), 0).then(() => {
+                    alert("Cofre zerado com sucesso! A casa voltou a arrecadar.");
+                });
+            }
+        };
 
         // --- 2. LISTA E GESTÃO DE USUÁRIOS ---
         let usersDataGlobal = {};
