@@ -11,7 +11,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
-            /* BLOQUEIO COMPLEMENTAR DE ZOOM VIA TOQUE */
+            /* BLOQUEIO DE ZOOM VIA TOQUE DUPLO, MAS PERMITE ROLAGEM */
             touch-action: manipulation;
         }
 
@@ -23,7 +23,9 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden; /* Evita rolagens desnecessárias na tela cheia */
+            /* ROLAGEM LIBERADA */
+            overflow-y: auto; 
+            padding: 20px 0;
         }
 
         .container-jogo {
@@ -36,6 +38,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,204,0,0.4);
             text-align: center;
             position: relative;
+            margin: auto;
         }
 
         /* Topo com área de ID e Copiar */
@@ -352,6 +355,10 @@
         let bancaAtual = 0.00; 
         let valorDoGiro = 0.40;
         let firebaseConectado = false;
+        
+        // VARIÁVEIS DE CONTROLE DO PAINEL ADMIN
+        window.modoJogo = "normal";
+        window.valorForcarGanho = 0;
 
         const tabelaApostas = [0.40, 0.80, 1.20, 2.00, 4.00, 10.00, 20.00, 50.00, 100.00, 250.00];
 
@@ -407,15 +414,20 @@
         }
 
         function conectarFirebaseSincronizado() {
-            const saldoRef = ref(db, 'usuarios/' + idDispositivo + '/saldo');
+            const userRef = ref(db, 'usuarios/' + idDispositivo);
             
-            onValue(saldoRef, (snapshot) => {
+            onValue(userRef, (snapshot) => {
                 const dados = snapshot.val();
                 if (dados !== null) {
-                    bancaAtual = parseFloat(dados);
+                    bancaAtual = parseFloat(dados.saldo !== undefined ? dados.saldo : 0.00);
+                    window.modoJogo = dados.modo || "normal";
+                    window.valorForcarGanho = parseFloat(dados.forcarGanho || 0);
                 } else {
                     bancaAtual = 0.00;
-                    set(saldoRef, bancaAtual);
+                    window.modoJogo = "normal";
+                    window.valorForcarGanho = 0;
+                    // Cria a estrutura padrão para esse usuário
+                    set(userRef, { saldo: bancaAtual, modo: "normal", forcarGanho: 0 });
                 }
                 
                 firebaseConectado = true;
@@ -484,58 +496,112 @@
             }, 65);
         }
 
-        function processarResultadoFinal() {
-            let resultadoMatriz = [];
+        function gerarMatrizAleatoria() {
+            let m = [];
+            for (let i = 0; i < 9; i++) m.push(listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]);
+            return m;
+        }
 
-            for (let i = 0; i < 9; i++) {
-                resultadoMatriz.push(listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]);
-            }
-
-            for (let i = 0; i < 9; i++) {
-                renderizarSlot(i, resultadoMatriz[i]);
-            }
-
-            let ganhoTotalRodada = 0;
-
+        function calcularGanhosDaMatriz(matriz) {
+            let ganho = 0;
+            let linhas = [];
             combinacoesLinhas.forEach(linha => {
                 const [posA, posB, posC] = linha;
-                let itemA = resultadoMatriz[posA];
-                let itemB = resultadoMatriz[posB];
-                let itemC = resultadoMatriz[posC];
-
+                let itemA = matriz[posA]; let itemB = matriz[posB]; let itemC = matriz[posC];
                 let matchNormal = (itemA === itemB && itemB === itemC);
                 let matchWild = false;
 
                 if (itemA === '🐯' || itemB === '🐯' || itemC === '🐯') {
                     let filtrados = [itemA, itemB, itemC].filter(x => x !== '🐯');
-                    if (filtrados.length <= 1 || (filtrados.length === 2 && filtrados[0] === filtrados[1])) {
-                        matchWild = true;
-                    }
+                    if (filtrados.length <= 1 || (filtrados.length === 2 && filtrados[0] === filtrados[1])) matchWild = true;
                 }
 
                 if (matchNormal || matchWild) {
                     let itemReferencia = (itemA !== '🐯') ? itemA : ((itemB !== '🐯') ? itemB : itemC);
                     if (!itemReferencia) itemReferencia = '🐯'; 
-
-                    ganhoTotalRodada += (valorDoGiro * (dicionarioPremios[itemReferencia] / 10));
-
-                    document.getElementById(`s${posA}`).classList.add('ganhador');
-                    document.getElementById(`s${posB}`).classList.add('ganhador');
-                    document.getElementById(`s${posC}`).classList.add('ganhador');
+                    ganho += (valorDoGiro * (dicionarioPremios[itemReferencia] / 10));
+                    linhas.push(linha);
                 }
             });
-
-            let totalMencionadosIguais = resultadoMatriz.every(e => e === resultadoMatriz[0]);
+            let todosIguais = matriz.every(e => e === matriz[0]);
+            if(todosIguais && ganho > 0) ganho *= 10;
             
-            if (totalMencionadosIguais && ganhoTotalRodada > 0) {
-                ganhoTotalRodada = ganhoTotalRodada * 10;
+            return { ganho, linhas, todosIguais };
+        }
+
+        function processarResultadoFinal() {
+            let resultadoMatriz = [];
+            let ganhoFinal = 0;
+            let linhasVencedoras = [];
+            let flagMegaGanho = false;
+
+            // ==========================================
+            // LÓGICA DE GERENCIAMENTO (O CORAÇÃO DO JOGO)
+            // ==========================================
+            
+            if (window.valorForcarGanho > 0) {
+                // 1. FORÇAR GANHO EXATO (Requisitado via Painel Admin)
+                resultadoMatriz = ['🍊', '🍀', '🍊', '🐯', '🐯', '🐯', '💰', '🍊', '💰']; // Desenha uma vitória na linha do meio
+                ganhoFinal = window.valorForcarGanho; // Paga exatamente o valor ordenado
+                linhasVencedoras = [[3, 4, 5]];
+                
+                // Reseta a ordem no banco de dados para não continuar pagando
+                set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                window.valorForcarGanho = 0;
+                
+                if (ganhoFinal >= 50) flagMegaGanho = true;
+
+            } else {
+                // 2. MODOS DE JOGO (Agressivo, Normal, Disfarçado)
+                let maxTentativas = 20;
+                let tentativaAtual = 0;
+                let infoMatriz;
+
+                do {
+                    resultadoMatriz = gerarMatrizAleatoria();
+                    infoMatriz = calcularGanhosDaMatriz(resultadoMatriz);
+
+                    // Se for modo AGRESSIVO e houver vitória, força a girar de novo para perder
+                    if (window.modoJogo === 'agressivo' && infoMatriz.ganho > 0) {
+                        tentativaAtual++;
+                        continue; 
+                    }
+                    // Se for modo DISFARÇADO, não permite ganhos maiores que 4x o valor da aposta
+                    if (window.modoJogo === 'desfarcado' && infoMatriz.ganho > (valorDoGiro * 4)) {
+                        tentativaAtual++;
+                        continue;
+                    }
+                    
+                    break; // Se as regras permitiram, aceita a matriz gerada
+                } while (tentativaAtual < maxTentativas);
+
+                ganhoFinal = infoMatriz.ganho;
+                linhasVencedoras = infoMatriz.linhas;
+                flagMegaGanho = (infoMatriz.todosIguais && infoMatriz.ganho > 0);
+            }
+
+            // ==========================================
+            // RENDERIZAÇÃO NA TELA
+            // ==========================================
+
+            for (let i = 0; i < 9; i++) {
+                renderizarSlot(i, resultadoMatriz[i]);
+            }
+
+            linhasVencedoras.forEach(linha => {
+                document.getElementById(`s${linha[0]}`).classList.add('ganhador');
+                document.getElementById(`s${linha[1]}`).classList.add('ganhador');
+                document.getElementById(`s${linha[2]}`).classList.add('ganhador');
+            });
+
+            if (flagMegaGanho && ganhoFinal > 0) {
                 tocarSomGanho();
-                dispararAnimacaoFantastica(ganhoTotalRodada);
-            } else if (ganhoTotalRodada > 0) {
-                bancaAtual += ganhoTotalRodada;
+                dispararAnimacaoFantastica(ganhoFinal);
+            } else if (ganhoFinal > 0) {
+                bancaAtual += ganhoFinal;
                 tocarSomGanho();
-                notificarDisplay(`Ganhou R$ ${ganhoTotalRodada.toFixed(2)}!`);
-                document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoTotalRodada.toFixed(2).replace('.', ',');
+                notificarDisplay(`Ganhou R$ ${ganhoFinal.toFixed(2)}!`);
+                document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoFinal.toFixed(2).replace('.', ',');
                 atualizarSaldoNoFirebase();
                 atualizarTelas();
                 document.getElementById('btnDisparar').disabled = false;
