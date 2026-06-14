@@ -41,7 +41,6 @@
             margin: auto;
         }
 
-        /* Topo com área de ID e Copiar */
         .topo-id-container {
             display: flex;
             align-items: center;
@@ -54,29 +53,9 @@
             border: 1px solid rgba(255, 204, 0, 0.3);
         }
 
-        .topo-id {
-            font-size: 11px;
-            color: #ffcc00;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
-
-        .btn-copiar {
-            background: #ffcc00;
-            border: none;
-            color: #000;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.2s;
-        }
-
-        .btn-copiar:active {
-            transform: scale(0.95);
-        }
+        .topo-id { font-size: 11px; color: #ffcc00; letter-spacing: 1px; font-weight: bold; }
+        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
+        .btn-copiar:active { transform: scale(0.95); }
 
         .painel-status {
             background: rgba(0, 0, 0, 0.6);
@@ -93,7 +72,6 @@
             justify-content: center;
         }
 
-        /* Matriz de Slots */
         .grade-slots {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -124,18 +102,8 @@
             z-index: 2;
         }
 
-        .label-wild {
-            position: absolute;
-            bottom: 2px;
-            background: #ffcc00;
-            color: #000;
-            font-size: 9px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 4px;
-        }
+        .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
 
-        /* Exibição do Último Ganho */
         .display-ganho-central {
             background: #000;
             border-radius: 12px;
@@ -144,144 +112,33 @@
             border-bottom: 3px solid #ffcc00;
         }
 
-        .display-ganho-central span {
-            font-size: 11px;
-            color: #aaa;
-            text-transform: uppercase;
-        }
+        .display-ganho-central span { font-size: 11px; color: #aaa; text-transform: uppercase; }
+        .display-ganho-central h1 { color: #ffcc00; font-size: 26px; margin-top: 1px; }
 
-        .display-ganho-central h1 {
-            color: #ffcc00;
-            font-size: 26px;
-            margin-top: 1px;
-        }
+        .controles-inferiores { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #8b0000; }
+        .seletor-aposta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        
+        .btn-ajuste { background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%); border: none; color: #000; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #997300; }
+        .btn-ajuste:active { transform: translateY(3px); box-shadow: 0 1px 0 #997300; }
+        
+        .info-aposta { text-align: center; }
+        .info-aposta div { font-size: 11px; color: #ccc; }
+        .info-aposta h2 { color: #ffcc00; font-size: 22px; }
 
-        /* Controles de Aposta */
-        .controles-inferiores {
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 16px;
-            border: 1px solid #8b0000;
-        }
+        .btn-disparar { width: 100%; background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); border: none; color: white; padding: 14px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 5px 0 #1e7e43, 0 8px 15px rgba(0,0,0,0.4); text-shadow: 1px 2px 2px rgba(0,0,0,0.4); }
+        .btn-disparar:disabled { background: #555 !important; box-shadow: none !important; transform: translateY(4px); cursor: not-allowed; opacity: 0.6; }
 
-        .seletor-aposta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .btn-ajuste {
-            background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%);
-            border: none;
-            color: #000;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #997300;
-        }
-
-        .btn-ajuste:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #997300;
-        }
-
-        .info-aposta {
-            text-align: center;
-        }
-
-        .info-aposta div {
-            font-size: 11px;
-            color: #ccc;
-        }
-
-        .info-aposta h2 {
-            color: #ffcc00;
-            font-size: 22px;
-        }
-
-        .btn-disparar {
-            width: 100%;
-            background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
-            border: none;
-            color: white;
-            padding: 14px;
-            font-size: 22px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #1e7e43, 0 8px 15px rgba(0,0,0,0.4);
-            text-shadow: 1px 2px 2px rgba(0,0,0,0.4);
-        }
-
-        .btn-disparar:disabled {
-            background: #555 !important;
-            box-shadow: none !important;
-            transform: translateY(4px);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* Exibição do Saldo */
-        .exibicao-saldo-rodape {
-            margin-top: 12px;
-            font-size: 13px;
-            color: #ccc;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-block;
-            border: 1px solid rgba(46, 204, 113, 0.2);
-        }
-        .exibicao-saldo-rodape strong { 
-            color: #2ecc71; 
-            font-size: 14px;
-            margin-left: 3px;
-        }
+        .exibicao-saldo-rodape { margin-top: 12px; font-size: 13px; color: #ccc; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 8px; display: inline-block; border: 1px solid rgba(46, 204, 113, 0.2); }
+        .exibicao-saldo-rodape strong { color: #2ecc71; font-size: 14px; margin-left: 3px; }
 
         /* Overlay de Super Ganho */
-        .tela-bonus {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
+        .tela-bonus { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .caixa-bonus h2 { font-size: 40px; color: #ffcc00; animation: pulsarTexto 0.6s infinite alternate; }
+        .caixa-bonus h3 { font-size: 55px; color: #2ecc71; margin-top: 15px; }
 
-        .caixa-bonus h2 {
-            font-size: 40px;
-            color: #ffcc00;
-            animation: pulsarTexto 0.6s infinite alternate;
-        }
-
-        .caixa-bonus h3 {
-            font-size: 55px;
-            color: #2ecc71;
-            margin-top: 15px;
-        }
-
-        /* Animações */
-        @keyframes piscarVitoria {
-            0% { transform: scale(1); filter: brightness(1); }
-            100% { transform: scale(1.05); filter: brightness(1.4); }
-        }
-
-        @keyframes pulsarTexto {
-            0% { transform: scale(0.95); }
-            100% { transform: scale(1.05); }
-        }
-
-        @keyframes cair {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
+        @keyframes piscarVitoria { 0% { transform: scale(1); filter: brightness(1); } 100% { transform: scale(1.05); filter: brightness(1.4); } }
+        @keyframes pulsarTexto { 0% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
+        @keyframes cair { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -295,15 +152,9 @@
         <div class="painel-status" id="displayMensagem">Carregando dados...</div>
 
         <div class="grade-slots">
-            <div class="slot" id="s0">🍊</div>
-            <div class="slot" id="s1">🍀</div>
-            <div class="slot" id="s2">🍊</div>
-            <div class="slot" id="s3">🧧</div>
-            <div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div>
-            <div class="slot" id="s5">🧧</div>
-            <div class="slot" id="s6">🍊</div>
-            <div class="slot" id="s7">💰</div>
-            <div class="slot" id="s8">🍊</div>
+            <div class="slot" id="s0">🍊</div><div class="slot" id="s1">🍀</div><div class="slot" id="s2">🍊</div>
+            <div class="slot" id="s3">🧧</div><div class="slot" id="s4">🐯<span class="label-wild">WILD</span></div><div class="slot" id="s5">🧧</div>
+            <div class="slot" id="s6">🍊</div><div class="slot" id="s7">💰</div><div class="slot" id="s8">🍊</div>
         </div>
 
         <div class="display-ganho-central">
@@ -314,15 +165,10 @@
         <div class="controles-inferiores">
             <div class="seletor-aposta">
                 <button class="btn-ajuste" onclick="ajustarGiroBotoes(-1)">-</button>
-                <div class="info-aposta">
-                    <div>APOSTA TOTAL</div>
-                    <h2 id="txtAposta">R$ 0,40</h2>
-                </div>
+                <div class="info-aposta"><div>APOSTA TOTAL</div><h2 id="txtAposta">R$ 0,40</h2></div>
                 <button class="btn-ajuste" onclick="ajustarGiroBotoes(1)">+</button>
             </div>
-
             <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()" disabled>CONECTANDO</button>
-            
             <div class="exibicao-saldo-rodape">Saldo Disponível:<strong id="txtSaldo">R$ 0,00</strong></div>
         </div>
     </div>
@@ -342,10 +188,7 @@
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             authDomain: "sortecerta-75b77.firebaseapp.com",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77",
-            storageBucket: "sortecerta-75b77.firebasestorage.app",
-            messagingSenderId: "989209096967",
-            appId: "1:989209096967:web:e58c112de75fb813068ba2"
+            projectId: "sortecerta-75b77"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -356,15 +199,14 @@
         let valorDoGiro = 0.40;
         let firebaseConectado = false;
         
-        // VARIÁVEIS DE CONTROLE DO PAINEL ADMIN
+        // VARIÁVEIS DE CONTROLE
         window.modoJogo = "normal";
         window.valorForcarGanho = 0;
+        window.emGiro = false; // Trava de segurança para não perder os ganhos
 
         const tabelaApostas = [0.40, 0.80, 1.20, 2.00, 4.00, 10.00, 20.00, 50.00, 100.00, 250.00];
 
-        const dicionarioPremios = {
-            '🐯': 50, '💰': 20, '🧧': 10, '🍀': 5, '🍊': 2   
-        };
+        const dicionarioPremios = { '🐯': 50, '💰': 20, '🧧': 10, '🍀': 5, '🍊': 2 };
 
         const listaSimbolosBase = [
             '🐯', '💰', '💰', '🧧', '🧧', '🧧', '🧧', 
@@ -401,7 +243,6 @@
                 btn.style.background = "#2ecc71";
                 btn.style.color = "#fff";
                 notificarDisplay("ID copiado com sucesso!");
-                
                 setTimeout(() => {
                     btn.innerText = "Copiar";
                     btn.style.background = "#ffcc00";
@@ -418,16 +259,24 @@
             
             onValue(userRef, (snapshot) => {
                 const dados = snapshot.val();
+                
                 if (dados !== null) {
-                    bancaAtual = parseFloat(dados.saldo !== undefined ? dados.saldo : 0.00);
-                    window.modoJogo = dados.modo || "normal";
-                    window.valorForcarGanho = parseFloat(dados.forcarGanho || 0);
+                    // Protege a banca de ser subscrita enquanto a roleta gira (evita engolir prêmios)
+                    if (!window.emGiro) {
+                        bancaAtual = parseFloat(dados.saldo !== undefined ? dados.saldo : 0.00);
+                    }
+                    
+                    window.modoJogo = String(dados.modo || "normal").toLowerCase().trim();
+                    
+                    // Tratamento blindado para valores: aceita 50, "50", "50,00", "R$ 50" sem bugar
+                    let textoGanho = String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.');
+                    window.valorForcarGanho = parseFloat(textoGanho) || 0;
+                    
                 } else {
                     bancaAtual = 0.00;
                     window.modoJogo = "normal";
                     window.valorForcarGanho = 0;
-                    // Cria a estrutura padrão para esse usuário
-                    set(userRef, { saldo: bancaAtual, modo: "normal", forcarGanho: 0 });
+                    if (!window.emGiro) set(userRef, { saldo: bancaAtual, modo: "normal", forcarGanho: 0 });
                 }
                 
                 firebaseConectado = true;
@@ -469,6 +318,9 @@
 
             if (ctxAudio.state === 'suspended') ctxAudio.resume();
 
+            // Ativa a trava de proteção de saldo
+            window.emGiro = true;
+
             bancaAtual -= valorDoGiro;
             atualizarSaldoNoFirebase();
             atualizarTelas();
@@ -477,9 +329,7 @@
             btn.disabled = true;
             notificarDisplay("Buscando combinações...");
 
-            for(let i=0; i<9; i++) {
-                document.getElementById(`s${i}`).classList.remove('ganhador');
-            }
+            for(let i=0; i<9; i++) document.getElementById(`s${i}`).classList.remove('ganhador');
 
             let passagens = 0;
             const loopAnimacao = setInterval(() => {
@@ -536,23 +386,23 @@
             let flagMegaGanho = false;
 
             // ==========================================
-            // LÓGICA DE GERENCIAMENTO (O CORAÇÃO DO JOGO)
+            // LÓGICA DE GERENCIAMENTO 
             // ==========================================
             
             if (window.valorForcarGanho > 0) {
-                // 1. FORÇAR GANHO EXATO (Requisitado via Painel Admin)
-                resultadoMatriz = ['🍊', '🍀', '🍊', '🐯', '🐯', '🐯', '💰', '🍊', '💰']; // Desenha uma vitória na linha do meio
-                ganhoFinal = window.valorForcarGanho; // Paga exatamente o valor ordenado
+                // 1. FORÇAR GANHO EXATO
+                resultadoMatriz = ['🍊', '🍀', '🍊', '🐯', '🐯', '🐯', '💰', '🍊', '💰']; 
+                ganhoFinal = window.valorForcarGanho; 
                 linhasVencedoras = [[3, 4, 5]];
                 
-                // Reseta a ordem no banco de dados para não continuar pagando
+                // Reseta a ordem no banco
                 set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
                 window.valorForcarGanho = 0;
                 
                 if (ganhoFinal >= 50) flagMegaGanho = true;
 
             } else {
-                // 2. MODOS DE JOGO (Agressivo, Normal, Disfarçado)
+                // 2. MODOS DE JOGO
                 let maxTentativas = 20;
                 let tentativaAtual = 0;
                 let infoMatriz;
@@ -561,18 +411,14 @@
                     resultadoMatriz = gerarMatrizAleatoria();
                     infoMatriz = calcularGanhosDaMatriz(resultadoMatriz);
 
-                    // Se for modo AGRESSIVO e houver vitória, força a girar de novo para perder
                     if (window.modoJogo === 'agressivo' && infoMatriz.ganho > 0) {
-                        tentativaAtual++;
-                        continue; 
+                        tentativaAtual++; continue; 
                     }
-                    // Se for modo DISFARÇADO, não permite ganhos maiores que 4x o valor da aposta
                     if (window.modoJogo === 'desfarcado' && infoMatriz.ganho > (valorDoGiro * 4)) {
-                        tentativaAtual++;
-                        continue;
+                        tentativaAtual++; continue;
                     }
                     
-                    break; // Se as regras permitiram, aceita a matriz gerada
+                    break;
                 } while (tentativaAtual < maxTentativas);
 
                 ganhoFinal = infoMatriz.ganho;
@@ -581,12 +427,10 @@
             }
 
             // ==========================================
-            // RENDERIZAÇÃO NA TELA
+            // RENDERIZAÇÃO NA TELA E PAGAMENTO
             // ==========================================
 
-            for (let i = 0; i < 9; i++) {
-                renderizarSlot(i, resultadoMatriz[i]);
-            }
+            for (let i = 0; i < 9; i++) renderizarSlot(i, resultadoMatriz[i]);
 
             linhasVencedoras.forEach(linha => {
                 document.getElementById(`s${linha[0]}`).classList.add('ganhador');
@@ -604,12 +448,16 @@
                 document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoFinal.toFixed(2).replace('.', ',');
                 atualizarSaldoNoFirebase();
                 atualizarTelas();
+                
                 document.getElementById('btnDisparar').disabled = false;
+                window.emGiro = false; // Libera a trava do banco
             } else {
                 notificarDisplay("Nenhum ganho nesta rodada.");
                 document.getElementById('txtGanhoTotal').innerText = "R$ 0,00";
                 atualizarTelas();
+                
                 document.getElementById('btnDisparar').disabled = false;
+                window.emGiro = false; // Libera a trava do banco
             }
         }
 
@@ -643,7 +491,9 @@
                 document.getElementById('txtGanhoTotal').innerText = "R$ " + valorFinal.toFixed(2).replace('.', ',');
                 atualizarSaldoNoFirebase();
                 atualizarTelas();
+                
                 document.getElementById('btnDisparar').disabled = false;
+                window.emGiro = false; // Libera a trava do banco aqui também
             }, 3500);
         }
 
@@ -652,18 +502,12 @@
             document.getElementById('txtAposta').innerText = "R$ " + valorDoGiro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function notificarDisplay(texto) {
-            document.getElementById('displayMensagem').innerText = texto;
-        }
-
-        function formatarMoeda(valor) {
-            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
+        function notificarDisplay(texto) { document.getElementById('displayMensagem').innerText = texto; }
+        function formatarMoeda(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
         function tocarSomGiro() {
             try {
-                let osc = ctxAudio.createOscillator();
-                let gain = ctxAudio.createGain();
+                let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain();
                 osc.type = 'sine'; osc.frequency.setValueAtTime(140, ctxAudio.currentTime);
                 gain.gain.setValueAtTime(0.05, ctxAudio.currentTime);
                 osc.connect(gain); gain.connect(ctxAudio.destination);
@@ -673,8 +517,7 @@
 
         function tocarSomGanho() {
             try {
-                let osc = ctxAudio.createOscillator();
-                let gain = ctxAudio.createGain();
+                let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain();
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(580, ctxAudio.currentTime);
                 gain.gain.setValueAtTime(0.1, ctxAudio.currentTime);
                 osc.connect(gain); gain.connect(ctxAudio.destination);
