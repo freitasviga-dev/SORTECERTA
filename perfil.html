@@ -2,372 +2,321 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SorteCerta | Gestão Automática</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SorteCerta - Meu Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #050505;
-            --bg-card: rgba(20, 20, 20, 0.95);
+            --bg-main: #0a0a0c;
+            --bg-card: rgba(24, 24, 27, 0.7);
             --gold: #f1c40f;
-            --green: #00e676;
-            --red: #ff1744;
-            --blue: #3498db;
+            --gold-dark: #b8860b;
+            --green: #2ecc71;
+            --red: #e74c3c;
             --text-main: #f4f4f5;
-            --text-muted: #888;
-            --border-color: #333;
+            --text-muted: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        body {
-            background: var(--bg-dark); color: var(--text-main);
-            min-height: 100vh; overflow-x: hidden;
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 90px; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- HEADER BANCÁRIO --- */
+        .header {
+            position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .btn-back:active { background: rgba(255,255,255,0.1); color: #fff; }
+        .page-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        /* TELA DE LOGIN BLINDADA */
-        #loginScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10000;
-            transition: opacity 0.5s ease;
+        .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 20px 15px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
+
+        /* --- CARTÃO DE USUÁRIO (ID) --- */
+        .profile-card {
+            background: linear-gradient(135deg, rgba(26, 26, 30, 0.9) 0%, rgba(10, 10, 12, 0.9) 100%); border: 1px solid var(--gold);
+            border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1); position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
-        .login-box {
-            background: #111; border: 1px solid var(--gold); border-radius: 16px;
-            padding: 40px; width: 90%; max-width: 400px; text-align: center;
-            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.2);
+        .profile-card::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(241,196,15,0.2) 0%, transparent 70%); }
+        
+        .avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #000; border: 2px solid #fff; z-index: 1; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
+        .user-info { z-index: 1; flex: 1; }
+        .user-name { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+        
+        .user-id-box { display: flex; align-items: center; gap: 8px; }
+        .user-id { font-family: monospace; color: var(--gold); background: rgba(241, 196, 15, 0.1); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid rgba(241, 196, 15, 0.3); letter-spacing: 1px; }
+        .btn-copy-id { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; font-size: 14px; transition: 0.2s; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .btn-copy-id:active { color: var(--green); border-color: var(--green); transform: scale(0.95); }
+
+        /* --- CARTÃO DE SALDO --- */
+        .wallet-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .wallet-header { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+        .wallet-header i { color: var(--green); }
+        .wallet-balance { font-size: 36px; font-weight: 900; color: var(--green); margin-bottom: 25px; letter-spacing: -1px; }
+        
+        .wallet-actions { display: flex; gap: 12px; }
+        .btn-action { flex: 1; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 13px; text-align: center; text-decoration: none; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-dep { background: linear-gradient(135deg, #00e676, #00b359); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
+        .btn-saq { background: rgba(241, 196, 15, 0.05); border: 1px solid var(--gold); color: var(--gold); }
+
+        /* --- LISTA DE MENUS --- */
+        .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
+        .menu-item:active { background: rgba(255,255,255,0.05); transform: scale(0.98); }
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .menu-text { font-size: 14px; font-weight: 700; }
+        .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 14px; }
+
+        .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 10px; }
+
+        /* --- MENU INFERIOR FOCADO --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
-        .login-box h2 { color: var(--gold); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
-        .login-input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 8px; font-size: 16px; outline: none; margin-bottom: 20px; text-align: center; letter-spacing: 3px; }
-        .login-input:focus { border-color: var(--gold); }
-        .login-btn { width: 100%; background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-        .error-msg { color: var(--red); font-size: 12px; margin-top: 15px; font-weight: bold; min-height: 15px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item i { font-size: 24px; transition: 0.2s; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
 
-        /* DASHBOARD GERAL */
-        #adminDashboard { display: none; flex-direction: column; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--bg-card); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .header-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; color: #fff; }
-        .header-brand i { color: var(--gold); }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
-        
-        .btn { padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; font-size: 13px; text-transform: uppercase; transition: 0.2s; }
-        .btn-logout { background: transparent; border: 1px solid var(--red); color: var(--red); }
-        .btn-logout:hover { background: var(--red); color: #fff; }
-        .btn-manu { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
-        .btn-manu.active { background: var(--red); border-color: var(--red); color: #fff; animation: blink 1s infinite; }
+        /* --- MODAIS DE POPUP --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 400px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .modal-body { font-size: 13px; color: #ccc; line-height: 1.6; overflow-y: auto; margin-bottom: 20px; flex: 1; padding-right: 5px; }
+        .btn-close-modal { width: 100%; background: #333; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex-shrink: 0; transition: 0.2s; }
+        .btn-close-modal:active { background: #555; }
 
-        /* MÉTRICAS (CAIXAS TOPO) */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); border-top: 4px solid var(--gold); position: relative; }
-        .metric-card.green { border-top-color: var(--green); }
-        .metric-card.red { border-top-color: var(--red); }
-        .metric-card.blue { border-top-color: var(--blue); }
-        .m-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .m-value { font-size: 32px; font-weight: 900; color: #fff; }
-        
-        /* BOTÃO DE ZERAR O COFRE */
-        .btn-zerar-cofre { margin-top: 15px; width: 100%; background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-zerar-cofre:hover { background: var(--gold); color: #000; }
+        /* Estilos do Histórico */
+        .trans-list { display: flex; flex-direction: column; gap: 10px; }
+        .trans-card { background: #121214; border: 1px solid #27272a; padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .trans-info { display: flex; align-items: center; gap: 10px; }
+        .trans-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .icon-dep { background: rgba(46, 204, 113, 0.1); color: var(--green); }
+        .icon-saq { background: rgba(231, 76, 60, 0.1); color: var(--red); }
+        .trans-type { font-size: 12px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .trans-date { font-size: 10px; color: #777; }
+        .trans-val { font-size: 14px; font-weight: 900; }
+        .val-dep { color: var(--green); }
+        .val-saq { color: var(--red); }
 
-        /* GESTÃO DE USUÁRIOS */
-        .panel-section { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 30px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .section-title { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .section-title i { color: var(--blue); }
-        
-        /* BARRA DE PESQUISA */
-        .search-bar { display: flex; align-items: center; background: #000; border: 1px solid #333; border-radius: 8px; padding: 8px 15px; width: 300px; }
-        .search-bar i { color: var(--text-muted); margin-right: 10px; }
-        .search-bar input { background: transparent; border: none; color: #fff; outline: none; width: 100%; font-size: 14px; }
-        .search-bar input:focus { color: var(--gold); }
-
-        /* TABELA */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { text-align: left; padding: 15px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #333; }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; vertical-align: middle; }
-        tr:hover { background: rgba(255,255,255,0.02); }
-        
-        .id-badge { font-family: monospace; color: var(--gold); background: rgba(241,196,15,0.1); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold; }
-        
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; border: 1px solid transparent; }
-        .status-normal { background: rgba(52, 152, 219, 0.1); color: var(--blue); border-color: var(--blue); }
-        .status-admin { background: rgba(232, 67, 147, 0.1); color: #e84393; border-color: #e84393; box-shadow: 0 0 10px rgba(232, 67, 147, 0.3); }
-
-        .action-btns { display: flex; gap: 8px; }
-        .btn-act { padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-        .btn-add-balance { background: rgba(0, 230, 118, 0.15); color: var(--green); border: 1px solid var(--green); }
-        .btn-add-balance:hover { background: var(--green); color: #000; }
-        .btn-toggle-admin { background: rgba(241, 196, 15, 0.15); color: var(--gold); border: 1px solid var(--gold); }
-        .btn-toggle-admin:hover { background: var(--gold); color: #000; }
-        .btn-delete { background: rgba(255, 23, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
-        .btn-delete:hover { background: var(--red); color: #fff; }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-        @media (max-width: 768px) {
-            .header-bar { flex-direction: column; gap: 15px; }
-            .section-header { flex-direction: column; gap: 15px; align-items: stretch; }
-            .search-bar { width: 100%; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen">
-        <div class="login-box">
-            <h2>Acesso Restrito</h2>
-            <input type="password" id="pwdInput" class="login-input" placeholder="Chave Mestra" onkeypress="if(event.key === 'Enter') checkAcesso()">
-            <button class="login-btn" onclick="checkAcesso()">Entrar no Sistema</button>
-            <div class="error-msg" id="loginError"></div>
+    <script>
+        if (!localStorage.getItem('usuario_tracker_id')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <header class="header">
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <div class="page-title">Área do Jogador</div>
+        <div style="width:40px;"></div>
+    </header>
+
+    <div class="container">
+        
+        <div class="profile-card">
+            <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div class="user-info">
+                <div class="user-name" id="displayUserName">MEMBRO VIP</div>
+                <div class="user-id-box">
+                    <span class="user-id" id="displayUserId">CARREGANDO...</span>
+                    <button class="btn-copy-id" onclick="copiarID()" id="btnCopyIcon"><i class="fa-regular fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="wallet-card">
+            <div class="wallet-header"><i class="fa-solid fa-shield-check"></i> Saldo Real Disponível</div>
+            <div class="wallet-balance" id="displaySaldo">R$ 0,00</div>
+            <div class="wallet-actions">
+                <a href="saldo.html" class="btn-action btn-dep"><i class="fa-solid fa-plus"></i> Depositar</a>
+                <a href="saque.html" class="btn-action btn-saq"><i class="fa-solid fa-paper-plane"></i> Sacar</a>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <a class="menu-item" onclick="abrirHistorico()">
+                <div class="menu-left">
+                    <div class="menu-icon" style="color: #3498db;"><i class="fa-solid fa-list-ul"></i></div>
+                    <span class="menu-text">Extrato e Transações</span>
+                </div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a href="#" id="linkSuporte" target="_blank" class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon" style="color: #25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+                    <span class="menu-text">Suporte Financeiro</span>
+                </div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a class="menu-item" onclick="abrirTermos()">
+                <div class="menu-left">
+                    <div class="menu-icon" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i></div>
+                    <span class="menu-text">Termos e Condições</span>
+                </div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a class="menu-item" onclick="sairDaConta()">
+                <div class="menu-left">
+                    <div class="menu-icon" style="color: #e74c3c;"><i class="fa-solid fa-power-off"></i></div>
+                    <span class="menu-text" style="color: #e74c3c;">Desconectar Conta</span>
+                </div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="app-version">SorteCerta V2.0.1 - Criptografia SSL 256-bit ativada.</div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>Cassino</span>
+        </a>
+        <a href="perfil.html" class="nav-item active">
+            <i class="fa-solid fa-user-astronaut"></i>
+            <span>Minha Conta</span>
+        </a>
+    </nav>
+
+    <div class="modal-overlay" id="modalTermos">
+        <div class="modal-content">
+            <div class="modal-title" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i> Políticas da Plataforma</div>
+            <div class="modal-body">
+                <p><strong>1. Funcionamento do Sistema (RTP):</strong> A SorteCerta utiliza algoritmos de geração de resultados aleatórios (RNG) com taxas de retorno (RTP) pré-configuradas. O sistema processa apostas e pagamentos de forma totalmente automatizada.</p><br>
+                <p><strong>2. Pagamentos e Transações:</strong> Todos os depósitos e saques são processados via PIX. O prazo de compensação é imediato para depósitos e até 24 horas para auditoria de saques, visando a segurança do seu saldo.</p><br>
+                <p><strong>3. Regras de Integridade:</strong> É terminantemente proibido o uso de qualquer software de terceiros ou robôs para manipular resultados. A casa reserva-se o direito de anular ganhos provenientes de falhas técnicas ou comportamentos atípicos que violem a integridade da plataforma.</p><br>
+                <p><strong>4. Aceitação:</strong> Ao utilizar a SorteCerta, o usuário reconhece que o jogo é uma forma de entretenimento e aceita as políticas internas de funcionamento e auditoria da casa.</p>
+            </div>
+            <button class="btn-close-modal" onclick="fecharModal('modalTermos')">Entendi e Concordo</button>
         </div>
     </div>
 
-    <div id="adminDashboard">
-        
-        <div class="header-bar">
-            <div class="header-brand">
-                <i class="fa-solid fa-crown"></i> Gestão SorteCerta
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-manu" id="btnManutencao" onclick="toggleManutencao()">
-                    <i class="fa-solid fa-power-off"></i> Manutenção
-                </button>
-                <button class="btn btn-logout" onclick="fazerLogout()">
-                    <i class="fa-solid fa-right-from-bracket"></i> Sair
-                </button>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="m-title"><i class="fa-solid fa-vault" style="color:var(--gold)"></i> Lucro da Casa (RTP)</div>
-                <div class="m-value" id="displayCaixaGlobal">R$ 0,00</div>
-                <button class="btn-zerar-cofre" onclick="zerarCofrePrompt()">
-                    <i class="fa-solid fa-rotate-left"></i> Zerar Saldo
-                </button>
-            </div>
-            <div class="metric-card green">
-                <div class="m-title"><i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Total Depositado</div>
-                <div class="m-value" id="displayDepositos">R$ 0,00</div>
-            </div>
-            <div class="metric-card red">
-                <div class="m-title"><i class="fa-solid fa-arrow-up" style="color:var(--red)"></i> Total Sacado</div>
-                <div class="m-value" id="displaySaques">R$ 0,00</div>
-            </div>
-            <div class="metric-card blue">
-                <div class="m-title"><i class="fa-solid fa-users" style="color:var(--blue)"></i> Jogadores Registrados</div>
-                <div class="m-value" id="contadorUsers">0</div>
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-users-gear"></i> Controle de Contas</div>
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar por ID..." onkeyup="filtrarTabela()">
+    <div class="modal-overlay" id="modalHistorico">
+        <div class="modal-content">
+            <div class="modal-title" style="color: #3498db;"><i class="fa-solid fa-clock-rotate-left"></i> Extrato de Conta</div>
+            <div class="modal-body" id="listaTransacoes">
+                <div style="text-align: center; color: #777; padding: 20px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>Buscando histórico...</p>
                 </div>
             </div>
-
-            <div class="table-responsive">
-                <table id="usersTable">
-                    <thead>
-                        <tr>
-                            <th>ID do Jogador</th>
-                            <th>Saldo Real</th>
-                            <th>Status da Conta</th>
-                            <th style="text-align: right;">Ações Rápidas</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaCorpo">
-                        <tr><td colspan="4" style="text-align:center; color:#555;">Carregando banco de dados...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <button class="btn-close-modal" onclick="fecharModal('modalHistorico')">Fechar Extrato</button>
         </div>
-
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        /* ATENÇÃO AQUI: ADICIONEI O COMANDO "push" PARA CRIAR O EXTRATO */
-        import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // --- SISTEMA DE LOGIN ---
-        const _0xkey = [91, 110, 121, 121, 116, 119, 55, 59, 55, 55, 53, 53];
-        window.checkAcesso = function() {
-            let input = document.getElementById('pwdInput').value;
-            let msg = document.getElementById('loginError');
-            if(!input || input.length !== _0xkey.length) { msg.innerText = "Acesso Negado."; return; }
-            let valid = true;
-            for(let i=0; i < input.length; i++) { if(input.charCodeAt(i) + 5 !== _0xkey[i]) valid = false; }
-            if(valid) {
-                sessionStorage.setItem('admin_auth_supreme', 'authorized');
-                document.getElementById('loginScreen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('adminDashboard').style.display = 'flex';
-                }, 500);
-            } else { msg.innerText = "Chave Inválida."; document.getElementById('pwdInput').value = ''; }
-        };
-
-        window.fazerLogout = function() { sessionStorage.removeItem('admin_auth_supreme'); location.reload(); };
-
-        if(sessionStorage.getItem('admin_auth_supreme') === 'authorized') {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'flex';
-        }
-
-        // --- FIREBASE INIT ---
+        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
-        const db = getDatabase(initializeApp(firebaseConfig));
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        let isManutencao = false;
-
-        // --- MÉTRICAS FINANCEIRAS AUTOMÁTICAS ---
-        onValue(ref(db, 'sistema'), (snapshot) => {
-            const sys = snapshot.val() || {};
-            let caixa = parseFloat(sys.caixa_global || 0);
-            let deps = parseFloat(sys.total_depositos || 0);
-            let saqs = parseFloat(sys.total_saques || 0);
-            
-            isManutencao = sys.manutencao === true;
-            
-            document.getElementById('displayCaixaGlobal').innerText = "R$ " + caixa.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            document.getElementById('displayDepositos').innerText = "R$ " + deps.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            document.getElementById('displaySaques').innerText = "R$ " + saqs.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-            const btnManu = document.getElementById('btnManutencao');
-            if(isManutencao) {
-                btnManu.classList.add('active');
-                btnManu.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> EM MANUTENÇÃO';
-            } else {
-                btnManu.classList.remove('active');
-                btnManu.innerHTML = '<i class="fa-solid fa-power-off"></i> Manutenção';
-            }
-        });
-
-        window.toggleManutencao = () => { set(ref(db, 'sistema/manutencao'), !isManutencao); };
-
-        window.zerarCofrePrompt = () => {
-            if(confirm("⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR o lucro da casa?\n\nO Cofre Global (RTP) voltará para R$ 0,00 e o algoritmo passará a focar na recuperação de caixa.")) {
-                set(ref(db, 'sistema/caixa_global'), 0).then(() => {
-                    alert("Cofre zerado com sucesso! A casa voltou a arrecadar.");
-                });
-            }
-        };
-
-        // --- LISTA E GESTÃO DE USUÁRIOS ---
-        let usersDataGlobal = {};
-
-        onValue(ref(db, 'usuarios'), (snapshot) => {
-            usersDataGlobal = snapshot.val() || {};
-            renderizarTabela(usersDataGlobal);
-        });
-
-        function renderizarTabela(data) {
-            const tbody = document.getElementById('tabelaCorpo');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            tbody.innerHTML = '';
-            let contador = 0;
-
-            for (let id in data) {
-                if (searchTerm && !id.toLowerCase().includes(searchTerm)) continue;
-
-                contador++;
-                const u = data[id];
-                let saldo = parseFloat(u.saldo || 0).toFixed(2);
-                let isInfluenciador = u.modo === 'influenciador';
-                
-                let badgeClass = isInfluenciador ? 'status-admin' : 'status-normal';
-                let badgeText = isInfluenciador ? '<i class="fa-solid fa-star"></i> Admin/Live' : 'Normal Automático';
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="id-badge">${id}</span></td>
-                        <td style="color:var(--green); font-weight:bold; font-size:16px;">R$ ${saldo}</td>
-                        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-                        <td style="text-align: right;">
-                            <div class="action-btns" style="justify-content: flex-end;">
-                                <button class="btn-act btn-add-balance" onclick="adicionarSaldoPrompt('${id}', ${saldo})" title="Adicionar Saldo">
-                                    <i class="fa-solid fa-money-bill-wave"></i> Saldo
-                                </button>
-                                <button class="btn-act btn-toggle-admin" onclick="toggleAdminMode('${id}', ${isInfluenciador})" title="Ativar Modo Live (Ganhos Infinitos)">
-                                    <i class="fa-solid fa-star"></i>
-                                </button>
-                                <button class="btn-act btn-delete" onclick="excluirContaPrompt('${id}')" title="Excluir Conta Permanentemente">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-
-            document.getElementById('contadorUsers').innerText = Object.keys(data).length;
-            
-            if (contador === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#555;">Nenhuma conta encontrada.</td></tr>';
-            }
+        // PUXAR ID DO USUÁRIO
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
+        document.getElementById('displayUserId').innerText = idDispositivo;
+        
+        // Esconder parte do número de telefone se for um número válido
+        if(idDispositivo && idDispositivo.length >= 10 && !idDispositivo.includes('TIGER')) {
+            document.getElementById('displayUserName').innerText = "Membro Final " + idDispositivo.slice(-4);
         }
 
-        window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
+        // SUPORTE WHATSAPP
+        const phoneDestination = "5583996469538";
+        document.getElementById('linkSuporte').href = `https://wa.me/${phoneDestination}?text=Olá,%20preciso%20falar%20com%20o%20financeiro.%20Meu%20ID%20é:%20${idDispositivo}`;
 
-        // ========================================================
-        // A MÁGICA ACONTECE AQUI: ADICIONAR SALDO + GERAR EXTRATO
-        // ========================================================
-        window.adicionarSaldoPrompt = (id, saldoAtual) => {
-            let valorStr = prompt(`Adicionar Saldo para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor a ADICIONAR:`, "10.00");
-            if(valorStr === null || valorStr === "") return;
-            
-            let valorNum = parseFloat(valorStr.replace(',','.'));
-            if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
-
-            let novoSaldo = parseFloat(saldoAtual) + valorNum;
-            
-            // 1. Atualiza a carteira do usuário
-            set(ref(db, `usuarios/${id}/saldo`), parseFloat(novoSaldo.toFixed(2))).then(() => {
-                
-                // 2. GERA O COMPROVANTE (PUSH) NO HISTÓRICO DE TRANSAÇÕES
-                push(ref(db, `usuarios/${id}/transacoes`), {
-                    tipo: "DEPÓSITO",
-                    valor: valorNum.toFixed(2),
-                    data: new Date().toISOString()
-                });
-
-                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados e extrato gerado para ${id}.`);
-                document.getElementById('searchInput').value = ''; 
+        // COPIAR ID
+        window.copiarID = function() {
+            navigator.clipboard.writeText(idDispositivo).then(() => {
+                const btn = document.getElementById('btnCopyIcon');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.style.color = 'var(--green)';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; btn.style.color = 'var(--text-muted)'; }, 2000);
             });
-        };
+        }
 
-        window.excluirContaPrompt = (id) => {
-            if(confirm(`⚠️ ALERTA VERMELHO!\nTem certeza que deseja APAGAR PERMANENTEMENTE a conta de ${id}?`)) {
-                remove(ref(db, `usuarios/${id}`)).then(() => {
-                    document.getElementById('searchInput').value = '';
-                });
-            }
-        };
+        // SALDO EM TEMPO REAL
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            const saldo = snapshot.val() || 0;
+            document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
 
-        window.toggleAdminMode = (id, isCurrentlyAdmin) => {
-            let novoModo = isCurrentlyAdmin ? 'normal' : 'influenciador';
-            let msg = isCurrentlyAdmin ? 
-                `Desativar Modo Admin para ${id}? Ele voltará a perder pelo RTP normal.` : 
-                `Ativar Modo Admin/Live para ${id}? O RTP ficará pagando ganhos falsos infinitos para essa conta gravar vídeos.`;
+        // MODAIS E LÓGICAS DE JANELA
+        window.abrirTermos = function() { document.getElementById('modalTermos').style.display = 'flex'; }
+        window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; }
+
+        // HISTÓRICO DE TRANSAÇÕES VIA FIREBASE
+        window.abrirHistorico = function() {
+            document.getElementById('modalHistorico').style.display = 'flex';
+            const containerLista = document.getElementById('listaTransacoes');
             
-            if(confirm(msg)) {
-                set(ref(db, `usuarios/${id}/modo`), novoModo).then(() => {
-                    document.getElementById('searchInput').value = '';
-                });
-            }
-        };
+            onValue(ref(db, 'usuarios/' + idDispositivo + '/transacoes'), (snapshot) => {
+                const transacoes = snapshot.val();
+                
+                if (!transacoes) {
+                    containerLista.innerHTML = `<div style="text-align: center; color: #777; padding: 20px;"><i class="fa-solid fa-receipt" style="font-size: 30px; margin-bottom: 10px; opacity:0.5;"></i><p>Nenhuma transação financeira registrada.</p></div>`;
+                    return;
+                }
 
+                containerLista.innerHTML = '<div class="trans-list"></div>';
+                const listDiv = containerLista.querySelector('.trans-list');
+
+                // Inverte para os mais recentes ficarem no topo
+                const historicoArray = Object.values(transacoes).reverse();
+
+                historicoArray.forEach(t => {
+                    const isDep = (t.tipo === 'DEPÓSITO' || t.tipo === 'DEPOSITO');
+                    const iconClass = isDep ? 'icon-dep' : 'icon-saq';
+                    const valClass = isDep ? 'val-dep' : 'val-saq';
+                    const iconShape = isDep ? 'fa-arrow-down' : 'fa-arrow-up';
+                    const prefix = isDep ? '+' : '-';
+
+                    // Formata valor
+                    let valorFormatado = parseFloat(t.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                    listDiv.innerHTML += `
+                        <div class="trans-card">
+                            <div class="trans-info">
+                                <div class="trans-icon ${iconClass}"><i class="fa-solid ${iconShape}"></i></div>
+                                <div>
+                                    <div class="trans-type">${t.tipo} PIX</div>
+                                    <div class="trans-date">Confirmado</div>
+                                </div>
+                            </div>
+                            <div class="trans-val ${valClass}">${prefix} R$ ${valorFormatado}</div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // DESCONECTAR CONTA
+        window.sairDaConta = function() {
+            if(confirm("Encerrar sessão no dispositivo? Você precisará fazer login novamente.")) {
+                localStorage.removeItem('usuario_tracker_id');
+                window.location.href = 'login.html';
+            }
+        }
     </script>
 </body>
 </html>
