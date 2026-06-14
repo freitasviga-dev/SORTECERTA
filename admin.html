@@ -3,328 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Controle de Saldos</title>
+    <title>TigerPanel Pro - Gestão</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        :root { --bg: #09090b; --card: #18181b; --accent: #ffcc00; --text: #f4f4f5; --danger: #dc2626; --success: #059669; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h1 { color: var(--accent); font-size: 24px; }
+        
+        .card { background: var(--card); border: 1px solid #27272a; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        
+        .form-grupo { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
+        .campo { display: flex; flex-direction: column; gap: 8px; }
+        .campo label { font-size: 11px; color: #a1a1aa; text-transform: uppercase; font-weight: bold; }
+        .campo input { background: #09090b; border: 1px solid #3f3f46; padding: 12px; border-radius: 8px; color: white; }
+        
+        select { background: #09090b; color: white; padding: 10px; border-radius: 8px; border: 1px solid #3f3f46; cursor: pointer; }
 
-        body {
-            background-color: #121214;
-            color: #e1e1e6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #29292e;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            color: #ffcc00;
-            font-size: 24px;
-        }
-
-        .contador-usuarios {
-            background: #202024;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid #29292e;
-            font-size: 14px;
-        }
-
-        .contador-usuarios strong {
-            color: #00b37e;
-        }
-
-        /* Grid de Gerenciamento Rápido */
-        .painel-comando {
-            background: #202024;
-            border: 1px solid #29292e;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .painel-comando h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .form-grupo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            align-items: end;
-        }
-
-        .campo {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .campo label {
-            font-size: 12px;
-            color: #a8a8b3;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .campo input {
-            background: #121214;
-            border: 1px solid #29292e;
-            padding: 12px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .campo input:focus {
-            border-color: #ffcc00;
-        }
-
-        .btn-acao {
-            background: #ffcc00;
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
-        }
-
-        .btn-acao:hover {
-            background: #e6b800;
-        }
-
-        /* Tabela de Dispositivos Conectados */
-        .lista-usuarios {
-            background: #202024;
-            border: 1px solid #29292e;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 16px;
-            border-bottom: 1px solid #29292e;
-        }
-
-        th {
-            background: #29292e;
-            color: #a8a8b3;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        td {
-            font-size: 14px;
-        }
-
-        .td-id {
-            font-family: monospace;
-            color: #ffcc00;
-            font-weight: bold;
-        }
-
-        .td-saldo {
-            color: #00b37e;
-            font-weight: bold;
-        }
-
-        .acoes-tabela {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-pequeno {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-editar {
-            background: #00b37e;
-            color: #fff;
-        }
-
-        .btn-zerar {
-            background: #f75a68;
-            color: #fff;
-        }
-
-        .btn-pequeno:hover {
-            filter: brightness(1.2);
-        }
-
-        .aviso-vazio {
-            padding: 40px;
-            text-align: center;
-            color: #a8a8b3;
-            font-style: italic;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 16px; color: #a1a1aa; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #27272a; }
+        td { padding: 16px; border-bottom: 1px solid #27272a; }
+        
+        .btn { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
+        .btn-acao { background: var(--accent); color: #000; padding: 12px; font-weight: bold; }
+        .btn-plus { background: var(--success); color: white; }
+        .btn-del { background: var(--danger); color: white; }
+        .btn:hover { filter: brightness(1.2); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>TigerPanel - Controle Externo</h1>
-            <div class="contador-usuarios">Clientes Ativos: <strong id="qtdClientes">0</strong></div>
-        </header>
-
-        <div class="painel-comando">
-            <h2>Alterar Saldo Manualmente</h2>
-            <div class="form-grupo">
-                <div class="campo">
-                    <label for="inputID">ID do Dispositivo</label>
-                    <input type="text" id="inputID" placeholder="Ex: TIGER-123456">
-                </div>
-                <div class="campo">
-                    <label for="inputSaldo">Novo Saldo (R$)</label>
-                    <input type="number" id="inputSaldo" step="0.01" placeholder="Ex: 150.00">
-                </div>
-                <button class="btn-acao" onclick="salvarSaldoManual()">Atualizar Saldo</button>
-            </div>
+<div class="container">
+    <header class="header">
+        <h1>TigerPanel <span style="color:var(--accent)">Pro</span></h1>
+        <div class="card" style="margin:0; padding: 10px 20px;">
+            Modo Roleta: 
+            <select id="modoRoleta" onchange="atualizarModo()">
+                <option value="agressivo">Agressivo</option>
+                <option value="normal">Normal</option>
+                <option value="desfarcado">Disfarçado</option>
+            </select>
         </div>
+    </header>
 
-        <div class="lista-usuarios">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID do Dispositivo</th>
-                        <th>Saldo Atual</th>
-                        <th>Ações Rápidas</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaCorpo">
-                    <tr>
-                        <td colspan="3" class="aviso-vazio">Buscando dispositivos conectados...</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="card">
+        <h2>Alterar Saldo Manualmente</h2>
+        <div class="form-grupo" style="margin-top:20px;">
+            <div class="campo"><label>ID do Dispositivo</label><input type="text" id="inputID"></div>
+            <div class="campo"><label>Novo Saldo (R$)</label><input type="number" id="inputSaldo" step="0.01"></div>
+            <button class="btn btn-acao" onclick="salvarSaldoManual()">Atualizar Saldo</button>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <div class="card">
+        <table>
+            <thead><tr><th>ID DO USUÁRIO</th><th>SALDO</th><th>AÇÕES</th></tr></thead>
+            <tbody id="tabelaCorpo"></tbody>
+        </table>
+    </div>
+</div>
 
-        // ==========================================
-        // CONFIGURAÇÕES DO SEU FIREBASE (ATUALIZADO!)
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            authDomain: "sortecerta-75b77.firebaseapp.com",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77",
-            storageBucket: "sortecerta-75b77.firebasestorage.app",
-            messagingSenderId: "989209096967",
-            appId: "1:989209096967:web:e58c112de75fb813068ba2"
-        };
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+        authDomain: "sortecerta-75b77.firebaseapp.com",
+        databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+        projectId: "sortecerta-75b77",
+        storageBucket: "sortecerta-75b77.firebasestorage.app",
+        messagingSenderId: "989209096967",
+        appId: "1:989209096967:web:e58c112de75fb813068ba2"
+    };
 
-        // Monitora em tempo real TODOS os usuários que entrarem no site
-        const usuariosRef = ref(db, 'usuarios');
-        
-        onValue(usuariosRef, (snapshot) => {
-            const listaUsuarios = snapshot.val();
-            const tabelaCorpo = document.getElementById('tabelaCorpo');
-            
-            if (!listaUsuarios) {
-                tabelaCorpo.innerHTML = `<tr><td colspan="3" class="aviso-vazio">Nenhum dispositivo registrado ainda.</td></tr>`;
-                document.getElementById('qtdClientes').innerText = "0";
-                return;
-            }
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-            let linhasHtml = "";
-            let contador = 0;
+    onValue(ref(db, 'usuarios'), (snapshot) => {
+        const data = snapshot.val();
+        const tbody = document.getElementById('tabelaCorpo');
+        tbody.innerHTML = '';
+        for (let id in data) {
+            tbody.innerHTML += `
+                <tr>
+                    <td style="color:var(--accent)">${id}</td>
+                    <td>R$ ${parseFloat(data[id].saldo).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-plus" onclick="somar('${id}')">+10</button>
+                        <button class="btn btn-del" onclick="deletar('${id}')">Excluir</button>
+                    </td>
+                </tr>
+            `;
+        }
+    });
 
-            // Varre todos os IDs dentro do nó 'usuarios'
-            for (let id in listaUsuarios) {
-                contador++;
-                let saldoFormatado = parseFloat(listaUsuarios[id].saldo).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                
-                linhasHtml += `
-                    <tr>
-                        <td class="td-id">${id}</td>
-                        <td class="td-saldo">${saldoFormatado}</td>
-                        <td class="acoes-tabela">
-                            <button class="btn-pequeno btn-editar" onclick="carregarParaInputs('${id}', ${listaUsuarios[id].saldo})">Selecionar</button>
-                            <button class="btn-pequeno btn-zerar" onclick="zerarSaldoRapido('${id}')">Zerar</button>
-                        </td>
-                    </tr>
-                `;
-            }
+    window.atualizarModo = () => {
+        const modo = document.getElementById('modoRoleta').value;
+        set(ref(db, 'configuracoes/roleta/modo'), modo).then(() => alert("Modo da roleta alterado!"));
+    };
 
-            tabelaCorpo.innerHTML = linhasHtml;
-            document.getElementById('qtdClientes').innerText = contador;
-        });
+    window.deletar = (id) => {
+        if(confirm("Tem certeza que deseja deletar esta conta?")) {
+            set(ref(db, 'usuarios/' + id), null);
+        }
+    };
 
-        // Altera o saldo no banco de dados baseado no ID
-        window.salvarSaldoManual = function() {
-            const id = document.getElementById('inputID').value.trim();
-            const saldo = parseFloat(document.getElementById('inputSaldo').value);
+    window.somar = (id) => {
+        const refSaldo = ref(db, 'usuarios/' + id + '/saldo');
+        onValue(refSaldo, (snap) => {
+            const novo = parseFloat(snap.val() || 0) + 10;
+            set(refSaldo, novo);
+        }, { onlyOnce: true });
+    };
 
-            if (!id) {
-                alert("Por favor, insira ou selecione um ID válido.");
-                return;
-            }
-            if (isNaN(saldo)) {
-                alert("Por favor, defina um valor numérico para o saldo.");
-                return;
-            }
-
-            set(ref(db, 'usuarios/' + id + '/saldo'), parseFloat(saldo.toFixed(2))).then(() => {
-                alert(`Saldo do ID ${id} atualizado para R$ ${saldo.toFixed(2)}!`);
-                document.getElementById('inputID').value = "";
-                document.getElementById('inputSaldo').value = "";
-            }).catch(err => {
-                alert("Erro ao salvar dados.");
-            });
-        };
-
-        // Funções auxiliares de controle fácil
-        window.carregarParaInputs = function(id, saldoAtual) {
-            document.getElementById('inputID').value = id;
-            document.getElementById('inputSaldo').value = saldoAtual;
-            document.getElementById('inputSaldo').focus();
-        };
-
-        window.zerarSaldoRapido = function(id) {
-            if(confirm(`Tem certeza que deseja zerar o saldo do ID ${id}?`)) {
-                set(ref(db, 'usuarios/' + id + '/saldo'), 0.00);
-            }
-        };
-    </script>
+    window.salvarSaldoManual = () => {
+        const id = document.getElementById('inputID').value.trim();
+        const saldo = parseFloat(document.getElementById('inputSaldo').value);
+        if(!id || isNaN(saldo)) return alert("Preencha corretamente");
+        set(ref(db, 'usuarios/' + id + '/saldo'), saldo).then(() => alert("Atualizado!"));
+    };
+</script>
 </body>
 </html>
