@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SorteCerta - Login VIP</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a0a0c;
+            --bg-card: rgba(24, 24, 27, 0.85);
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --green: #2ecc71;
+            --text-main: #f4f4f5;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background-color: var(--bg-main); 
+            background-image: radial-gradient(circle at 50% 0%, #2a1a00 0%, transparent 80%);
+            color: var(--text-main); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card); width: 100%; max-width: 400px; padding: 40px 30px;
+            border-radius: 20px; border: 1px solid var(--border-color); text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(241, 196, 15, 0.05);
+            backdrop-filter: blur(15px); position: relative; z-index: 2;
+        }
+
+        .logo { font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 35px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .logo i { color: var(--gold); font-size: 32px; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.5)); }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; letter-spacing: 0.5px; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i { position: absolute; left: 15px; color: #666; font-size: 16px; }
+        
+        .input-custom {
+            width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 16px 16px 16px 45px;
+            border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; font-weight: 600;
+        }
+        .input-custom::placeholder { color: #555; font-weight: 400; }
+        .input-custom:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
+        .input-wrapper i.active { color: var(--gold); }
+
+        .btn-submit {
+            width: 100%; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000; border: none; padding: 18px; border-radius: 12px; font-size: 15px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(241, 196, 15, 0.3); transition: 0.2s; margin-top: 10px;
+        }
+        .btn-submit:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(241, 196, 15, 0.3); }
+
+        .system-msg { margin-top: 20px; font-size: 13px; font-weight: bold; min-height: 20px; color: var(--gold); }
+
+        .security-seal { display: flex; justify-content: center; gap: 15px; margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
+        .security-seal span { font-size: 10px; color: #666; display: flex; align-items: center; gap: 5px; font-weight: 700; text-transform: uppercase; }
+        .security-seal i { color: #888; }
+
+        /* Efeito de brilho de fundo */
+        .bg-glow { position: absolute; width: 200px; height: 200px; background: rgba(241, 196, 15, 0.15); filter: blur(80px); border-radius: 50%; top: -50px; left: -50px; z-index: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="login-card">
+        <div class="logo"><i class="fa-solid fa-crown"></i> SORTECERTA</div>
+        
+        <div class="input-group">
+            <label class="input-label">Celular (Com DDD)</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-phone"></i>
+                <input type="tel" id="inputPhone" class="input-custom" placeholder="Ex: 83999999999" maxlength="11">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">Senha Segura</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="inputPass" class="input-custom" placeholder="Sua senha">
+            </div>
+        </div>
+
+        <button class="btn-submit" id="btnAcesso" onclick="processarAcesso()">Acessar Conta</button>
+        
+        <div class="system-msg" id="msgDisplay"></div>
+
+        <div class="security-seal">
+            <span><i class="fa-solid fa-shield-halved"></i> SSL 256-bit</span>
+            <span><i class="fa-solid fa-user-lock"></i> Dados Criptografados</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // FIREBASE SETUP
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Animação dos ícones nos inputs
+        document.querySelectorAll('.input-custom').forEach(input => {
+            input.addEventListener('focus', function() { this.previousElementSibling.classList.add('active'); });
+            input.addEventListener('blur', function() { this.previousElementSibling.classList.remove('active'); });
+        });
+
+        // LÓGICA DE LOGIN OU CADASTRO HÍBRIDO
+        window.processarAcesso = async function() {
+            const phone = document.getElementById('inputPhone').value.trim();
+            const pass = document.getElementById('inputPass').value.trim();
+            const msg = document.getElementById('msgDisplay');
+            const btn = document.getElementById('btnAcesso');
+
+            // Validação simples
+            if(phone.length < 10) {
+                msg.style.color = '#e74c3c'; msg.innerText = "Digite um número de telefone válido com DDD."; return;
+            }
+            if(pass.length < 4) {
+                msg.style.color = '#e74c3c'; msg.innerText = "Sua senha deve ter no mínimo 4 caracteres."; return;
+            }
+
+            btn.innerText = "Processando...";
+            msg.style.color = 'var(--gold)';
+            msg.innerText = "Verificando credenciais...";
+
+            const userRef = ref(db, 'usuarios/' + phone);
+            
+            try {
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    // CONTA JÁ EXISTE: FAZ O LOGIN
+                    const dados = snapshot.val();
+                    if (dados.senha === pass) {
+                        localStorage.setItem('usuario_tracker_id', phone);
+                        msg.style.color = 'var(--green)';
+                        msg.innerText = "Login aprovado! Entrando...";
+                        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                    } else {
+                        msg.style.color = '#e74c3c';
+                        msg.innerText = "Senha incorreta. Tente novamente.";
+                        btn.innerText = "Acessar Conta";
+                    }
+                } else {
+                    // CONTA NÃO EXISTE: CADASTRO AUTOMÁTICO
+                    await set(userRef, { 
+                        saldo: 0.00, 
+                        senha: pass, 
+                        modo: 'normal',
+                        data_criacao: new Date().toISOString()
+                    });
+                    
+                    localStorage.setItem('usuario_tracker_id', phone);
+                    msg.style.color = 'var(--green)';
+                    msg.innerText = "Conta criada com sucesso! Entrando...";
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+                }
+            } catch (error) {
+                msg.style.color = '#e74c3c';
+                msg.innerText = "Erro de conexão com o servidor.";
+                btn.innerText = "Acessar Conta";
+            }
+        }
+    </script>
+</body>
+</html>
