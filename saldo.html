@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SorteCerta - Caixa Seguro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --green: #00e676;
+            --green-dark: #00b359;
+            --text-main: #f4f4f5;
+            --text-muted: #8b8b93;
+            --border-color: #27272a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* HEADER FIXO */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; transition: 0.2s; }
+        .btn-back:active { transform: scale(0.9); color: var(--gold); }
+        .page-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+        .page-title i { color: var(--gold); margin-right: 5px; }
+        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); }
+
+        .container { max-width: 500px; margin: 80px auto 0; padding: 15px; }
+
+        /* SUPORTE / CREDIBILIDADE */
+        .support-banner {
+            background: linear-gradient(90deg, #18281b 0%, #121214 100%); border: 1px solid #1e3a24;
+            border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .support-info { display: flex; align-items: center; gap: 12px; }
+        .support-icon { background: #25D366; color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px rgba(37, 211, 102, 0.3); }
+        .support-text h4 { font-size: 13px; color: #fff; margin-bottom: 2px; }
+        .support-text p { font-size: 14px; font-weight: bold; color: #25D366; letter-spacing: 0.5px; }
+        .btn-wa { background: #25D366; color: #000; text-decoration: none; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 50px; text-transform: uppercase; }
+
+        /* CARD PRINCIPAL */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); position: relative; overflow: hidden; }
+        
+        .section-header { margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .section-header i { color: var(--green); font-size: 18px; }
+        .section-header h3 { font-size: 15px; color: #fff; font-weight: 600; }
+
+        /* SELEÇÃO DE VALOR */
+        .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .btn-value {
+            background: #1a1a1e; border: 1px solid #333; color: var(--text-muted); padding: 14px;
+            border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .btn-value.active { background: rgba(241, 196, 15, 0.1); border-color: var(--gold); color: var(--gold); transform: scale(1.02); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
+        
+        .custom-input-group { position: relative; margin-bottom: 20px; }
+        .custom-input-group span { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--gold); font-weight: 900; font-size: 18px; }
+        .input-custom {
+            width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 18px 18px 18px 55px;
+            border-radius: 12px; font-size: 22px; font-weight: 900; outline: none; transition: 0.3s;
+        }
+        .input-custom:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
+
+        /* ALERTAS DE SEGURANÇA E BÔNUS */
+        .security-badges { display: flex; justify-content: space-around; background: #0a0a0c; border: 1px solid #222; border-radius: 8px; padding: 10px; margin-bottom: 20px; }
+        .security-badges span { font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; font-weight: 600; text-transform: uppercase; }
+        .security-badges i { color: var(--green); }
+
+        .bonus-alert { background: linear-gradient(90deg, rgba(241,196,15,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .bonus-alert i { color: var(--gold); font-size: 22px; }
+        .bonus-alert p { font-size: 11px; color: #ddd; line-height: 1.4; }
+        .bonus-alert strong { color: var(--gold); }
+
+        /* BOTÃO GERAR PIX */
+        .btn-submit {
+            width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+            color: #000; border: none; padding: 18px; border-radius: 12px; font-size: 16px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(0, 230, 118, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-submit:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0, 230, 118, 0.3); }
+
+        /* =======================================
+           TELA DE CHECKOUT PIX (PASSO 2)
+           ======================================= */
+        #pixScreen { display: none; text-align: center; }
+        .pix-header { background: #25D366; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: 900; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+        
+        .qr-placeholder { width: 200px; height: 200px; background: #fff; margin: 0 auto 20px; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; border: 4px solid var(--green); box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); }
+        .qr-placeholder img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .pix-timer { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .pix-timer strong { color: var(--gold); }
+
+        .pix-code-box { background: #000; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 20px; word-break: break-all; font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #888; text-align: left; }
+        
+        .btn-copy { width: 100%; background: var(--bg-main); border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
+        .btn-copy:active { transform: scale(0.98); }
+
+        /* MÓDULO DE TESTE */
+        .dev-tools { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #333; }
+        .btn-simulate { width: 100%; background: transparent; border: 1px solid #2980b9; color: #3498db; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title"><i class="fa-solid fa-lock"></i> Caixa Seguro</div>
+        <div class="balance-badge" id="displaySaldoTop">R$ 0,00</div>
+    </header>
+
+    <div class="container" id="depositSetup">
+        
+        <!-- BANNER DE SUPORTE (CREDIBILIDADE) -->
+        <div class="support-banner">
+            <div class="support-info">
+                <div class="support-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="support-text">
+                    <h4>Suporte Oficial 24h</h4>
+                    <p>(83) 99646-9538</p>
+                </div>
+            </div>
+            <a href="https://wa.me/5583996469538?text=Ola%2C%20preciso%20de%20ajuda%20com%20meu%20deposito!" target="_blank" class="btn-wa">Falar</a>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <i class="fa-brands fa-pix"></i>
+                <h3>Depósito via PIX</h3>
+            </div>
+            
+            <div class="value-grid">
+                <button class="btn-value" onclick="selecionarValor(30, this)">R$ 30</button>
+                <button class="btn-value" onclick="selecionarValor(50, this)">R$ 50</button>
+                <button class="btn-value active" onclick="selecionarValor(100, this)">R$ 100</button>
+                <button class="btn-value" onclick="selecionarValor(200, this)">R$ 200</button>
+                <button class="btn-value" onclick="selecionarValor(500, this)">R$ 500</button>
+                <button class="btn-value" onclick="selecionarValor(1000, this)">R$ 1000</button>
+            </div>
+
+            <div class="custom-input-group">
+                <span>R$</span>
+                <input type="number" id="inputValor" class="input-custom" value="100" oninput="limparBotoes()">
+            </div>
+
+            <!-- SELOS DE SEGURANÇA -->
+            <div class="security-badges">
+                <span><i class="fa-solid fa-lock"></i> SSL 256-bit</span>
+                <span><i class="fa-solid fa-shield-check"></i> Seguro</span>
+                <span><i class="fa-solid fa-bolt"></i> Imediato</span>
+            </div>
+
+            <div class="bonus-alert">
+                <i class="fa-solid fa-rocket"></i>
+                <p>O Processamento PIX é <strong>instantâneo</strong>. Sem taxas ocultas. Seu saldo é atualizado assim que o pagamento for confirmado pelo Banco Central.</p>
+            </div>
+
+            <button class="btn-submit" id="btnGerarPix" onclick="gerarPix()">
+                <i class="fa-brands fa-pix"></i> Gerar PIX Pagamento
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         TELA DO QR CODE GERADO (PASSO 2)
+         ========================================== -->
+    <div class="container" id="pixScreen">
+        <div class="card">
+            
+            <div class="pix-header">
+                <i class="fa-solid fa-circle-check"></i> PIX Gerado com Sucesso!
+            </div>
+            
+            <h1 style="color:#fff; margin-bottom:5px; font-size: 36px; font-weight: 900;" id="displayValorPix">R$ 100,00</h1>
+            <p class="pix-timer">Pague em até <strong>14:59</strong> para garantir este código.</p>
+
+            <!-- QR CODE -->
+            <div class="qr-placeholder" style="margin-top: 20px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix0136SorteCertaOficial5204000053039865802BR5915SorteCerta6009SaoPaulo" alt="QR Code PIX">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 5px; font-size: 11px; font-weight: bold; color: var(--gold); text-transform: uppercase;">
+                <i class="fa-solid fa-paste"></i> Pix Copia e Cola
+            </div>
+            
+            <!-- CÓDIGO REALÍSTICO -->
+            <div class="pix-code-box" id="codigoPix">
+                00020126580014br.gov.bcb.pix0136a1f4b0-2b1c-4e8a-9d3f-8c9e1a2b3c4d5204000053039865802BR5915SorteCerta Pagamentos6009Sao Paulo62070503***6304ABCD
+            </div>
+            
+            <button class="btn-copy" onclick="copiarPix()" id="btnCopiarText">
+                <i class="fa-regular fa-copy"></i> Copiar Código PIX
+            </button>
+            
+            <p style="font-size:11px; color:#666; margin-top:5px; text-align: left;">
+                <i class="fa-solid fa-circle-info"></i> Abra o app do seu banco, escolha <strong>Pix Copia e Cola</strong>, insira o código e confirme o pagamento.
+            </p>
+            
+            <!-- ÁREA DE TESTES -->
+            <div class="dev-tools">
+                <p style="font-size:10px; color:#555; margin-bottom: 5px;">Ambiente de Teste (Admin):</p>
+                <button class="btn-simulate" onclick="simularPagamentoAprovado()"><i class="fa-solid fa-code"></i> Simular Confirmação do Banco</button>
+            </div>
+        </div>
+        
+        <!-- Repetição do Suporte na tela do PIX para caso ele tenha dúvida ao pagar -->
+        <div class="support-banner" style="margin-top: 0;">
+            <div class="support-info">
+                <div class="support-icon" style="width:30px; height:30px; font-size:15px;"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="support-text">
+                    <h4 style="font-size: 11px;">Dúvidas no pagamento?</h4>
+                    <p style="font-size: 12px;">(83) 99646-9538</p>
+                </div>
+            </div>
+            <a href="https://wa.me/5583996469538?text=Nao%20estou%20conseguindo%20pagar%20o%20PIX!" target="_blank" class="btn-wa">Ajuda</a>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SISTEMA (FIREBASE)
+         ========================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        if (!idDispositivo) {
+            idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('usuario_tracker_id', idDispositivo);
+        }
+
+        let bancaAtual = 0.00;
+        let valorSelecionado = 100.00;
+
+        // PUXAR SALDO ATUAL DO FIREBASE
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            bancaAtual = parseFloat(snapshot.val() || 0);
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
+
+        // FUNÇÕES DA INTERFACE
+        window.selecionarValor = function(valor, btnElement) {
+            document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('inputValor').value = valor;
+            valorSelecionado = parseFloat(valor);
+        }
+
+        window.limparBotoes = function() {
+            document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active'));
+            valorSelecionado = parseFloat(document.getElementById('inputValor').value);
+        }
+
+        window.gerarPix = function() {
+            let valorInput = parseFloat(document.getElementById('inputValor').value);
+            if(isNaN(valorInput) || valorInput < 20) {
+                alert("O valor mínimo de depósito é R$ 20,00.");
+                return;
+            }
+            
+            valorSelecionado = valorInput;
+            document.getElementById('displayValorPix').innerText = "R$ " + valorSelecionado.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            
+            // Troca as telas suavemente
+            document.getElementById('depositSetup').style.display = 'none';
+            document.getElementById('pixScreen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        window.copiarPix = function() {
+            const codigo = document.getElementById('codigoPix').innerText;
+            navigator.clipboard.writeText(codigo).then(() => {
+                const btn = document.getElementById('btnCopiarText');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado com Sucesso!';
+                btn.style.background = 'var(--green)';
+                btn.style.color = '#000';
+                btn.style.borderColor = 'var(--green)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar Código PIX';
+                    btn.style.background = 'var(--bg-main)';
+                    btn.style.color = 'var(--gold)';
+                    btn.style.borderColor = 'var(--gold)';
+                }, 3000);
+            });
+        }
+
+        // SIMULADOR DE APROVAÇÃO BANCÁRIA
+        window.simularPagamentoAprovado = function() {
+            let novoSaldo = bancaAtual + valorSelecionado;
+            
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
+                alert(`✅ PIX RECEBIDO!\n\nSeu saldo foi atualizado com R$ ${valorSelecionado.toFixed(2)}. Boa sorte nos jogos!`);
+                window.location.href = "index.html"; // Manda de volta pra Home
+            }).catch((error) => {
+                alert("Erro de conexão com o banco de dados. Tente novamente.");
+            });
+        }
+    </script>
+</body>
+</html>
