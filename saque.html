@@ -74,10 +74,12 @@
         .val-prefix { position: absolute; left: 16px; color: var(--green); font-weight: 900; font-size: 20px; }
         .input-money { padding-left: 55px; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
 
+        /* --- SELOS DE SEGURANÇA --- */
         .security-badges { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
         .s-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #777; font-weight: 600; text-transform: uppercase; }
         .s-badge i { color: #555; font-size: 14px; }
 
+        /* --- BOTÃO DE SOLICITAR --- */
         .btn-submit {
             width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
             color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 16px;
@@ -88,7 +90,6 @@
 
         .footer-info { text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.5; padding: 0 10px; margin-top: 10px; }
         .footer-info strong { color: #fff; }
-
     </style>
 </head>
 <body>
@@ -135,4 +136,122 @@
             <div class="input-group">
                 <label class="input-label">Tipo de Chave PIX</label>
                 <select class="select-custom" id="tipoChave">
-                    <option value="CPF/CNPJ">CPF
+                    <option value="CPF/CNPJ">CPF / CNPJ</option>
+                    <option value="Telefone">Número de Celular</option>
+                    <option value="E-mail">Endereço de E-mail</option>
+                    <option value="Chave Aleatória">Chave Aleatória</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 10px;">
+                <label class="input-label">Chave PIX de Destino</label>
+                <input type="text" id="chavePix" class="input-custom" placeholder="Digite a chave da sua conta bancária">
+            </div>
+
+            <div class="security-badges">
+                <div class="s-badge"><i class="fa-solid fa-lock"></i> SSL Criptografado 256-bit</div>
+                <div class="s-badge"><i class="fa-solid fa-building-columns"></i> Auditoria Financeira</div>
+            </div>
+
+            <button class="btn-submit" onclick="solicitarSaque()">
+                <i class="fa-solid fa-paper-plane"></i> Finalizar Saque
+            </button>
+        </div>
+
+        <div class="footer-info">
+            Para garantir a sua segurança, transferências só são aprovadas para contas bancárias vinculadas ao <strong>mesmo titular</strong> cadastrado na plataforma SorteCerta. Em caso de divergência, o valor retorna ao saldo.
+        </div>
+        
+    </div>
+
+    <script type="module">
+        /* ATENÇÃO AQUI: ADICIONEI O "push" NO IMPORT */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
+        let bancaAtual = 0.00;
+        const phoneDestination = "5583996469538";
+
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            bancaAtual = parseFloat(snapshot.val() || 0);
+            document.getElementById('displaySaldoTopo').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
+
+        window.sacarTudo = function() {
+            if(bancaAtual < 20) {
+                alert("O valor mínimo para saque é de R$ 20,00.");
+                return;
+            }
+            document.getElementById('valorSaque').value = bancaAtual.toFixed(2);
+        }
+
+        window.solicitarSaque = function() {
+            let chavePix = document.getElementById('chavePix').value.trim();
+            let tipoChave = document.getElementById('tipoChave').value;
+            let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
+
+            if (isNaN(valorSaqueInput) || valorSaqueInput < 20.00) {
+                alert("Operação negada: O valor mínimo de saque exigido é de R$ 20,00.");
+                return;
+            }
+            if (valorSaqueInput > bancaAtual) {
+                alert(`Operação negada: Saldo insuficiente. Seu saldo atual é de R$ ${bancaAtual.toFixed(2)}`);
+                return;
+            }
+            if (chavePix === "") {
+                alert("Operação negada: Preencha o campo com a sua chave PIX de destino.");
+                return;
+            }
+
+            if(confirm(`AUTORIZAÇÃO DE TRANSFERÊNCIA\n\nConfirma a solicitação de saque no valor de R$ ${valorSaqueInput.toFixed(2)}?\nO valor será processado para a chave PIX: ${chavePix}.`)) {
+                
+                // 1. DEDUZ SALDO DO USUÁRIO
+                let novoSaldo = bancaAtual - valorSaqueInput;
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
+                    
+                    // 2. ATUALIZA A MÉTRICA GERAL DE SAQUES NO ADMIN
+                    const refTotalSaques = ref(db, 'sistema/total_saques');
+                    get(refTotalSaques).then((snap) => {
+                        let totalAtual = parseFloat(snap.val() || 0);
+                        set(refTotalSaques, totalAtual + valorSaqueInput);
+                    });
+
+                    // 3. GERA O COMPROVANTE NO EXTRATO DO JOGADOR (A MÁGICA AQUI)
+                    push(ref(db, `usuarios/${idDispositivo}/transacoes`), {
+                        tipo: "SAQUE",
+                        valor: valorSaqueInput.toFixed(2),
+                        data: new Date().toISOString()
+                    });
+
+                    // 4. ENVIA DADOS PARA O SEU WHATSAPP
+                    let valorFormatado = valorSaqueInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    
+                    let mensagemComposta = `*✅ SAQUE APROVADO PELO SISTEMA*\n` +
+                                           `_Aguardando processamento manual_\n\n` +
+                                           `👤 *ID Jogador:* ${idDispositivo}\n` +
+                                           `💰 *Valor Solicitado:* ${valorFormatado}\n` +
+                                           `🔑 *Chave (${tipoChave}):* ${chavePix}\n\n` +
+                                           `_Saldo debitado. Pode transferir._`;
+                    
+                    let urlFinalWhastapp = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
+                    
+                    alert("Solicitação de Saque registrada com sucesso! Você será redirecionado para o recebimento do comprovante.");
+                    window.location.href = urlFinalWhastapp;
+
+                }).catch((error) => {
+                    alert("Erro interno de conexão. Tente novamente mais tarde.");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
