@@ -2,64 +2,42 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TigerPanel Pro - Gestão</title>
+    <title>TigerPanel Pro - Gestão Individual</title>
     <style>
-        :root { --bg: #09090b; --card: #18181b; --accent: #ffcc00; --text: #f4f4f5; --danger: #dc2626; --success: #059669; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        h1 { color: var(--accent); font-size: 24px; }
-        
-        .card { background: var(--card); border: 1px solid #27272a; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-        
-        .form-grupo { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
-        .campo { display: flex; flex-direction: column; gap: 8px; }
-        .campo label { font-size: 11px; color: #a1a1aa; text-transform: uppercase; font-weight: bold; }
-        .campo input { background: #09090b; border: 1px solid #3f3f46; padding: 12px; border-radius: 8px; color: white; }
-        
-        select { background: #09090b; color: white; padding: 10px; border-radius: 8px; border: 1px solid #3f3f46; cursor: pointer; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 16px; color: #a1a1aa; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #27272a; }
+        :root { --bg: #09090b; --card: #18181b; --accent: #ffcc00; --text: #f4f4f5; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--card); border: 1px solid #27272a; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: #a1a1aa; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #27272a; }
         td { padding: 16px; border-bottom: 1px solid #27272a; }
-        
-        .btn { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
-        .btn-acao { background: var(--accent); color: #000; padding: 12px; font-weight: bold; }
-        .btn-plus { background: var(--success); color: white; }
-        .btn-del { background: var(--danger); color: white; }
-        .btn:hover { filter: brightness(1.2); }
+        .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; }
+        .btn-select { background: #2563eb; color: white; }
+        .btn-del { background: #dc2626; color: white; }
+        input, select { background: #09090b; border: 1px solid #3f3f46; padding: 8px; border-radius: 6px; color: white; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header class="header">
-        <h1>TigerPanel <span style="color:var(--accent)">Pro</span></h1>
-        <div class="card" style="margin:0; padding: 10px 20px;">
-            Modo Roleta: 
-            <select id="modoRoleta" onchange="atualizarModo()">
+    <div class="card">
+        <h1>TigerPanel <span style="color:var(--accent)">Individual</span></h1>
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-top:20px;">
+            <input type="text" id="inputID" placeholder="ID do Usuário">
+            <input type="number" id="inputSaldo" placeholder="Saldo">
+            <select id="inputModo">
                 <option value="agressivo">Agressivo</option>
                 <option value="normal">Normal</option>
                 <option value="desfarcado">Disfarçado</option>
             </select>
-        </div>
-    </header>
-
-    <div class="card">
-        <h2>Alterar Saldo Manualmente</h2>
-        <div class="form-grupo" style="margin-top:20px;">
-            <div class="campo"><label>ID do Dispositivo</label><input type="text" id="inputID"></div>
-            <div class="campo"><label>Novo Saldo (R$)</label><input type="number" id="inputSaldo" step="0.01"></div>
-            <button class="btn btn-acao" onclick="salvarSaldoManual()">Atualizar Saldo</button>
+            <input type="number" id="inputForcarGanho" placeholder="Forçar Ganho (R$)">
+            <button class="btn" style="background:var(--accent)" onclick="salvarConfig()">SALVAR CONFIG</button>
         </div>
     </div>
 
     <div class="card">
         <table>
-            <thead><tr><th>ID DO USUÁRIO</th><th>SALDO</th><th>AÇÕES</th></tr></thead>
+            <thead><tr><th>ID</th><th>SALDO</th><th>MODO</th><th>GANHO FORÇADO</th><th>AÇÕES</th></tr></thead>
             <tbody id="tabelaCorpo"></tbody>
         </table>
     </div>
@@ -79,20 +57,22 @@
         appId: "1:989209096967:web:e58c112de75fb813068ba2"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(initializeApp(firebaseConfig));
 
     onValue(ref(db, 'usuarios'), (snapshot) => {
         const data = snapshot.val();
         const tbody = document.getElementById('tabelaCorpo');
         tbody.innerHTML = '';
         for (let id in data) {
+            const u = data[id];
             tbody.innerHTML += `
                 <tr>
                     <td style="color:var(--accent)">${id}</td>
-                    <td>R$ ${parseFloat(data[id].saldo).toFixed(2)}</td>
+                    <td>R$ ${parseFloat(u.saldo || 0).toFixed(2)}</td>
+                    <td>${u.modo || 'normal'}</td>
+                    <td style="color:var(--accent)">R$ ${parseFloat(u.forcarGanho || 0).toFixed(2)}</td>
                     <td>
-                        <button class="btn btn-plus" onclick="somar('${id}')">+10</button>
+                        <button class="btn btn-select" onclick="selecionar('${id}', ${u.saldo}, '${u.modo || 'normal'}', ${u.forcarGanho || 0})">Selecionar</button>
                         <button class="btn btn-del" onclick="deletar('${id}')">Excluir</button>
                     </td>
                 </tr>
@@ -100,30 +80,25 @@
         }
     });
 
-    window.atualizarModo = () => {
-        const modo = document.getElementById('modoRoleta').value;
-        set(ref(db, 'configuracoes/roleta/modo'), modo).then(() => alert("Modo da roleta alterado!"));
+    window.selecionar = (id, saldo, modo, ganho) => {
+        document.getElementById('inputID').value = id;
+        document.getElementById('inputSaldo').value = saldo;
+        document.getElementById('inputModo').value = modo;
+        document.getElementById('inputForcarGanho').value = ganho;
+    };
+
+    window.salvarConfig = () => {
+        const id = document.getElementById('inputID').value.trim();
+        if(!id) return alert("Selecione um ID!");
+        set(ref(db, 'usuarios/' + id), {
+            saldo: parseFloat(document.getElementById('inputSaldo').value),
+            modo: document.getElementById('inputModo').value,
+            forcarGanho: parseFloat(document.getElementById('inputForcarGanho').value || 0)
+        }).then(() => alert("Configurações aplicadas!"));
     };
 
     window.deletar = (id) => {
-        if(confirm("Tem certeza que deseja deletar esta conta?")) {
-            set(ref(db, 'usuarios/' + id), null);
-        }
-    };
-
-    window.somar = (id) => {
-        const refSaldo = ref(db, 'usuarios/' + id + '/saldo');
-        onValue(refSaldo, (snap) => {
-            const novo = parseFloat(snap.val() || 0) + 10;
-            set(refSaldo, novo);
-        }, { onlyOnce: true });
-    };
-
-    window.salvarSaldoManual = () => {
-        const id = document.getElementById('inputID').value.trim();
-        const saldo = parseFloat(document.getElementById('inputSaldo').value);
-        if(!id || isNaN(saldo)) return alert("Preencha corretamente");
-        set(ref(db, 'usuarios/' + id + '/saldo'), saldo).then(() => alert("Atualizado!"));
+        if(confirm("Apagar conta?")) set(ref(db, 'usuarios/' + id), null);
     };
 </script>
 </body>
