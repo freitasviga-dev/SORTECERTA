@@ -2,102 +2,103 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SorteCerta - Caixa Seguro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SorteCerta - Adicionar Saldo</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #050505;
-            --bg-card: #121214;
+            --bg-main: #0a0a0c;
+            --bg-card: #18181b;
             --gold: #f1c40f;
             --gold-dark: #b8860b;
-            --green: #00e676;
-            --green-dark: #00b359;
+            --green: #2ecc71;
+            --green-dark: #27ae60;
             --text-main: #f4f4f5;
-            --text-muted: #8b8b93;
+            --text-muted: #a1a1aa;
             --border-color: #27272a;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
 
-        /* HEADER FIXO */
+        /* --- HEADER BANCÁRIO --- */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
-            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; transition: 0.2s; }
-        .btn-back:active { transform: scale(0.9); color: var(--gold); }
-        .page-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
-        .page-title i { color: var(--gold); margin-right: 5px; }
-        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .btn-back:active { background: rgba(255,255,255,0.1); color: #fff; }
+        .page-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; }
+        .balance-badge { background: rgba(46, 204, 113, 0.1); color: var(--green); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; border: 1px solid rgba(46, 204, 113, 0.3); display: flex; align-items: center; gap: 4px; }
 
-        .container { max-width: 500px; margin: 80px auto 0; padding: 15px; }
+        .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 20px 15px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-        /* SUPORTE / CREDIBILIDADE SEM EXIBIR NÚMERO */
+        /* --- BANNER DE SUPORTE --- */
         .support-banner {
-            background: linear-gradient(90deg, #18281b 0%, #121214 100%); border: 1px solid #1e3a24;
-            border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(18, 18, 20, 0.8) 100%); border: 1px solid rgba(37, 211, 102, 0.2);
+            border-radius: 16px; padding: 15px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .support-info { display: flex; align-items: center; gap: 12px; }
-        .support-icon { background: #25D366; color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px rgba(37, 211, 102, 0.3); }
-        .support-text h4 { font-size: 14px; color: #fff; margin-bottom: 2px; font-weight: bold; }
-        .support-text p { font-size: 11px; color: var(--text-muted); }
-        .btn-wa { background: #25D366; color: #000; text-decoration: none; font-size: 11px; font-weight: bold; padding: 8px 16px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .support-icon { background: #25D366; color: #000; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+        .support-text h4 { font-size: 13px; color: #fff; margin-bottom: 2px; font-weight: 800; }
+        .support-text p { font-size: 10px; color: var(--text-muted); }
+        .btn-wa { background: #25D366; color: #000; text-decoration: none; font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
 
-        /* CARD PRINCIPAL */
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); position: relative; overflow: hidden; }
+        /* --- CARD DE DEPÓSITO --- */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .section-header { margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-        .section-header i { color: var(--green); font-size: 18px; }
-        .section-header h3 { font-size: 15px; color: #fff; font-weight: 600; }
+        .section-header { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .sh-icon { background: rgba(46, 204, 113, 0.1); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 18px; }
+        .sh-text h3 { font-size: 16px; color: #fff; font-weight: 700; }
+        .sh-text p { font-size: 11px; color: var(--text-muted); }
 
         /* SELEÇÃO DE VALOR */
-        .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
         .btn-value {
-            background: #1a1a1e; border: 1px solid #333; color: var(--text-muted); padding: 14px;
-            border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.2s; text-align: center;
+            background: #111; border: 1px solid #333; color: var(--text-muted); padding: 16px 0;
+            border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center;
         }
-        .btn-value.active { background: rgba(241, 196, 15, 0.1); border-color: var(--gold); color: var(--gold); transform: scale(1.02); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
+        .btn-value.active { background: rgba(46, 204, 113, 0.1); border-color: var(--green); color: var(--green); transform: scale(1.03); box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
         
-        .custom-input-group { position: relative; margin-bottom: 20px; }
-        .custom-input-group span { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--gold); font-weight: 900; font-size: 18px; }
+        .custom-input-group { position: relative; margin-bottom: 25px; }
+        .custom-input-group span { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--green); font-weight: 900; font-size: 20px; }
         .input-custom {
-            width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 18px 18px 18px 55px;
-            border-radius: 12px; font-size: 22px; font-weight: 900; outline: none; transition: 0.3s;
+            width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 20px 20px 20px 60px;
+            border-radius: 12px; font-size: 26px; font-weight: 900; outline: none; transition: 0.2s; letter-spacing: -1px;
         }
-        .input-custom:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
+        .input-custom:focus { border-color: var(--green); background: rgba(46, 204, 113, 0.05); }
 
         /* SELOS DE SEGURANÇA */
-        .security-badges { display: flex; justify-content: space-around; background: #0a0a0c; border: 1px solid #222; border-radius: 8px; padding: 10px; margin-bottom: 20px; }
-        .security-badges span { font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; font-weight: 600; text-transform: uppercase; }
-        .security-badges i { color: var(--green); }
+        .security-badges { display: flex; justify-content: space-around; background: #0a0a0c; border: 1px solid #222; border-radius: 12px; padding: 12px; margin-bottom: 20px; }
+        .security-badges span { font-size: 9px; color: #888; display: flex; align-items: center; gap: 4px; font-weight: 700; text-transform: uppercase; }
+        .security-badges i { color: var(--green); font-size: 12px; }
 
-        .bonus-alert { background: linear-gradient(90deg, rgba(241,196,15,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
-        .bonus-alert i { color: var(--gold); font-size: 22px; }
-        .bonus-alert p { font-size: 11px; color: #ddd; line-height: 1.4; }
-        .bonus-alert strong { color: var(--gold); }
+        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .bonus-alert i { color: var(--gold); font-size: 20px; }
+        .bonus-alert p { font-size: 11px; color: #ccc; line-height: 1.4; }
+        .bonus-alert strong { color: #fff; }
 
         /* BOTÃO ENVIAR */
         .btn-submit {
             width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
-            color: #000; border: none; padding: 18px; border-radius: 12px; font-size: 16px;
+            color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 16px;
             font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 5px 20px rgba(0, 230, 118, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 8px 0 #145a32, 0 15px 25px rgba(46, 204, 113, 0.3); transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-submit:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0, 230, 118, 0.3); }
+        .btn-submit:active { transform: translateY(8px); box-shadow: 0 0 0 #145a32; }
+
     </style>
 </head>
 <body>
 
     <header class="header">
-        <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="page-title"><i class="fa-solid fa-lock"></i> Caixa Seguro</div>
-        <div class="balance-badge" id="displaySaldoTop">R$ 0,00</div>
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <div class="page-title">Caixa SorteCerta</div>
+        <div class="balance-badge"><i class="fa-solid fa-wallet"></i> <span id="displaySaldoTop">0,00</span></div>
     </header>
 
     <div class="container" id="depositSetup">
@@ -106,17 +107,20 @@
             <div class="support-info">
                 <div class="support-icon"><i class="fa-brands fa-whatsapp"></i></div>
                 <div class="support-text">
-                    <h4>Suporte Financeiro Plantão</h4>
-                    <p>Fale conosco para liberar seu saldo imediatamente</p>
+                    <h4>Suporte Financeiro</h4>
+                    <p>Atendimento VIP para liberação imediata</p>
                 </div>
             </div>
-            <a href="#" id="linkSuporteDireto" target="_blank" class="btn-wa">Falar</a>
+            <a href="#" id="linkSuporteDireto" target="_blank" class="btn-wa">Chamar</a>
         </div>
 
         <div class="card">
             <div class="section-header">
-                <i class="fa-brands fa-pix"></i>
-                <h3>Informar Valor do Depósito</h3>
+                <div class="sh-icon"><i class="fa-solid fa-circle-plus"></i></div>
+                <div class="sh-text">
+                    <h3>Adicionar Saldo</h3>
+                    <p>Escolha o valor que deseja depositar na plataforma.</p>
+                </div>
             </div>
             
             <div class="value-grid">
@@ -136,24 +140,25 @@
             <div class="security-badges">
                 <span><i class="fa-solid fa-lock"></i> SSL 256-bit</span>
                 <span><i class="fa-solid fa-shield-check"></i> Garantido</span>
-                <span><i class="fa-solid fa-bolt"></i> Suporte 24h</span>
+                <span><i class="fa-solid fa-bolt"></i> Rápido</span>
             </div>
 
             <div class="bonus-alert">
                 <i class="fa-solid fa-circle-info"></i>
-                <p>Ao clicar no botão abaixo, você será direcionado ao nosso atendente automático para receber a chave Pix. O saldo mínimo para envio é de <strong>R$ 1,00</strong>.</p>
+                <p>O saldo mínimo para depósito é de <strong>R$ 1,00</strong>. Ao continuar, você será direcionado ao nosso setor financeiro para receber a chave Pix oficial.</p>
             </div>
 
             <button class="btn-submit" id="btnGerarPix" onclick="enviarOrdemDeposito()">
-                <i class="fa-brands fa-pix"></i> Solicitar Chave PIX
+                <i class="fa-brands fa-pix"></i> Solicitar Pagamento PIX
             </button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
@@ -172,7 +177,7 @@
         // PUXAR SALDO ATUAL
         onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
             bancaAtual = parseFloat(snapshot.val() || 0);
-            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('displaySaldoTop').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         });
 
         // Configura o botão superior de suporte para ir direto sem mostrar número
@@ -195,22 +200,29 @@
             
             // Validação do valor mínimo de R$ 1,00
             if(isNaN(valorInput) || valorInput < 1.00) {
-                alert("O valor mínimo de depósito aceito é de R$ 1,00.");
+                alert("Operação negada: O valor mínimo de depósito é de R$ 1,00.");
                 return;
             }
+            
+            // ATUALIZA A MÉTRICA GERAL DE DEPÓSITOS NO ADMIN PANEL ANTES DE IR PRO WPP
+            const refTotalDepositos = ref(db, 'sistema/total_depositos');
+            get(refTotalDepositos).then((snap) => {
+                let totalAtual = parseFloat(snap.val() || 0);
+                set(refTotalDepositos, totalAtual + valorInput);
+            });
             
             valorSelecionado = valorInput;
             let valorFormatado = valorSelecionado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             
-            // Montagem da mensagem automatizada contendo valor e o ID do dispositivo
-            let mensagemComposta = `Olá! Quero fazer um depósito na plataforma.\n\n` +
-                                   `• *Valor solicitado:* ${valorFormatado}\n` +
-                                   `• *Meu ID de Jogador:* ${idDispositivo}\n\n` +
-                                   `Por favor, me envie a chave PIX para transferência.`;
+            // Montagem da mensagem automatizada
+            let mensagemComposta = `*⚠️ NOVA INTENÇÃO DE DEPÓSITO*\n\n` +
+                                   `👤 *ID Jogador:* ${idDispositivo}\n` +
+                                   `💰 *Valor Solicitado:* ${valorFormatado}\n\n` +
+                                   `_Aguardando chave PIX para realizar o pagamento._`;
             
             let urlFinalWhastapp = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
             
-            // Redireciona o usuário imediatamente para o chat
+            alert("Ordem de depósito gerada! Você será redirecionado para o nosso financeiro para receber a chave Pix oficial.");
             window.location.href = urlFinalWhastapp;
         }
     </script>
