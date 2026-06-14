@@ -2,7 +2,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0c">
+    
     <title>SorteCerta - O Melhor Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -37,31 +42,45 @@
         #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
         #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; }
 
-        /* --- HEADER PREMIUM --- */
+        /* --- HEADER PREMIUM E REAJUSTADO --- */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.85);
             backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            padding-top: calc(12px + env(safe-area-inset-top)); /* Evita corte no iPhone (Notch) */
         }
         
-        .brand-logo { display: flex; align-items: center; }
-        /* Substitua o src pelo link da sua logo. Tamanho sugerido: altura máxima de 35px */
+        .brand-logo { display: flex; align-items: center; text-decoration: none; }
         .brand-logo img { height: 32px; object-fit: contain; } 
         
-        .audio-ctrl { color: var(--text-muted); font-size: 18px; margin-right: 10px; cursor: pointer; transition: 0.2s; }
-        .audio-ctrl:active { transform: scale(0.8); }
-
-        .user-panel { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); }
-        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 8px; }
-        .balance-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; }
-        .balance { font-weight: 900; color: var(--green); font-size: 14px; white-space: nowrap; line-height: 1; }
+        .user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); }
+        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 5px; }
+        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 2px; }
+        .balance { font-weight: 900; color: var(--green); font-size: 13px; white-space: nowrap; line-height: 1; }
         
-        .action-buttons { display: flex; gap: 6px; }
-        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 12px; border-radius: 20px; font-size: 11px; text-decoration: none; text-transform: uppercase; transition: 0.2s; }
-        .btn-deposit { background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; padding: 6px 12px; border-radius: 20px; font-size: 11px; text-decoration: none; text-transform: uppercase; box-shadow: 0 0 15px rgba(0, 230, 118, 0.3); animation: softPulse 2s infinite; }
+        .action-buttons { display: flex; gap: 5px; }
+        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; }
+        
+        /* BOTÃO DE DEPOSITAR NEON */
+        .btn-deposit { 
+            background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; 
+            padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; 
+            text-transform: uppercase; white-space: nowrap; border: 1px solid #fff;
+            animation: neonGlow 1.5s infinite alternate; 
+        }
 
-        .container { max-width: 800px; margin: 80px auto 0; padding: 15px; }
+        .container { max-width: 800px; margin: 90px auto 0; padding: 15px; }
+
+        /* --- BOTÃO FLUTUANTE DE ÁUDIO --- */
+        .floating-audio {
+            position: fixed; bottom: 85px; right: 15px; width: 45px; height: 45px;
+            background: rgba(18, 18, 20, 0.9); border: 1px solid var(--border-color);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            color: var(--text-muted); font-size: 18px; z-index: 999; backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: 0.3s; cursor: pointer;
+        }
+        .floating-audio.active { color: var(--green); border-color: var(--green); box-shadow: 0 0 15px rgba(0, 230, 118, 0.4); }
 
         /* --- BANNER NEON --- */
         .hero-banner {
@@ -92,7 +111,6 @@
         .game-card:active { transform: scale(0.92); border-color: var(--gold); }
         .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
         
-        /* Sombras internas para dar profundidade às capas */
         .gc-tiger { background: radial-gradient(circle, #8b0000, #330000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-aviator { background: radial-gradient(circle, #1e3c72, #0a1930); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-mines { background: radial-gradient(circle, #0f2027, #000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
@@ -133,6 +151,10 @@
         /* --- ANIMAÇÕES --- */
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
         @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes neonGlow {
+            0% { box-shadow: 0 0 5px var(--green), inset 0 0 2px var(--green); }
+            100% { box-shadow: 0 0 15px var(--green), inset 0 0 8px var(--green); }
+        }
     </style>
 </head>
 <body>
@@ -149,23 +171,24 @@
 
     <nav class="navbar">
         <a href="index.html" class="brand-logo">
-            <span style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
+            <span style="font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
         </a>
         
-        <div style="display: flex; align-items: center;">
-            <i class="fa-solid fa-volume-xmark audio-ctrl" id="btnAudio" onclick="toggleAudio()"></i>
-            <div class="user-panel">
-                <div class="balance-box">
-                    <span class="balance-label">Saldo Disponível</span>
-                    <span class="balance" id="displaySaldo">R$ 0,00</span>
-                </div>
-                <div class="action-buttons">
-                    <a href="saque.html" class="btn-withdraw">Sacar</a>
-                    <a href="saldo.html" class="btn-deposit">Depositar</a>
-                </div>
+        <div class="user-panel">
+            <div class="balance-box">
+                <span class="balance-label">Saldo</span>
+                <span class="balance" id="displaySaldo">R$ 0,00</span>
+            </div>
+            <div class="action-buttons">
+                <a href="saque.html" class="btn-withdraw">Sacar</a>
+                <a href="saldo.html" class="btn-deposit">Depositar</a>
             </div>
         </div>
     </nav>
+
+    <div class="floating-audio" id="btnAudio" onclick="toggleAudio()">
+        <i class="fa-solid fa-volume-xmark"></i>
+    </div>
 
     <div class="container">
         
@@ -269,7 +292,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 1. GERAÇÃO DE ID E REGISTRO AUTOMÁTICO NO BANCO (CRIA PERFIL SE NÃO EXISTIR)
+        // 1. GERAÇÃO DE ID E REGISTRO AUTOMÁTICO NO BANCO
         let idDispositivo = localStorage.getItem('usuario_tracker_id');
         if (!idDispositivo) {
             idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
@@ -279,7 +302,6 @@
         const userRef = ref(db, 'usuarios/' + idDispositivo);
         get(userRef).then((snapshot) => {
             if (!snapshot.exists()) {
-                // Cria a conta do cara automaticamente
                 set(userRef, { saldo: 0, modo: 'normal', forcarGanho: 0 });
             }
         });
@@ -290,47 +312,48 @@
             document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         });
 
-        // 3. ESCUTA DO BOTÃO DE MANUTENÇÃO (TRAVA O SITE SE ADMIN MANDAR)
+        // 3. ESCUTA DO BOTÃO DE MANUTENÇÃO (TRAVA O SITE)
         onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
             const isManutencao = snapshot.val() || false;
             const tela = document.getElementById('telaManutencao');
             if (isManutencao) {
                 tela.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // Impede rolagem
+                document.body.style.overflow = 'hidden'; 
             } else {
                 tela.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
         });
 
-        // 4. LÓGICA DE ÁUDIO AMBIENTE (INTERAÇÃO DO USUÁRIO)
+        // 4. LÓGICA DE ÁUDIO AMBIENTE FLUTUANTE
         const bgMusic = document.getElementById('bgMusic');
         const btnAudio = document.getElementById('btnAudio');
         let audioStarted = false;
 
-        bgMusic.volume = 0.2; // Volume baixo para não assustar
+        bgMusic.volume = 0.2;
 
-        // Inicia música no primeiro toque em qualquer lugar da tela
         document.body.addEventListener('click', () => {
             if (!audioStarted) {
-                bgMusic.play().catch(e => console.log("Áudio bloqueado pelo navegador."));
+                bgMusic.play().catch(e => console.log("Áudio aguardando liberação."));
                 audioStarted = true;
-                btnAudio.className = 'fa-solid fa-volume-high audio-ctrl';
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btnAudio.classList.add('active');
             }
         }, { once: true });
 
-        // Controle de Mute manual pelo botão no topo
         window.toggleAudio = function() {
             if (bgMusic.paused) {
                 bgMusic.play();
-                btnAudio.className = 'fa-solid fa-volume-high audio-ctrl';
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btnAudio.classList.add('active');
             } else {
                 bgMusic.pause();
-                btnAudio.className = 'fa-solid fa-volume-xmark audio-ctrl';
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+                btnAudio.classList.remove('active');
             }
         }
 
-        // 5. LÓGICA DO POPUP DE GANHOS (PROVA SOCIAL DINÂMICA)
+        // 5. LÓGICA DO POPUP DE GANHOS (PROVA SOCIAL)
         const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger", "***chef"];
         const jogosFake = ["Tiger", "Aviator", "Roleta", "Ox", "Mines"];
         
@@ -345,12 +368,9 @@
             document.getElementById('winAmount').innerText = "R$ " + valor;
             
             popup.classList.add('show');
-            
-            // Esconde depois de 4 segundos
             setTimeout(() => { popup.classList.remove('show'); }, 4000);
         }
 
-        // Fica mostrando popups aleatoriamente a cada 7 a 15 segundos
         setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (15000 - 7000 + 1) + 7000));
     </script>
 </body>
