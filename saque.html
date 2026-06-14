@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SorteCerta - Saque de Ganhos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --green: #00e676;
+            --red: #ff1744;
+            --text-main: #f4f4f5;
+            --text-muted: #8b8b93;
+            --border-color: #27272a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* HEADER FIXO */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; transition: 0.2s; }
+        .btn-back:active { transform: scale(0.9); color: var(--gold); }
+        .page-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); }
+
+        .container { max-width: 500px; margin: 80px auto 0; padding: 15px; }
+
+        /* CARD PRINCIPAL */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+        
+        .section-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .section-title-wrap { display: flex; align-items: center; gap: 8px; }
+        .section-title-wrap i { color: var(--gold); font-size: 18px; }
+        .section-title-wrap h3 { font-size: 15px; color: #fff; font-weight: 600; }
+        .tax-badge { background: rgba(241, 196, 15, 0.1); color: var(--gold); font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid var(--gold); }
+
+        /* INPUTS DE CHAVE PIX E VALOR */
+        .input-group { margin-bottom: 15px; }
+        .input-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; font-weight: 600; text-transform: uppercase; }
+        
+        .select-custom {
+            width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 15px;
+            border-radius: 10px; font-size: 14px; outline: none; margin-bottom: 10px; appearance: none;
+        }
+        
+        .input-custom {
+            width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 15px;
+            border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s;
+        }
+        .input-custom:focus, .select-custom:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
+
+        /* INPUT DE VALOR COM ÍCONE */
+        .value-wrapper { position: relative; margin-bottom: 15px; }
+        .value-wrapper span { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--gold); font-weight: 900; font-size: 18px; }
+        .value-wrapper input { padding-left: 50px; font-size: 22px; font-weight: 900; }
+
+        /* BOTÃO DE SALDO TOTAL */
+        .btn-max { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--green); color: var(--green); padding: 8px 15px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 20px; transition: 0.2s; }
+        .btn-max:active { transform: scale(0.98); background: var(--green); color: #000; }
+
+        /* ALERTAS DE SEGURANÇA */
+        .info-alert { background: rgba(255, 255, 255, 0.03); border-left: 3px solid var(--text-muted); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 12px; }
+        .info-alert i { color: var(--text-muted); font-size: 18px; margin-top: 2px; }
+        .info-alert p { font-size: 11px; color: #aaa; line-height: 1.5; }
+
+        /* BOTÃO SOLICITAR */
+        .btn-submit {
+            width: 100%; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000; border: none; padding: 18px; border-radius: 12px; font-size: 16px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(241, 196, 15, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-submit:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(241, 196, 15, 0.3); }
+
+        /* HISTÓRICO RECENTE FAKE */
+        .history-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; font-weight: bold; }
+        .history-item { background: #1a1a1e; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 1px solid #222; }
+        .h-left { display: flex; align-items: center; gap: 10px; }
+        .h-icon { color: var(--green); background: rgba(0,230,118,0.1); padding: 8px; border-radius: 50%; font-size: 12px; }
+        .h-text h4 { font-size: 12px; color: #fff; }
+        .h-text p { font-size: 10px; color: #777; }
+        .h-value { font-size: 13px; font-weight: bold; color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title"><i class="fa-solid fa-money-bill-transfer"></i> Saque</div>
+        <div class="balance-badge" id="displaySaldoTop">R$ 0,00</div>
+    </header>
+
+    <div class="container">
+        
+        <div class="card">
+            <div class="section-header">
+                <div class="section-title-wrap">
+                    <i class="fa-brands fa-pix"></i>
+                    <h3>Dados do Recebedor</h3>
+                </div>
+                <div class="tax-badge">TAXA 0%</div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Tipo de Chave PIX</label>
+                <select class="select-custom" id="tipoChave">
+                    <option value="CPF/CNPJ">CPF / CNPJ</option>
+                    <option value="Telefone">Celular</option>
+                    <option value="E-mail">E-mail</option>
+                    <option value="Chave Aleatória">Chave Aleatória</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Chave PIX de Destino</label>
+                <input type="text" id="chavePix" class="input-custom" placeholder="Digite sua chave PIX aqui...">
+            </div>
+
+            <div class="input-group" style="margin-top: 25px;">
+                <label class="input-label">Valor a Sacar (R$)</label>
+                <div class="value-wrapper">
+                    <span>R$</span>
+                    <input type="number" id="valorSaque" class="input-custom" placeholder="0.00" step="10.00">
+                </div>
+            </div>
+
+            <button class="btn-max" onclick="sacarTudo()">Sacar Todo o Saldo (Max)</button>
+
+            <div class="info-alert">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>O titular da conta de destino deve ser o mesmo cadastrado na plataforma. Saques são analisados e processados pelo setor financeiro de forma imediata.</p>
+            </div>
+
+            <button class="btn-submit" onclick="solicitarSaque()">
+                Solicitar Saque Agora
+            </button>
+        </div>
+
+        <div class="history-title">Últimas Movimentações</div>
+        <div class="history-item">
+            <div class="h-left">
+                <div class="h-icon"><i class="fa-solid fa-check"></i></div>
+                <div class="h-text">
+                    <h4>Saque PIX</h4>
+                    <p>Processado e Concluído</p>
+                </div>
+            </div>
+            <div class="h-value">R$ 50,00</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // CONFIGURAÇÃO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        if (!idDispositivo) {
+            idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('usuario_tracker_id', idDispositivo);
+        }
+
+        let bancaAtual = 0.00;
+        const phoneDestination = "5583996469538";
+
+        // PUXAR SALDO EM TEMPO REAL
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            bancaAtual = parseFloat(snapshot.val() || 0);
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
+
+        // PREENCHE INPUT COM SALDO TOTAL
+        window.sacarTudo = function() {
+            if(bancaAtual <= 0) {
+                alert("Você não possui saldo disponível para saque.");
+                return;
+            }
+            document.getElementById('valorSaque').value = bancaAtual.toFixed(2);
+        }
+
+        // LÓGICA DE SOLICITAÇÃO E DESCONTO
+        window.solicitarSaque = function() {
+            let chavePix = document.getElementById('chavePix').value.trim();
+            let tipoChave = document.getElementById('tipoChave').value;
+            let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
+
+            // Validações Básicas
+            if (chavePix === "") {
+                alert("Por favor, informe a sua chave PIX de destino.");
+                return;
+            }
+            if (isNaN(valorSaqueInput) || valorSaqueInput < 20.00) {
+                alert("O valor mínimo de saque é de R$ 20,00.");
+                return;
+            }
+            if (valorSaqueInput > bancaAtual) {
+                alert(`Saldo insuficiente! Seu saldo atual é de R$ ${bancaAtual.toFixed(2)}`);
+                return;
+            }
+
+            // Confirmação com o jogador
+            if(confirm(`Deseja confirmar o saque de R$ ${valorSaqueInput.toFixed(2)} para a chave PIX informada? O valor será debitado da sua banca.`)) {
+                
+                // 1. DEDUZ O SALDO DO JOGADOR NO FIREBASE (Passo crítico de segurança)
+                let novoSaldo = bancaAtual - valorSaqueInput;
+                
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
+                    
+                    // 2. MONTA A MENSAGEM PARA VOCÊ (ADMIN) NO WHATSAPP
+                    let valorFormatado = valorSaqueInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    
+                    let mensagemComposta = `*⚠️ SOLICITAÇÃO DE SAQUE (SorteCerta)*\n\n` +
+                                           `• *ID do Jogador:* ${idDispositivo}\n` +
+                                           `• *Valor a Pagar:* ${valorFormatado}\n` +
+                                           `• *Tipo de Chave:* ${tipoChave}\n` +
+                                           `• *Chave PIX:* ${chavePix}\n\n` +
+                                           `_O saldo já foi debitado da conta do jogador no painel._`;
+                    
+                    let urlFinalWhastapp = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
+                    
+                    // 3. REDIRECIONA PARA O WHATSAPP
+                    alert("Solicitação enviada! Você será redirecionado para o nosso setor financeiro para liberação da transferência.");
+                    window.location.href = urlFinalWhastapp;
+
+                }).catch((error) => {
+                    alert("Erro ao processar o saque. Tente novamente ou contate o suporte.");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
