@@ -11,73 +11,76 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
-            /* BLOQUEIO DE ZOOM VIA TOQUE DUPLO, MAS PERMITE ROLAGEM */
-            touch-action: manipulation;
+            /* PERMITE ROLAGEM, BLOQUEIA ZOOM DUPLO E PINÇA */
+            touch-action: pan-y; 
         }
 
         body {
-            background: radial-gradient(circle, #2c0202 0%, #0f0101 100%);
+            background: #0f0101;
             color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
-            /* ROLAGEM LIBERADA */
-            overflow-y: auto; 
-            padding: 20px 0;
+            overflow-y: auto;
+            padding: 10px;
         }
 
         .container-jogo {
             width: 100%;
             max-width: 420px;
-            background: linear-gradient(180deg, #8b0000 0%, #b81414 50%, #4a0000 100%);
-            border: 4px solid #ffcc00;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,204,0,0.4);
+            background: linear-gradient(180deg, #8b0000 0%, #4a0000 100%);
+            border: 3px solid #ffcc00;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             text-align: center;
             position: relative;
-            margin: auto;
         }
 
-        .topo-id-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px 12px;
-            border-radius: 50px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 204, 0, 0.3);
-        }
-
-        .topo-id { font-size: 11px; color: #ffcc00; letter-spacing: 1px; font-weight: bold; }
-        .btn-copiar { background: #ffcc00; border: none; color: #000; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
-        .btn-copiar:active { transform: scale(0.95); }
-
-        .painel-status {
-            background: rgba(0, 0, 0, 0.6);
+        /* Saldo no Topo com Link */
+        .saldo-topo {
+            background: rgba(0, 0, 0, 0.7);
             border: 2px solid #ffcc00;
-            border-radius: 12px;
+            border-radius: 50px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .saldo-topo:active { transform: scale(0.97); }
+        .saldo-texto { font-size: 16px; font-weight: bold; color: #fff; }
+        .saldo-valor { color: #2ecc71; margin-left: 5px; }
+        .btn-mais-saldo { background: #ffcc00; color: #000; font-weight: bold; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; }
+
+        /* Painel de Status (Alertas de Bet) */
+        .painel-status {
+            background: #000;
+            border: 1px solid #ffcc00;
+            border-radius: 8px;
             padding: 8px;
             margin-bottom: 15px;
             font-weight: bold;
             color: #ffcc00;
-            font-size: 14px;
-            min-height: 38px;
+            font-size: 12px;
+            min-height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-transform: uppercase;
         }
 
+        /* Matriz de Slots */
         .grade-slots {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             background: #220000;
-            padding: 12px;
+            padding: 10px;
             border-radius: 16px;
             border: 3px solid #660000;
             margin-bottom: 15px;
@@ -85,15 +88,14 @@
 
         .slot {
             background: linear-gradient(145deg, #ffffff, #dddddd);
-            height: 95px;
+            height: 90px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 42px;
+            font-size: 45px;
             position: relative;
-            box-shadow: inset 0 5px 10px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.1s ease;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.4);
         }
 
         .slot.ganhador {
@@ -101,38 +103,101 @@
             border: 3px solid #ffcc00;
             z-index: 2;
         }
-
         .label-wild { position: absolute; bottom: 2px; background: #ffcc00; color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 4px; }
 
+        /* Overlay de Ganho Central */
         .display-ganho-central {
             background: #000;
             border-radius: 12px;
-            padding: 8px 10px;
+            padding: 10px;
             margin-bottom: 15px;
-            border-bottom: 3px solid #ffcc00;
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+            transition: all 0.3s;
+        }
+        .display-ganho-central span { font-size: 11px; color: #aaa; text-transform: uppercase; }
+        .display-ganho-central h1 { color: #ffcc00; font-size: 28px; margin-top: 2px; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+
+        /* Novos Controles: Turbo, Aposta, Auto */
+        .controles-acao {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #8b0000;
         }
 
-        .display-ganho-central span { font-size: 11px; color: #aaa; text-transform: uppercase; }
-        .display-ganho-central h1 { color: #ffcc00; font-size: 26px; margin-top: 1px; }
+        .btn-redondo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #ffcc00;
+            background: #2c0202;
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 4px 0 #997300;
+        }
+        .btn-redondo:active { transform: translateY(4px); box-shadow: 0 0px 0 #997300; }
+        .btn-redondo.ativo { background: #f39c12; color: #000; border-color: #fff; }
 
-        .controles-inferiores { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #8b0000; }
-        .seletor-aposta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .controle-aposta {
+            display: flex;
+            align-items: center;
+            background: #000;
+            border-radius: 50px;
+            padding: 5px;
+            border: 1px solid #4a0000;
+        }
+
+        .btn-aposta {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%);
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-aposta:active { transform: scale(0.9); filter: brightness(0.8); }
+
+        .valor-aposta { padding: 0 15px; font-size: 18px; font-weight: bold; color: #ffcc00; min-width: 90px; }
+
+        /* Botão Girar Principal */
+        .btn-disparar {
+            width: 100%;
+            background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
+            border: none;
+            color: white;
+            padding: 18px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #1e7e43, 0 10px 15px rgba(0,0,0,0.4);
+            text-shadow: 1px 2px 2px rgba(0,0,0,0.4);
+            transition: all 0.1s;
+            position: relative;
+        }
+        .btn-disparar:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0px 0 #1e7e43; }
+        .btn-disparar:disabled { background: #555 !important; box-shadow: none !important; transform: translateY(6px); opacity: 0.8; }
         
-        .btn-ajuste { background: linear-gradient(180deg, #ffcc00 0%, #cc9900 100%); border: none; color: #000; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #997300; }
-        .btn-ajuste:active { transform: translateY(3px); box-shadow: 0 1px 0 #997300; }
-        
-        .info-aposta { text-align: center; }
-        .info-aposta div { font-size: 11px; color: #ccc; }
-        .info-aposta h2 { color: #ffcc00; font-size: 22px; }
-
-        .btn-disparar { width: 100%; background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); border: none; color: white; padding: 14px; font-size: 22px; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 5px 0 #1e7e43, 0 8px 15px rgba(0,0,0,0.4); text-shadow: 1px 2px 2px rgba(0,0,0,0.4); }
-        .btn-disparar:disabled { background: #555 !important; box-shadow: none !important; transform: translateY(4px); cursor: not-allowed; opacity: 0.6; }
-
-        .exibicao-saldo-rodape { margin-top: 12px; font-size: 13px; color: #ccc; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 8px; display: inline-block; border: 1px solid rgba(46, 204, 113, 0.2); }
-        .exibicao-saldo-rodape strong { color: #2ecc71; font-size: 14px; margin-left: 3px; }
+        .badge-auto {
+            position: absolute; top: -10px; right: -10px; background: #e74c3c; color: #fff; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 10px; border: 2px solid #fff; display: none;
+        }
 
         /* Overlay de Super Ganho */
-        .tela-bonus { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .tela-bonus { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .caixa-bonus h2 { font-size: 40px; color: #ffcc00; animation: pulsarTexto 0.6s infinite alternate; }
         .caixa-bonus h3 { font-size: 55px; color: #2ecc71; margin-top: 15px; }
 
@@ -144,12 +209,13 @@
 <body>
 
     <div class="container-jogo">
-        <div class="topo-id-container">
-            <div class="topo-id">ID: <span id="lblIdDispositivo">CONECTANDO...</span></div>
-            <button class="btn-copiar" id="btnCopiarId" onclick="copiarIdDispositivo()">Copiar</button>
+        
+        <div class="saldo-topo" onclick="window.location.href='saldo.html'">
+            <div class="saldo-texto">SALDO:<span class="saldo-valor" id="txtSaldo">R$ 0,00</span></div>
+            <div class="btn-mais-saldo">+</div>
         </div>
         
-        <div class="painel-status" id="displayMensagem">Carregando dados...</div>
+        <div class="painel-status" id="displayMensagem">Bem-vindo! Boa sorte.</div>
 
         <div class="grade-slots">
             <div class="slot" id="s0">🍊</div><div class="slot" id="s1">🍀</div><div class="slot" id="s2">🍊</div>
@@ -158,19 +224,28 @@
         </div>
 
         <div class="display-ganho-central">
-            <span>Último Ganho</span>
+            <span>GANHO DA RODADA</span>
             <h1 id="txtGanhoTotal">R$ 0,00</h1>
         </div>
 
-        <div class="controles-inferiores">
-            <div class="seletor-aposta">
-                <button class="btn-ajuste" onclick="ajustarGiroBotoes(-1)">-</button>
-                <div class="info-aposta"><div>APOSTA TOTAL</div><h2 id="txtAposta">R$ 0,40</h2></div>
-                <button class="btn-ajuste" onclick="ajustarGiroBotoes(1)">+</button>
+        <div class="controles-acao">
+            <button class="btn-redondo" id="btnTurbo" onclick="toggleTurbo()" title="Modo Turbo">⚡</button>
+            
+            <div class="controle-aposta">
+                <button class="btn-aposta" onclick="ajustarAposta(-1)">-</button>
+                <div class="valor-aposta" id="txtAposta">R$ 0,40</div>
+                <button class="btn-aposta" onclick="ajustarAposta(1)">+</button>
             </div>
-            <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()" disabled>CONECTANDO</button>
-            <div class="exibicao-saldo-rodape">Saldo Disponível:<strong id="txtSaldo">R$ 0,00</strong></div>
+
+            <button class="btn-redondo" id="btnAuto" onclick="iniciarAuto()" title="Auto Giro">🔄</button>
         </div>
+
+        <button class="btn-disparar" id="btnDisparar" onclick="executarRodada()">
+            GIRAR
+            <span class="badge-auto" id="badgeAuto">0</span>
+        </button>
+        
+        <div style="font-size: 10px; color: #555; margin-top:10px; display: none;" id="lblIdDispositivo"></div>
     </div>
 
     <div class="tela-bonus" id="telaBonus">
@@ -190,22 +265,28 @@
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let idDispositivo = "";
+        let idDispositivo = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('usuario_tracker_id', idDispositivo);
+        document.getElementById('lblIdDispositivo').innerText = idDispositivo;
+        
         let bancaAtual = 0.00; 
         let valorDoGiro = 0.40;
         let firebaseConectado = false;
+
+        // Variaveis de Controle Novas
+        window.isTurbo = false;
+        window.girosAutoRestantes = 0;
+        window.emGiro = false;
         
-        // VARIÁVEIS DE CONTROLE
-        window.modoJogo = "normal";
-        window.valorForcarGanho = 0;
-        window.emGiro = false; // Trava de segurança para não perder os ganhos
+        // Variaveis Matematicas e Admin
+        window.estadoSequencia = 0; 
+        window.valorPremioForcado = 0;
+        window.girosAtaqueRestantes = 0;
 
         const tabelaApostas = [0.40, 0.80, 1.20, 2.00, 4.00, 10.00, 20.00, 50.00, 100.00, 250.00];
-
         const dicionarioPremios = { '🐯': 50, '💰': 20, '🧧': 10, '🍀': 5, '🍊': 2 };
 
         const listaSimbolosBase = [
@@ -222,37 +303,7 @@
 
         const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
 
-        recuperarOuCriarID();
         conectarFirebaseSincronizado();
-
-        function recuperarOuCriarID() {
-            let idSalvo = localStorage.getItem('usuario_tracker_id');
-            if (!idSalvo) {
-                idSalvo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
-                localStorage.setItem('usuario_tracker_id', idSalvo);
-            }
-            idDispositivo = idSalvo;
-            document.getElementById('lblIdDispositivo').innerText = idDispositivo;
-        }
-
-        window.copiarIdDispositivo = function() {
-            if (!idDispositivo) return;
-            navigator.clipboard.writeText(idDispositivo).then(() => {
-                const btn = document.getElementById('btnCopiarId');
-                btn.innerText = "Copiado!";
-                btn.style.background = "#2ecc71";
-                btn.style.color = "#fff";
-                notificarDisplay("ID copiado com sucesso!");
-                setTimeout(() => {
-                    btn.innerText = "Copiar";
-                    btn.style.background = "#ffcc00";
-                    btn.style.color = "#000";
-                    notificarDisplay("Aperte Girar para Iniciar");
-                }, 2000);
-            }).catch(() => {
-                notificarDisplay("Falha ao copiar automaticamente.");
-            });
-        }
 
         function conectarFirebaseSincronizado() {
             const userRef = ref(db, 'usuarios/' + idDispositivo);
@@ -261,100 +312,146 @@
                 const dados = snapshot.val();
                 
                 if (dados !== null) {
-                    // Protege a banca de ser subscrita enquanto a roleta gira (evita engolir prêmios)
-                    if (!window.emGiro) {
-                        bancaAtual = parseFloat(dados.saldo !== undefined ? dados.saldo : 0.00);
+                    if (!window.emGiro) bancaAtual = parseFloat(dados.saldo !== undefined ? dados.saldo : 0.00);
+                    
+                    if (window.estadoSequencia !== 3) {
+                        window.modoJogo = String(dados.modo || "normal").toLowerCase().trim();
                     }
                     
-                    window.modoJogo = String(dados.modo || "normal").toLowerCase().trim();
-                    
-                    // Tratamento blindado para valores: aceita 50, "50", "50,00", "R$ 50" sem bugar
                     let textoGanho = String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.');
-                    window.valorForcarGanho = parseFloat(textoGanho) || 0;
+                    let valorLido = parseFloat(textoGanho) || 0;
                     
+                    if (valorLido > 0 && window.estadoSequencia === 0) {
+                        window.valorPremioForcado = valorLido;
+                        window.estadoSequencia = 1;
+                        window.girosAtaqueRestantes = Math.floor(Math.random() * 3) + 2; 
+                        set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                    }
                 } else {
                     bancaAtual = 0.00;
-                    window.modoJogo = "normal";
-                    window.valorForcarGanho = 0;
                     if (!window.emGiro) set(userRef, { saldo: bancaAtual, modo: "normal", forcarGanho: 0 });
                 }
                 
                 firebaseConectado = true;
                 atualizarTelas();
-                
-                if(document.getElementById('btnDisparar').innerText === "CONECTANDO") {
-                    document.getElementById('btnDisparar').disabled = false;
-                    document.getElementById('btnDisparar').innerText = "GIRAR";
-                    notificarDisplay("Aperte Girar para Iniciar");
-                }
-            }, (error) => {
-                notificarDisplay("Erro na conexão com Banco!");
             });
         }
 
         function atualizarSaldoNoFirebase() {
-            if(firebaseConectado) {
-                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            if(firebaseConectado) set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+        }
+
+        // LÓGICA DE APOSTA COM LIMITES
+        window.ajustarAposta = function(direcao) {
+            if(window.emGiro) return;
+
+            let indexAtual = tabelaApostas.findIndex(v => v >= valorDoGiro);
+            if(indexAtual === -1) indexAtual = 0;
+            let novoIndex = indexAtual + direcao;
+
+            if(novoIndex < 0) {
+                notificarDisplay("⚠ BET MÍNIMA ALCANÇADA");
+                return;
+            }
+            if(novoIndex >= tabelaApostas.length) {
+                notificarDisplay("⚠ BET MÁXIMA ALCANÇADA");
+                return;
+            }
+
+            valorDoGiro = tabelaApostas[novoIndex];
+            atualizarTelas();
+            notificarDisplay("Aposta ajustada!");
+        }
+
+        // MODO TURBO
+        window.toggleTurbo = function() {
+            if(window.emGiro) return;
+            window.isTurbo = !window.isTurbo;
+            const btn = document.getElementById('btnTurbo');
+            if(window.isTurbo) {
+                btn.classList.add('ativo');
+                notificarDisplay("⚡ MODO TURBO ATIVADO");
+            } else {
+                btn.classList.remove('ativo');
+                notificarDisplay("MODO TURBO DESATIVADO");
             }
         }
 
-        window.ajustarGiroBotoes = function(direcao) {
-            let indexAtual = tabelaApostas.findIndex(v => v >= valorDoGiro);
-            if(indexAtual === -1) indexAtual = 0;
-            indexAtual += direcao;
-            if(indexAtual < 0) indexAtual = 0;
-            if(indexAtual >= tabelaApostas.length) indexAtual = tabelaApostas.length - 1;
+        // MODO AUTO GIRO
+        window.iniciarAuto = function() {
+            if(window.emGiro) {
+                window.girosAutoRestantes = 0; // Cancela se estiver girando
+                document.getElementById('badgeAuto').style.display = 'none';
+                notificarDisplay("Auto Giro Cancelado");
+                return;
+            }
+            
+            let qtd = prompt("Quantos giros automáticos deseja fazer? (Ex: 10, 30, 50)");
+            let giros = parseInt(qtd);
+            
+            if(!isNaN(giros) && giros > 0) {
+                window.girosAutoRestantes = giros;
+                atualizarBadgeAuto();
+                notificarDisplay(`🔄 AUTO INICIADO: ${giros} GIROS`);
+                window.executarRodada();
+            }
+        }
 
-            valorDoGiro = tabelaApostas[indexAtual];
-            atualizarTelas();
+        function atualizarBadgeAuto() {
+            const badge = document.getElementById('badgeAuto');
+            if(window.girosAutoRestantes > 0) {
+                badge.style.display = 'block';
+                badge.innerText = window.girosAutoRestantes;
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         window.executarRodada = function() {
             if (!firebaseConectado) return;
-            if (bancaAtual < valorDoGiro) {
-                notificarDisplay("Saldo Insuficiente!");
-                return;
+            if (bancaAtual < valorDoGiro) { 
+                notificarDisplay("⚠ SALDO INSUFICIENTE"); 
+                window.girosAutoRestantes = 0;
+                atualizarBadgeAuto();
+                return; 
             }
 
             if (ctxAudio.state === 'suspended') ctxAudio.resume();
-
-            // Ativa a trava de proteção de saldo
             window.emGiro = true;
-
             bancaAtual -= valorDoGiro;
             atualizarSaldoNoFirebase();
             atualizarTelas();
             
-            const btn = document.getElementById('btnDisparar');
-            btn.disabled = true;
-            notificarDisplay("Buscando combinações...");
+            document.getElementById('btnDisparar').disabled = true;
+            document.getElementById('txtGanhoTotal').innerText = "R$ 0,00";
+            notificarDisplay("BOA SORTE!");
 
             for(let i=0; i<9; i++) document.getElementById(`s${i}`).classList.remove('ganhador');
 
             let passagens = 0;
+            let velocidadeAnimacao = window.isTurbo ? 30 : 70; // TURBO ALtera A VELOCIDADE AQUI
+            
             const loopAnimacao = setInterval(() => {
                 tocarSomGiro();
-                for(let i=0; i<9; i++) {
-                    let simboloAleatorio = listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)];
-                    renderizarSlot(i, simboloAleatorio);
-                }
+                for(let i=0; i<9; i++) renderizarSlot(i, listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]);
                 passagens++;
                 if(passagens > 14) {
                     clearInterval(loopAnimacao);
                     processarResultadoFinal();
                 }
-            }, 65);
+            }, velocidadeAnimacao);
         }
 
-        function gerarMatrizAleatoria() {
-            let m = [];
-            for (let i = 0; i < 9; i++) m.push(listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]);
-            return m;
+        function gerarMatrizAleatoria() { let m = []; for (let i = 0; i < 9; i++) m.push(listaSimbolosBase[Math.floor(Math.random() * listaSimbolosBase.length)]); return m; }
+        function gerarMatrizPerdedora() {
+            let matriz; let info; let seguranca = 0;
+            do { matriz = gerarMatrizAleatoria(); info = calcularGanhosDaMatriz(matriz); seguranca++; } while (info.ganho > 0 && seguranca < 100);
+            if (info.ganho > 0) return ['🍊', '💰', '🍀', '💰', '🍊', '🧧', '🍀', '🧧', '🍊'];
+            return matriz;
         }
 
         function calcularGanhosDaMatriz(matriz) {
-            let ganho = 0;
-            let linhas = [];
+            let ganho = 0; let linhas = [];
             combinacoesLinhas.forEach(linha => {
                 const [posA, posB, posC] = linha;
                 let itemA = matriz[posA]; let itemB = matriz[posB]; let itemC = matriz[posC];
@@ -375,7 +472,6 @@
             });
             let todosIguais = matriz.every(e => e === matriz[0]);
             if(todosIguais && ganho > 0) ganho *= 10;
-            
             return { ganho, linhas, todosIguais };
         }
 
@@ -385,39 +481,36 @@
             let linhasVencedoras = [];
             let flagMegaGanho = false;
 
-            // ==========================================
-            // LÓGICA DE GERENCIAMENTO 
-            // ==========================================
-            
-            if (window.valorForcarGanho > 0) {
-                // 1. FORÇAR GANHO EXATO
+            if (window.estadoSequencia === 1) { 
+                resultadoMatriz = gerarMatrizPerdedora();
+                window.girosAtaqueRestantes--;
+                if(window.girosAtaqueRestantes <= 0) window.estadoSequencia = 2;
+            } 
+            else if (window.estadoSequencia === 2) { 
                 resultadoMatriz = ['🍊', '🍀', '🍊', '🐯', '🐯', '🐯', '💰', '🍊', '💰']; 
-                ganhoFinal = window.valorForcarGanho; 
+                ganhoFinal = window.valorPremioForcado; 
                 linhasVencedoras = [[3, 4, 5]];
-                
-                // Reseta a ordem no banco
-                set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
-                window.valorForcarGanho = 0;
-                
                 if (ganhoFinal >= 50) flagMegaGanho = true;
-
-            } else {
-                // 2. MODOS DE JOGO
-                let maxTentativas = 20;
-                let tentativaAtual = 0;
-                let infoMatriz;
-
+                window.estadoSequencia = 3; 
+                window.modoJogo = 'agressivo';
+                set(ref(db, 'usuarios/' + idDispositivo + '/modo'), 'agressivo'); 
+            } 
+            else if (window.estadoSequencia === 3 || window.modoJogo === 'agressivo') { 
+                if (Math.random() < 0.3) {
+                    ganhoFinal = valorDoGiro * 0.8;
+                    resultadoMatriz = ['🍊', '🍊', '🍊', '🧧', '🧧', '🧧', '🍀', '🍀', '🍀'];
+                    linhasVencedoras = [[0, 1, 2]];
+                } else {
+                    resultadoMatriz = gerarMatrizPerdedora();
+                }
+                if (bancaAtual <= 0.50) window.estadoSequencia = 0; 
+            } 
+            else {
+                let maxTentativas = 20; let tentativaAtual = 0; let infoMatriz;
                 do {
                     resultadoMatriz = gerarMatrizAleatoria();
                     infoMatriz = calcularGanhosDaMatriz(resultadoMatriz);
-
-                    if (window.modoJogo === 'agressivo' && infoMatriz.ganho > 0) {
-                        tentativaAtual++; continue; 
-                    }
-                    if (window.modoJogo === 'desfarcado' && infoMatriz.ganho > (valorDoGiro * 4)) {
-                        tentativaAtual++; continue;
-                    }
-                    
+                    if (window.modoJogo === 'desfarcado' && infoMatriz.ganho > (valorDoGiro * 4)) { tentativaAtual++; continue; }
                     break;
                 } while (tentativaAtual < maxTentativas);
 
@@ -426,12 +519,7 @@
                 flagMegaGanho = (infoMatriz.todosIguais && infoMatriz.ganho > 0);
             }
 
-            // ==========================================
-            // RENDERIZAÇÃO NA TELA E PAGAMENTO
-            // ==========================================
-
             for (let i = 0; i < 9; i++) renderizarSlot(i, resultadoMatriz[i]);
-
             linhasVencedoras.forEach(linha => {
                 document.getElementById(`s${linha[0]}`).classList.add('ganhador');
                 document.getElementById(`s${linha[1]}`).classList.add('ganhador');
@@ -441,60 +529,66 @@
             if (flagMegaGanho && ganhoFinal > 0) {
                 tocarSomGanho();
                 dispararAnimacaoFantastica(ganhoFinal);
-            } else if (ganhoFinal > 0) {
+            } else {
+                finalizarRodadaProcesso(ganhoFinal);
+            }
+        }
+
+        function finalizarRodadaProcesso(ganhoFinal) {
+            if (ganhoFinal > 0) {
                 bancaAtual += ganhoFinal;
                 tocarSomGanho();
-                notificarDisplay(`Ganhou R$ ${ganhoFinal.toFixed(2)}!`);
-                document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoFinal.toFixed(2).replace('.', ',');
-                atualizarSaldoNoFirebase();
-                atualizarTelas();
-                
-                document.getElementById('btnDisparar').disabled = false;
-                window.emGiro = false; // Libera a trava do banco
+                notificarDisplay(`GANHOU R$ ${ganhoFinal.toFixed(2)}`);
             } else {
-                notificarDisplay("Nenhum ganho nesta rodada.");
-                document.getElementById('txtGanhoTotal').innerText = "R$ 0,00";
-                atualizarTelas();
-                
-                document.getElementById('btnDisparar').disabled = false;
-                window.emGiro = false; // Libera a trava do banco
+                notificarDisplay("TENTE NOVAMENTE");
             }
+
+            document.getElementById('txtGanhoTotal').innerText = "R$ " + ganhoFinal.toFixed(2).replace('.', ',');
+            atualizarSaldoNoFirebase();
+            atualizarTelas();
+            
+            // Continuidade do Auto Giro ou Liberação
+            if(window.girosAutoRestantes > 0) {
+                window.girosAutoRestantes--;
+                atualizarBadgeAuto();
+                let tempoEspera = window.isTurbo ? 500 : 1200;
+                setTimeout(() => {
+                    if(window.girosAutoRestantes >= 0) window.executarRodada();
+                }, tempoEspera);
+            } else {
+                document.getElementById('btnDisparar').disabled = false;
+                window.emGiro = false;
+            }
+        }
+
+        window.dispararAnimacaoFantastica = function(valorFinal) {
+            const telaBonus = document.getElementById('telaBonus');
+            telaBonus.style.display = 'flex'; 
+            telaBonus.style.zIndex = '9999';
+            document.getElementById('valorPremioFantastico').innerText = "R$ " + valorFinal.toFixed(2);
+
+            for (let i = 0; i < 20; i++) {
+                let coin = document.createElement('div');
+                coin.innerHTML = '🪙';
+                coin.style.position = 'absolute';
+                coin.style.left = Math.random() * 100 + '%';
+                coin.style.top = '-50px';
+                coin.style.fontSize = '35px';
+                coin.style.animation = 'cair 2s linear forwards';
+                telaBonus.appendChild(coin);
+                setTimeout(() => coin.remove(), 2000);
+            }
+
+            setTimeout(() => {
+                telaBonus.style.display = 'none';
+                finalizarRodadaProcesso(valorFinal);
+            }, 3000);
         }
 
         function renderizarSlot(id, simbolo) {
             const containerItem = document.getElementById(`s${id}`);
-            if (simbolo === '🐯') {
-                containerItem.innerHTML = `🐯<span class="label-wild">WILD</span>`;
-            } else {
-                containerItem.innerHTML = simbolo;
-            }
-        }
-
-        function dispararAnimacaoFantastica(valorFinal) {
-            const telaOverlay = document.getElementById('telaBonus');
-            document.getElementById('valorPremioFantastico').innerText = formatarMoeda(valorFinal);
-            telaOverlay.style.display = 'flex';
-
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const drop = document.createElement('div');
-                    drop.style.cssText = `position: absolute; font-size: 24px; top: -40px; left: ${Math.random() * 90}%; animation: cair 1.5s linear forwards;`;
-                    drop.innerText = '🪙';
-                    telaOverlay.appendChild(drop);
-                    setTimeout(() => drop.remove(), 1500);
-                }, i * 80);
-            }
-
-            setTimeout(() => {
-                telaOverlay.style.display = 'none';
-                bancaAtual += valorFinal;
-                document.getElementById('txtGanhoTotal').innerText = "R$ " + valorFinal.toFixed(2).replace('.', ',');
-                atualizarSaldoNoFirebase();
-                atualizarTelas();
-                
-                document.getElementById('btnDisparar').disabled = false;
-                window.emGiro = false; // Libera a trava do banco aqui também
-            }, 3500);
+            if (simbolo === '🐯') { containerItem.innerHTML = `🐯<span class="label-wild">WILD</span>`; } 
+            else { containerItem.innerHTML = simbolo; }
         }
 
         function atualizarTelas() {
@@ -504,26 +598,8 @@
 
         function notificarDisplay(texto) { document.getElementById('displayMensagem').innerText = texto; }
         function formatarMoeda(valor) { return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-
-        function tocarSomGiro() {
-            try {
-                let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain();
-                osc.type = 'sine'; osc.frequency.setValueAtTime(140, ctxAudio.currentTime);
-                gain.gain.setValueAtTime(0.05, ctxAudio.currentTime);
-                osc.connect(gain); gain.connect(ctxAudio.destination);
-                osc.start(); osc.stop(ctxAudio.currentTime + 0.08);
-            } catch(e){}
-        }
-
-        function tocarSomGanho() {
-            try {
-                let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain();
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(580, ctxAudio.currentTime);
-                gain.gain.setValueAtTime(0.1, ctxAudio.currentTime);
-                osc.connect(gain); gain.connect(ctxAudio.destination);
-                osc.start(); osc.stop(ctxAudio.currentTime + 0.3);
-            } catch(e){}
-        }
+        function tocarSomGiro() { try { let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(140, ctxAudio.currentTime); gain.gain.setValueAtTime(0.05, ctxAudio.currentTime); osc.connect(gain); gain.connect(ctxAudio.destination); osc.start(); osc.stop(ctxAudio.currentTime + 0.08); } catch(e){} }
+        function tocarSomGanho() { try { let osc = ctxAudio.createOscillator(); let gain = ctxAudio.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(580, ctxAudio.currentTime); gain.gain.setValueAtTime(0.1, ctxAudio.currentTime); osc.connect(gain); gain.connect(ctxAudio.destination); osc.start(); osc.stop(ctxAudio.currentTime + 0.3); } catch(e){} }
     </script>
 </body>
 </html>
