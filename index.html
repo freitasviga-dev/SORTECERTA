@@ -112,17 +112,17 @@
         .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
         
         .gc-tiger { background: radial-gradient(circle, #8b0000, #330000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .gc-dragon { background: radial-gradient(circle, #d35400, #5a2400); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-aviator { background: radial-gradient(circle, #1e3c72, #0a1930); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-mines { background: radial-gradient(circle, #0f2027, #000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-roulette { background: radial-gradient(circle, #11998e, #063d38); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-ox { background: radial-gradient(circle, #8e44ad, #2c0b3d); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-dragon { background: radial-gradient(circle, #d35400, #5a2400); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); filter: grayscale(0.5); }
 
         .game-info { padding: 10px; text-align: center; background: rgba(0,0,0,0.6); }
         .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; }
         .game-provider { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
         
-        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; }
+        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; z-index: 10; }
 
         /* --- PROVA SOCIAL (POPUP DE GANHOS) --- */
         .live-win-popup {
@@ -202,6 +202,15 @@
                 <div class="game-cover gc-tiger">🐯</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Tiger</div>
+                    <div class="game-provider">PG Soft</div>
+                </div>
+            </div>
+
+            <div class="game-card game-link" data-game="dragon.html">
+                <div class="hot-badge">NOVO</div>
+                <div class="game-cover gc-dragon">🐉</div>
+                <div class="game-info">
+                    <div class="game-name">Fortune Dragon</div>
                     <div class="game-provider">PG Soft</div>
                 </div>
             </div>
