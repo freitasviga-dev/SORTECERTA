@@ -8,76 +8,67 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>Fortune Dragon | SorteCerta</title>
+    <title>Fortune Dragon | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --dragon-red: #8b0000;
-            --dragon-dark: #3a0000;
-            --gold: #f39c12;
-            --gold-light: #f1c40f;
-            --gold-dark: #b8860b;
-            --text-main: #ffffff;
-            --bg-panel: rgba(15, 2, 2, 0.98);
+        /* PROTOCOLO 2: TRAVA DE ZOOM E OVERSCROLL */
+        html, body {
+            touch-action: none;
+            -webkit-text-size-adjust: 100%;
+            overscroll-behavior: none;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent; user-select: none;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { touch-action: none; box-sizing: border-box; }
 
         body { 
-            background-color: #000; 
-            background-image: radial-gradient(circle at 50% 0%, var(--dragon-red) 0%, #000 85%);
-            color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            background-color: #050000; 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            color: #ffffff;
         }
 
-        /* --- TELA DE ENTRADA BLINDADA (Fundo 100% Sólido) --- */
+        /* --- TELA DE ENTRADA BLINDADA (SEM TRANSPARÊNCIA) --- */
         #startScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0000; z-index: 9999999; /* Z-index absurdo pra barrar tudo */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: #0a0000; z-index: 9999999;
             display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
         }
-        #startScreen::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(139,0,0,0.5), transparent); pointer-events: none;
-        }
-        #startScreen i { font-size: 90px; color: var(--gold); margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(241, 196, 15, 0.6)); position: relative; z-index: 2; }
-        #startScreen h2 { color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; position: relative; z-index: 2; }
-        .btn-start { background: linear-gradient(180deg, var(--gold-light), var(--gold-dark)); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; font-size: 16px; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 30px; box-shadow: 0 5px 20px rgba(241, 196, 15, 0.4); position: relative; z-index: 2; }
+        #startScreen i { font-size: 90px; color: #f1c40f; margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(241, 196, 15, 0.6)); }
+        #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
+        .btn-start { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; font-size: 16px; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 30px; box-shadow: 0 5px 20px rgba(241, 196, 15, 0.4); }
 
-        /* --- O JOGO INTEIRO FICA ESCONDIDO AQUI ATÉ O PLAY --- */
+        /* --- O JOGO PRINCIPAL --- */
         #mainUI {
             display: flex; flex-direction: column; height: 100vh; width: 100%;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
-        /* --- HEADER & SALDO --- */
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center; padding: 15px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, transparent 100%); z-index: 100;
+        /* HEADER: SALDO DESTACADO (PROTOCOLO 2) */
+        .header-container {
+            width: 100%; padding: 15px 20px; background: #000; border-bottom: 2px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(15px + env(safe-area-inset-top)); z-index: 100;
         }
-        .btn-back { color: var(--gold-light); font-size: 22px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); cursor: pointer; padding: 5px; }
-        
-        .wallet-pill {
-            background: rgba(0, 0, 0, 0.7); border: 1px solid var(--gold-dark);
-            padding: 8px 18px; border-radius: 30px; display: flex; align-items: center; gap: 10px;
-            box-shadow: inset 0 0 10px rgba(243, 156, 18, 0.1), 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .wallet-pill i { color: var(--gold-light); font-size: 14px; }
-        .wallet-pill span { font-weight: 900; color: #fff; font-size: 15px; letter-spacing: 0.5px; }
+        .btn-back { color: #f1c40f; font-size: 24px; cursor: pointer; padding: 5px; }
+        .saldo-box { text-align: center; flex: 1; }
+        .saldo-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 2px; }
+        .saldo-value { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+        .btn-audio { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; width: 30px; text-align: right; }
 
-        /* --- ÁREA DA MÁQUINA --- */
-        .game-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; position: relative; }
-        .dragon-mascot { font-size: 65px; filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.6)); margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+        /* ÁREA DA MÁQUINA */
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: radial-gradient(circle at 50% 50%, #3a0000 0%, #050000 70%); }
+        .dragon-mascot { font-size: 65px; filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.6)); margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
         
         .slot-machine {
             background: linear-gradient(180deg, #4a0000 0%, #1a0000 100%);
-            border: 4px solid var(--gold); border-radius: 16px; padding: 12px;
-            width: 100%; max-width: 380px; box-shadow: 0 15px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.9);
+            border: 4px solid #f1c40f; border-radius: 16px; padding: 10px;
+            width: 92%; max-width: 400px; box-shadow: 0 15px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.9);
             position: relative; overflow: hidden;
         }
-        .slot-machine::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent); z-index: 10; pointer-events: none; }
-        .slot-machine::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent); z-index: 10; pointer-events: none; }
 
         .reels-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #000; padding: 8px; border-radius: 10px; border: 1px solid #333; }
         .reel { display: flex; flex-direction: column; gap: 8px; }
@@ -85,88 +76,91 @@
         .symbol-box {
             background: linear-gradient(180deg, #222 0%, #111 100%); border: 1px solid #444;
             border-radius: 8px; height: 85px; display: flex; align-items: center; justify-content: center;
-            font-size: 50px; position: relative; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); transition: 0.1s;
+            font-size: 45px; position: relative; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); transition: 0.1s;
         }
         
-        .spinning .symbol-box { animation: slotSpin 0.12s infinite linear; filter: blur(3px); color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.6); }
-        .symbol-box.win-anim { background: radial-gradient(circle, rgba(243, 156, 18, 0.5), #111) !important; border-color: var(--gold-light) !important; animation: winPulse 0.5s infinite alternate; z-index: 5; box-shadow: 0 0 25px rgba(243, 156, 18, 0.6) !important; }
+        .spinning .symbol-box { animation: slotSpin 0.1s infinite linear; filter: blur(2px); color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        
+        /* LUZ DE CONEXÃO EXATA */
+        .symbol-box.win-anim { 
+            background: radial-gradient(circle, rgba(241, 196, 15, 0.4), #111) !important; 
+            border-color: #f1c40f !important; 
+            animation: winPulse 0.5s infinite alternate; 
+            z-index: 5; box-shadow: 0 0 25px rgba(241, 196, 15, 0.6) !important; 
+        }
 
         .normal-win-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            background: rgba(0,0,0,0.95); border: 2px solid var(--gold); border-radius: 20px;
+            background: #000; border: 2px solid #f1c40f; border-radius: 20px;
             padding: 15px 35px; display: flex; flex-direction: column; align-items: center;
             z-index: 50; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 20px rgba(243, 156, 18, 0.4); pointer-events: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 20px rgba(241, 196, 15, 0.4); pointer-events: none;
         }
         .normal-win-badge.show { transform: translate(-50%, -50%) scale(1); }
-        .normal-win-badge span:first-child { color: var(--gold-light); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
-        .normal-win-badge span:last-child { color: #fff; font-size: 30px; font-weight: 900; letter-spacing: -1px; }
+        .normal-win-badge span:first-child { color: #f1c40f; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
+        .normal-win-badge span:last-child { color: #fff; font-size: 28px; font-weight: 900; }
 
-        /* --- PAINEL DE CONTROLE --- */
-        .control-panel {
-            background: var(--bg-panel); width: 100%; padding: 15px 20px; border-top: 2px solid var(--gold-dark);
-            border-radius: 30px 30px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 15px;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom)); position: relative; z-index: 20;
+        /* FOOTER: APOSTA E CONTROLES (PROTOCOLO 2) */
+        .footer-container {
+            width: 100%; background: #000; border-top: 2px solid #333;
+            display: flex; flex-direction: column; align-items: center; padding: 15px 20px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom)); z-index: 20; position: relative;
         }
 
-        .bet-info-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
-        .bet-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-        .bet-value { font-size: 20px; font-weight: 900; color: var(--gold-light); }
+        .aposta-box { text-align: center; margin-bottom: 12px; }
+        .aposta-label { font-size: 11px; color: #b8860b; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .aposta-value { font-size: 20px; font-weight: 900; color: #f1c40f; }
 
-        .spin-controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .spin-controls { width: 100%; max-width: 350px; display: flex; justify-content: space-between; align-items: center; }
         
-        .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 60px; height: 60px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
+        .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 60px; height: 60px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .btn-side span { font-size: 10px; font-weight: 900; margin-top: 3px; text-transform: uppercase; }
-        .btn-side.active { color: var(--gold-light); border-color: var(--gold-dark); box-shadow: 0 0 20px rgba(243, 156, 18, 0.4); }
-        .btn-side:active { transform: scale(0.9); }
+        .btn-side.active { color: #f1c40f; border-color: #b8860b; box-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
 
-        .auto-spin-menu {
-            position: absolute; bottom: 110px; right: 20px; background: rgba(10, 10, 10, 0.98);
-            border: 1px solid var(--gold-dark); border-radius: 15px; padding: 15px;
-            display: flex; flex-direction: column; gap: 8px; transform: translateY(20px);
-            opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.9); z-index: 50; width: 100px;
-        }
-        .auto-spin-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-        .auto-btn-option { background: #222; border: 1px solid #444; color: #fff; padding: 12px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 16px; }
-        .auto-btn-option:active { background: var(--gold-dark); color: #000; }
-
-        .btn-spin-wrapper { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 50px; border: 1px solid #333; }
-        .btn-bet-adjust { background: transparent; border: none; color: #fff; font-size: 26px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
-        .btn-bet-adjust:active { color: var(--gold-light); transform: scale(0.8); }
+        .btn-spin-wrapper { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 50px; border: 1px solid #333; }
+        .btn-bet-adjust { background: transparent; border: none; color: #fff; font-size: 24px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
+        .btn-bet-adjust:active { color: #f1c40f; transform: scale(0.8); }
         
         .btn-spin-main {
-            width: 90px; height: 90px; border-radius: 50%; border: 4px solid #000;
-            background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold-dark));
-            box-shadow: 0 0 25px rgba(243, 156, 18, 0.5), inset 0 -5px 15px rgba(0,0,0,0.5);
+            width: 85px; height: 85px; border-radius: 50%; border: 4px solid #000;
+            background: radial-gradient(circle at 30% 30%, #f1c40f, #b8860b);
+            box-shadow: 0 0 25px rgba(241, 196, 15, 0.5), inset 0 -5px 15px rgba(0,0,0,0.5);
             display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;
         }
-        .btn-spin-main i { font-size: 40px; color: #111; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.4)); transition: 0.2s; }
-        .btn-spin-main .auto-count { font-size: 34px; font-weight: 900; color: #111; display: none; }
-        .btn-spin-main:active { transform: scale(0.92); box-shadow: 0 0 10px rgba(243, 156, 18, 0.4); }
-        .btn-spin-main:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; }
+        .btn-spin-main i { font-size: 38px; color: #111; transition: 0.2s; }
+        .btn-spin-main .auto-count { font-size: 32px; font-weight: 900; color: #111; display: none; }
         .btn-spin-main.is-spinning i { animation: rotateSpin 0.8s infinite linear; }
-        
         .btn-spin-main.auto-active i { display: none; }
         .btn-spin-main.auto-active .auto-count { display: block; }
         .btn-spin-main.auto-active { background: radial-gradient(circle at 30% 30%, #e74c3c, #900000); box-shadow: 0 0 25px rgba(231, 76, 60, 0.6); }
 
-        /* --- POPUPS E ALERTAS --- */
+        /* MENU AUTO SPIN */
+        .auto-spin-menu {
+            position: absolute; bottom: 100%; right: 20px; background: #0a0a0a;
+            border: 1px solid #b8860b; border-radius: 15px; padding: 15px;
+            display: flex; flex-direction: column; gap: 8px; transform: translateY(20px);
+            opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.9); z-index: 50; width: 100px; margin-bottom: 10px;
+        }
+        .auto-spin-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .auto-btn-option { background: #222; border: 1px solid #444; color: #fff; padding: 12px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 16px; }
+        .auto-btn-option:active { background: #b8860b; color: #000; }
+
+        /* POPUP MEGA GANHO */
         .mega-win-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000000ed;
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
-            backdrop-filter: blur(10px);
         }
         .mega-win-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-        .mw-title { font-size: 50px; font-weight: 900; color: var(--gold-light); text-transform: uppercase; text-shadow: 0 0 40px var(--gold-dark), 0 5px 10px #000; margin-bottom: 20px; animation: bounce 1s infinite alternate; text-align: center; line-height: 1; }
-        .mw-value { font-size: 65px; font-weight: 900; color: #fff; text-shadow: 0 5px 25px var(--gold-dark); background: linear-gradient(to bottom, #fff, var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .mw-title { font-size: 50px; font-weight: 900; color: #f1c40f; text-transform: uppercase; text-shadow: 0 0 40px #b8860b, 0 5px 10px #000; margin-bottom: 20px; animation: bounce 1s infinite alternate; text-align: center; line-height: 1; }
+        .mw-value { font-size: 60px; font-weight: 900; color: #fff; text-shadow: 0 5px 25px #b8860b; }
 
-        .system-toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: rgba(231, 76, 60, 0.95); color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.6); border: 1px solid #ff5252; }
-        .system-toast.show { opacity: 1; top: 110px; }
+        .system-toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        .system-toast.show { opacity: 1; top: 120px; }
 
-        @keyframes startPulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        @keyframes startPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes slotSpin { 0% { transform: translateY(-30px); } 100% { transform: translateY(30px); } }
-        @keyframes winPulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        @keyframes winPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
         @keyframes rotateSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes bounce { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -190,16 +184,16 @@
         <audio id="sfxStop" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3"></audio>
         <audio id="sfxWin" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3"></audio>
 
-        <div class="top-bar">
+        <div class="header-container">
             <div class="btn-back" onclick="window.location.href='index.html'"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="wallet-pill">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="displaySaldo">R$ 0,00</span>
+            <div class="saldo-box">
+                <div class="saldo-label">SEU SALDO</div>
+                <div class="saldo-value" id="displaySaldo">R$ 0,00</div>
             </div>
-            <div class="btn-back" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
+            <div class="btn-audio" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
 
-        <div class="game-container">
+        <div class="game-area">
             <div class="dragon-mascot">🐉</div>
             
             <div class="slot-machine">
@@ -222,14 +216,14 @@
             </div>
         </div>
 
-        <div class="control-panel">
-            <div class="bet-info-bar">
-                <div class="bet-label">Aposta Atual</div>
-                <div class="bet-value" id="displayAposta">R$ 0,40</div>
+        <div class="footer-container">
+            <div class="aposta-box">
+                <div class="aposta-label">APOSTA ATUAL</div>
+                <div class="aposta-value" id="displayAposta">R$ 0,40</div>
             </div>
 
             <div class="auto-spin-menu" id="menuAuto">
-                <div style="color: var(--gold-light); font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 5px;">Giros</div>
+                <div style="color: #f1c40f; font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 5px;">Giros</div>
                 <div class="auto-btn-option" onclick="ativarAuto(10)">10</div>
                 <div class="auto-btn-option" onclick="ativarAuto(30)">30</div>
                 <div class="auto-btn-option" onclick="ativarAuto(50)">50</div>
@@ -281,7 +275,7 @@
         let bancaAtual = 0; let modoJogador = 'normal'; let isSpinning = false; let isTurbo = false; let audioLigado = false;
         let girosAutoRestantes = 0; let menuAutoAberto = false;
 
-        // LINHAS DE PAGAMENTO REAIS (Horizontal e Diagonal)
+        // PROTOCOLO 4: LINHAS DE PAGAMENTO EXATAS
         const paylines = [
             [[0,1], [1,1], [2,1]], // Linha 1 (Meio)
             [[0,0], [1,0], [2,0]], // Linha 2 (Topo)
@@ -290,22 +284,19 @@
             [[0,2], [1,1], [2,0]]  // Linha 5 (Diagonal /)
         ];
 
-        // LÓGICA DE TELA CHEIA - ABRINDO O COFRE
         document.getElementById('startScreen').addEventListener('click', function() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); }
             else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
             
-            // FADEOUT DA TELA PRETA
             this.style.opacity = '0';
             setTimeout(() => { 
                 this.style.display = 'none'; 
-                // MOSTRA O JOGO
                 document.getElementById('mainUI').classList.add('active');
-            }, 400);
+            }, 300);
             
             const bgMusic = document.getElementById('bgMusic');
-            if(bgMusic) { bgMusic.play().catch(e=>console.log(e)); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = 'var(--green)'; }
+            if(bgMusic) { bgMusic.play().catch(e=>console.log(e)); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
         });
 
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00];
@@ -314,7 +305,7 @@
 
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; bancaAtual = parseFloat(dados.saldo || 0); modoJogador = dados.modo || 'normal';
-            document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
 
         const sfxSpin = document.getElementById('sfxSpin'); const sfxStop = document.getElementById('sfxStop'); const sfxWin = document.getElementById('sfxWin');
@@ -322,8 +313,8 @@
 
         window.toggleAudio = function() {
             audioLigado = !audioLigado; const btn = document.getElementById('audioBtn'); const bgMusic = document.getElementById('bgMusic');
-            if(audioLigado) { bgMusic.play().catch(()=>{}); btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = 'var(--green)'; } 
-            else { bgMusic.pause(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = 'var(--gold-light)'; }
+            if(audioLigado) { bgMusic.play().catch(()=>{}); btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#00e676'; } 
+            else { bgMusic.pause(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#f1c40f'; }
         };
 
         window.toggleTurbo = function() { isTurbo = !isTurbo; const btn = document.getElementById('btnTurbo'); if(isTurbo) btn.classList.add('active'); else btn.classList.remove('active'); };
@@ -333,7 +324,7 @@
             let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
                 indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
-                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
         };
 
@@ -363,9 +354,10 @@
             else { btnMain.classList.remove('auto-active'); btnAuto.classList.remove('active'); }
         }
 
+        // --- PROTOCOLO 3: MOTOR BLINDADO ---
         window.iniciarGiro = async function() {
             if(isSpinning) return;
-            if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Faça um depósito."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
+            if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite para jogar."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
 
             isSpinning = true; const btnGirar = document.getElementById('btnGirar');
             if(girosAutoRestantes === 0) btnGirar.classList.add('is-spinning');
@@ -375,52 +367,61 @@
             document.getElementById('normalWinBadge').classList.remove('show');
             document.querySelectorAll('.symbol-box').forEach(box => box.classList.remove('win-anim'));
 
+            // Deduz saldo primeiro
             let novoSaldo = bancaAtual - apostaAtual;
-            await set(ref(db, `usuarios/${idDispositivo}/saldo`), novoSaldo);
-            get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), (parseFloat(snap.val() || 0) + apostaAtual)));
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
+            get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2))));
 
             const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
             reels.forEach(reel => reel.classList.add('spinning'));
 
             let ganhou = false; let valorGanho = 0; let telaFinal = [[], [], []]; let linhasVencedorasInfo = [];
 
+            // PROTOCOLO 1 E 4 APLICADOS NA LÓGICA DE SORTEIO
             if(modoJogador === 'influenciador') {
                 ganhou = Math.random() < 0.85; 
                 if(ganhou) {
-                    valorGanho = apostaAtual * (Math.floor(Math.random() * 40) + 10);
-                    let simbolo = simbolos[Math.floor(Math.random() * simbolos.length)];
-                    telaFinal = [[simbolo, simbolo, simbolo], [simbolo, simbolo, simbolo], [simbolo, simbolo, simbolo]];
-                    linhasVencedorasInfo = paylines; // Acende todas as 5 linhas
+                    let multiplicadorInteiro = Math.floor(Math.random() * (40 - 10 + 1)) + 10;
+                    valorGanho = Math.round(apostaAtual * multiplicadorInteiro);
+                    
+                    // Sorteia uma linha específica para vencer
+                    let linhaWin = paylines[Math.floor(Math.random() * paylines.length)];
+                    let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
+                    let lixo = simbolos.filter(s => s !== simboloVencedor);
+
+                    for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = lixo[Math.floor(Math.random() * lixo.length)]; }
+                    linhaWin.forEach(pos => telaFinal[pos[0]][pos[1]] = simboloVencedor);
+                    linhasVencedorasInfo = [linhaWin];
                 }
             } else {
                 ganhou = Math.random() < 0.12; 
                 if(ganhou) {
-                    valorGanho = apostaAtual * ((Math.random() * 2) + 0.5);
-                    // Escolhe UMA linha de pagamento oficial aleatória
+                    let multiplicadorInteiro = Math.floor(Math.random() * (5 - 1 + 1)) + 1; // Paga de 1x a 5x
+                    valorGanho = Math.round(apostaAtual * multiplicadorInteiro);
+                    
                     let linhaWin = paylines[Math.floor(Math.random() * paylines.length)];
                     let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
-                    let lixo = simbolos.filter(s => s !== simboloVencedor); // Lixo seguro
+                    let lixo = simbolos.filter(s => s !== simboloVencedor);
 
-                    // Preenche tela com lixo
                     for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = lixo[Math.floor(Math.random() * lixo.length)]; }
-                    
-                    // Desenha a linha exata da vitória
                     linhaWin.forEach(pos => telaFinal[pos[0]][pos[1]] = simboloVencedor);
                     linhasVencedorasInfo = [linhaWin];
                 }
             }
 
             if(!ganhou) {
-                // Preenche com lixo e QUEBRA qualquer linha que formar sem querer
+                // Preenche com símbolos aleatórios
                 for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)]; }
                 
+                // ANTI-FALSO POSITIVO: Destrói qualquer linha que se formou por acidente
                 paylines.forEach(linha => {
                     let s1 = telaFinal[linha[0][0]][linha[0][1]];
                     let s2 = telaFinal[linha[1][0]][linha[1][1]];
                     let s3 = telaFinal[linha[2][0]][linha[2][1]];
+                    
                     if(s1 === s2 && s2 === s3) {
-                        let troca = simbolos.filter(s => s !== s3);
-                        telaFinal[linha[2][0]][linha[2][1]] = troca[0]; // Quebra a linha na 3ª coluna
+                        let simbolosSeguros = simbolos.filter(s => s !== s2);
+                        telaFinal[linha[2][0]][linha[2][1]] = simbolosSeguros[Math.floor(Math.random() * simbolosSeguros.length)];
                     }
                 });
             }
@@ -449,8 +450,8 @@
             if(ganhou && valorGanho > 0) {
                 if(audioLigado) { sfxSpin.pause(); sfxWin.currentTime = 0; sfxWin.play(); }
                 
+                // PROTOCOLO 4: Acende EXATAMENTE a linha que ganhou
                 const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
-                // Acende EXATAMENTE a linha que ganhou
                 linhasWin.forEach(linha => {
                     linha.forEach(pos => reels[pos[0]].querySelectorAll('.symbol-box')[pos[1]].classList.add('win-anim'));
                 });
@@ -458,13 +459,16 @@
                 let saldoAposVitoria = saldoAtualizado + valorGanho;
                 await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoAposVitoria.toFixed(2)));
 
-                if(valorGanho >= (apostaAtual * 5)) {
-                    document.getElementById('megaWinValor').innerText = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                // Formatação exata garantida
+                let valorFormatado = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                if(valorGanho >= (apostaAtual * 10)) {
+                    document.getElementById('megaWinValor').innerText = valorFormatado;
                     document.getElementById('megaWinScreen').classList.add('show');
                     tempoParaProximo = 4500;
                     setTimeout(() => { document.getElementById('megaWinScreen').classList.remove('show'); liberarMaquina(); }, 4000);
                 } else {
-                    document.getElementById('normalWinValue').innerText = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    document.getElementById('normalWinValue').innerText = valorFormatado;
                     document.getElementById('normalWinBadge').classList.add('show');
                     tempoParaProximo = 2000;
                     setTimeout(() => { document.getElementById('normalWinBadge').classList.remove('show'); liberarMaquina(); }, 1800);
