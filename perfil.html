@@ -2,178 +2,193 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SorteCerta - Meu Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #050505;
-            --bg-card: #121214;
+            --bg-main: #0a0a0c;
+            --bg-card: rgba(24, 24, 27, 0.7);
             --gold: #f1c40f;
             --gold-dark: #b8860b;
-            --green: #00e676;
+            --green: #2ecc71;
             --text-main: #f4f4f5;
-            --text-muted: #8b8b93;
-            --border-color: #27272a;
+            --text-muted: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* HEADER FIXO */
+        /* --- HEADER BANCÁRIO --- */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
-            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; }
-        .page-title { font-size: 16px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-settings { color: var(--text-muted); font-size: 18px; }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .btn-back:active { background: rgba(255,255,255,0.1); color: #fff; }
+        .page-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        .container { max-width: 600px; margin: 70px auto 0; padding: 15px; }
+        .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 20px 15px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-        /* CARTÃO DE USUÁRIO */
+        /* --- CARTÃO DE USUÁRIO (ID) --- */
         .profile-card {
-            background: linear-gradient(135deg, #1a1a1e 0%, #0a0a0c 100%); border: 1px solid var(--gold);
+            background: linear-gradient(135deg, rgba(26, 26, 30, 0.9) 0%, rgba(10, 10, 12, 0.9) 100%); border: 1px solid var(--gold);
             border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1); margin-bottom: 20px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1); position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
         .profile-card::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(241,196,15,0.2) 0%, transparent 70%); }
         
-        .avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #000; border: 2px solid #fff; z-index: 1; }
+        .avatar { width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(45deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #000; border: 2px solid #fff; z-index: 1; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
         .user-info { z-index: 1; flex: 1; }
-        .user-name { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 2px; }
+        .user-name { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 4px; letter-spacing: 0.5px; }
         
-        .user-id-box { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-        .user-id { font-family: monospace; color: var(--gold); background: rgba(241, 196, 15, 0.1); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid rgba(241, 196, 15, 0.3); }
-        .btn-copy-id { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .btn-copy-id:active { color: var(--green); transform: scale(1.1); }
+        .user-id-box { display: flex; align-items: center; gap: 8px; }
+        .user-id { font-family: monospace; color: var(--gold); background: rgba(241, 196, 15, 0.1); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid rgba(241, 196, 15, 0.3); letter-spacing: 1px; }
+        .btn-copy-id { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; font-size: 14px; transition: 0.2s; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .btn-copy-id:active { color: var(--green); border-color: var(--green); transform: scale(0.95); }
 
-        /* CARTÃO DE CARTEIRA (SALDO) */
-        .wallet-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 25px; }
-        .wallet-header { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        /* --- CARTÃO DE SALDO --- */
+        .wallet-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .wallet-header { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
         .wallet-header i { color: var(--green); }
-        .wallet-balance { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 20px; letter-spacing: -1px; }
+        .wallet-balance { font-size: 36px; font-weight: 900; color: var(--green); margin-bottom: 25px; letter-spacing: -1px; }
         
-        .wallet-actions { display: flex; gap: 10px; }
-        .btn-action { flex: 1; padding: 12px; border-radius: 10px; font-weight: 900; font-size: 13px; text-align: center; text-decoration: none; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .wallet-actions { display: flex; gap: 12px; }
+        .btn-action { flex: 1; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 13px; text-align: center; text-decoration: none; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-action:active { transform: scale(0.96); }
-        .btn-dep { background: linear-gradient(180deg, var(--green) 0%, #00b359 100%); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
-        .btn-saq { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+        .btn-dep { background: linear-gradient(135deg, #00e676, #00b359); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
+        .btn-saq { background: rgba(241, 196, 15, 0.05); border: 1px solid var(--gold); color: var(--gold); }
 
-        /* LISTA DE MENUS */
-        .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
-        .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; }
-        .menu-item:active { background: #1a1a1e; border-color: #333; }
-        .menu-left { display: flex; align-items: center; gap: 12px; }
-        .menu-icon { width: 35px; height: 35px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .menu-text { font-size: 14px; font-weight: 600; }
-        .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 12px; }
+        /* --- LISTA DE MENUS --- */
+        .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; backdrop-filter: blur(10px); }
+        .menu-item:active { background: rgba(255,255,255,0.05); transform: scale(0.98); }
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .menu-text { font-size: 14px; font-weight: 700; }
+        .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 14px; }
 
-        /* CORES DOS ÍCONES */
+        /* CORES DOS ÍCONES DE MENU */
         .icon-history { color: #3498db; }
         .icon-vip { color: var(--gold); }
         .icon-terms { color: #9b59b6; }
         .icon-logout { color: #e74c3c; }
 
-        /* VERSÃO/RODAPÉ */
-        .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 20px; }
+        .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 10px; }
 
-        /* NAVEGAÇÃO INFERIOR */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(24, 24, 27, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; gap: 4px; transition: 0.2s; }
-        .nav-item i { font-size: 20px; }
+        /* --- MENU INFERIOR FOCADO --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
+        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
+
+        /* --- POPUP DE TERMOS --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 400px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .modal-title { font-size: 18px; font-weight: 900; color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .modal-body { font-size: 12px; color: #ccc; line-height: 1.6; max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
+        .btn-close-modal { width: 100%; background: #333; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
     </style>
 </head>
 <body>
 
     <header class="header">
-        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="page-title">Meu Perfil</div>
-        <a href="#" class="btn-settings"><i class="fa-solid fa-gear"></i></a>
-    </header>
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <div class="page-title">Área do Jogador</div>
+        <div style="width:40px;"></div> </header>
 
     <div class="container">
         
         <div class="profile-card">
-            <div class="avatar"><i class="fa-solid fa-user-ninja"></i></div>
+            <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
             <div class="user-info">
-                <div class="user-name">Jogador VIP</div>
+                <div class="user-name" id="displayUserName">Membro Oficial</div>
                 <div class="user-id-box">
                     <span class="user-id" id="displayUserId">CARREGANDO...</span>
                     <button class="btn-copy-id" onclick="copiarID()" id="btnCopyIcon"><i class="fa-regular fa-copy"></i></button>
                 </div>
-                <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Forneça este ID ao suporte para pagamentos.</div>
             </div>
         </div>
 
         <div class="wallet-card">
-            <div class="wallet-header"><i class="fa-solid fa-wallet"></i> Saldo Real Disponível</div>
+            <div class="wallet-header"><i class="fa-solid fa-shield-check"></i> Saldo Real Disponível</div>
             <div class="wallet-balance" id="displaySaldo">R$ 0,00</div>
             <div class="wallet-actions">
                 <a href="saldo.html" class="btn-action btn-dep"><i class="fa-solid fa-plus"></i> Depositar</a>
-                <a href="saque.html" class="btn-action btn-saq"><i class="fa-solid fa-money-bill-transfer"></i> Sacar</a>
+                <a href="saque.html" class="btn-action btn-saq"><i class="fa-solid fa-paper-plane"></i> Sacar</a>
             </div>
         </div>
 
         <div class="menu-list">
-            <a href="#" class="menu-item" onclick="alert('Histórico de apostas estará disponível em breve.')">
+            <a href="#" class="menu-item" onclick="alert('Funcionalidade de Histórico sendo atualizada. Estará disponível em breve.')">
                 <div class="menu-left">
-                    <div class="menu-icon icon-history"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <span class="menu-text">Histórico de Transações</span>
+                    <div class="menu-icon icon-history"><i class="fa-solid fa-list-ul"></i></div>
+                    <span class="menu-text">Extrato e Transações</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
 
             <a href="#" id="linkSuporte" target="_blank" class="menu-item">
                 <div class="menu-left">
-                    <div class="menu-icon icon-vip"><i class="fa-solid fa-headset"></i></div>
-                    <span class="menu-text">Suporte VIP (Plantão)</span>
+                    <div class="menu-icon icon-vip"><i class="fa-brands fa-whatsapp"></i></div>
+                    <span class="menu-text">Suporte Financeiro</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
 
-            <a href="#" class="menu-item" onclick="alert('Termos aceitos no momento do cadastro.')">
+            <a href="#" class="menu-item" onclick="abrirTermos()">
                 <div class="menu-left">
-                    <div class="menu-icon icon-terms"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="menu-icon icon-terms"><i class="fa-solid fa-file-shield"></i></div>
                     <span class="menu-text">Termos e Condições</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
 
-            <a href="index.html" class="menu-item">
+            <a href="#" class="menu-item" onclick="sairDaConta()">
                 <div class="menu-left">
-                    <div class="menu-icon icon-logout"><i class="fa-solid fa-right-from-bracket"></i></div>
-                    <span class="menu-text">Sair da Conta</span>
+                    <div class="menu-icon icon-logout"><i class="fa-solid fa-power-off"></i></div>
+                    <span class="menu-text" style="color: #e74c3c;">Desconectar Conta</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
         </div>
 
-        <div class="app-version">SorteCerta V2.0.1 - Licenciado e Seguro</div>
+        <div class="app-version">SorteCerta V2.0.1 - Criptografia SSL 256-bit ativada.</div>
 
     </div>
 
     <nav class="bottom-nav">
         <a href="index.html" class="nav-item">
-            <i class="fa-solid fa-house"></i>
-            <span>Início</span>
-        </a>
-        <a href="index.html" class="nav-item">
             <i class="fa-solid fa-gamepad"></i>
             <span>Cassino</span>
         </a>
-        <a href="saque.html" class="nav-item">
-            <i class="fa-solid fa-money-bill-transfer"></i>
-            <span>Saque</span>
-        </a>
         <a href="perfil.html" class="nav-item active">
-            <i class="fa-solid fa-user"></i>
-            <span>Perfil</span>
+            <i class="fa-solid fa-user-astronaut"></i>
+            <span>Minha Conta</span>
         </a>
     </nav>
+
+    <div class="modal-overlay" id="modalTermos">
+        <div class="modal-content">
+            <div class="modal-title"><i class="fa-solid fa-balance-scale"></i> Políticas da Plataforma</div>
+            <div class="modal-body">
+                <p><strong>1. Jogo Responsável:</strong> A plataforma SorteCerta destina-se a maiores de 18 anos. O jogo deve ser encarado como entretenimento, não como forma de investimento.</p><br>
+                <p><strong>2. Saques e Depósitos:</strong> Todas as transações devem ser efetuadas em contas bancárias de titularidade do jogador cadastrado. Tentativas de fraude resultarão em bloqueio imediato.</p><br>
+                <p><strong>3. Auditoria de Ganhos:</strong> O sistema realiza auditorias automáticas para garantir a integridade dos resultados (RTP). A casa reserva-se o direito de anular apostas em caso de instabilidade de rede ou uso de softwares de terceiros.</p>
+            </div>
+            <button class="btn-close-modal" onclick="fecharTermos()">Entendi e Concordo</button>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -184,32 +199,40 @@
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         // CONFIGURAÇÃO DO ID DO USUÁRIO
         let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        
+        // --- TRAVA DE SEGURANÇA BÁSICA (Será aprimorada no sistema de Login) ---
         if (!idDispositivo) {
             idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
             localStorage.setItem('usuario_tracker_id', idDispositivo);
         }
         
         document.getElementById('displayUserId').innerText = idDispositivo;
+        
+        // Formata nome baseado no ID (Se o ID for telefone, esconde o começo)
+        if(idDispositivo && idDispositivo.length > 8 && !idDispositivo.includes('TIGER')) {
+            document.getElementById('displayUserName').innerText = "Membro " + idDispositivo.substring(0, 4) + "***";
+        }
 
-        // Configura o link de Suporte com o ID automático (número oculto)
+        // SUPORTE
         const phoneDestination = "5583996469538";
         document.getElementById('linkSuporte').href = `https://wa.me/${phoneDestination}?text=Olá,%20preciso%20de%20ajuda%20com%20minha%20conta.%20Meu%20ID%20é:%20${idDispositivo}`;
 
-        // FUNÇÃO DE COPIAR ID
+        // COPIAR ID
         window.copiarID = function() {
             navigator.clipboard.writeText(idDispositivo).then(() => {
                 const btn = document.getElementById('btnCopyIcon');
                 btn.innerHTML = '<i class="fa-solid fa-check"></i>';
                 btn.style.color = 'var(--green)';
+                btn.style.borderColor = 'var(--green)';
                 setTimeout(() => {
                     btn.innerHTML = '<i class="fa-regular fa-copy"></i>';
                     btn.style.color = 'var(--text-muted)';
+                    btn.style.borderColor = 'var(--border-color)';
                 }, 2000);
             });
         }
@@ -219,6 +242,21 @@
             const saldo = snapshot.val() || 0;
             document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         });
+
+        // POPUP TERMOS
+        window.abrirTermos = function() { document.getElementById('modalTermos').style.display = 'flex'; }
+        window.fecharTermos = function() { document.getElementById('modalTermos').style.display = 'none'; }
+
+        // SISTEMA DE LOGOUT
+        window.sairDaConta = function() {
+            if(confirm("Tem certeza que deseja desconectar sua conta? Você precisará entrar novamente para acessar seu saldo.")) {
+                localStorage.removeItem('usuario_tracker_id');
+                // Quando o login.html existir, aqui nós redirecionaremos para lá:
+                // window.location.href = 'login.html';
+                alert("Conta desconectada com segurança. Como a página de Login ainda será criada, recarregaremos a página.");
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
