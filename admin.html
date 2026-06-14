@@ -66,9 +66,14 @@
         .m-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .m-value { font-size: 32px; font-weight: 900; color: #fff; }
         
-        /* BOTÃO DE ZERAR O COFRE */
-        .btn-zerar-cofre { margin-top: 15px; width: 100%; background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-zerar-cofre:hover { background: var(--gold); color: #000; }
+        /* BOTÕES DE ZERAR */
+        .btn-zerar { margin-top: 15px; width: 100%; background: transparent; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-zerar-gold { border: 1px solid var(--gold); color: var(--gold); }
+        .btn-zerar-gold:hover { background: var(--gold); color: #000; }
+        .btn-zerar-green { border: 1px solid var(--green); color: var(--green); }
+        .btn-zerar-green:hover { background: var(--green); color: #000; }
+        .btn-zerar-red { border: 1px solid var(--red); color: var(--red); }
+        .btn-zerar-red:hover { background: var(--red); color: #fff; }
 
         /* GESTÃO DE USUÁRIOS */
         .panel-section { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 30px; }
@@ -144,20 +149,26 @@
             <div class="metric-card">
                 <div class="m-title"><i class="fa-solid fa-vault" style="color:var(--gold)"></i> Lucro da Casa (RTP)</div>
                 <div class="m-value" id="displayCaixaGlobal">R$ 0,00</div>
-                <button class="btn-zerar-cofre" onclick="zerarCofrePrompt()">
-                    <i class="fa-solid fa-rotate-left"></i> Zerar Saldo
+                <button class="btn-zerar btn-zerar-gold" onclick="zerarMetrica('caixa_global', 'Lucro da Casa (RTP)')">
+                    <i class="fa-solid fa-rotate-left"></i> Zerar
                 </button>
             </div>
             <div class="metric-card green">
                 <div class="m-title"><i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Total Depositado</div>
                 <div class="m-value" id="displayDepositos">R$ 0,00</div>
+                <button class="btn-zerar btn-zerar-green" onclick="zerarMetrica('total_depositos', 'Total Depositado')">
+                    <i class="fa-solid fa-rotate-left"></i> Zerar
+                </button>
             </div>
             <div class="metric-card red">
                 <div class="m-title"><i class="fa-solid fa-arrow-up" style="color:var(--red)"></i> Total Sacado</div>
                 <div class="m-value" id="displaySaques">R$ 0,00</div>
+                <button class="btn-zerar btn-zerar-red" onclick="zerarMetrica('total_saques', 'Total Sacado')">
+                    <i class="fa-solid fa-rotate-left"></i> Zerar
+                </button>
             </div>
             <div class="metric-card blue">
-                <div class="m-title"><i class="fa-solid fa-users" style="color:var(--blue)"></i> Jogadores Registrados</div>
+                <div class="m-title"><i class="fa-solid fa-users" style="color:var(--blue)"></i> Jogadores</div>
                 <div class="m-value" id="contadorUsers">0</div>
             </div>
         </div>
@@ -192,7 +203,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        /* ATENÇÃO AQUI: ADICIONEI O COMANDO "push" PARA CRIAR O EXTRATO */
+        // IMPORTANTE: Adicionado a função PUSH aqui para o histórico funcionar
         import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // --- SISTEMA DE LOGIN ---
@@ -255,10 +266,11 @@
 
         window.toggleManutencao = () => { set(ref(db, 'sistema/manutencao'), !isManutencao); };
 
-        window.zerarCofrePrompt = () => {
-            if(confirm("⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR o lucro da casa?\n\nO Cofre Global (RTP) voltará para R$ 0,00 e o algoritmo passará a focar na recuperação de caixa.")) {
-                set(ref(db, 'sistema/caixa_global'), 0).then(() => {
-                    alert("Cofre zerado com sucesso! A casa voltou a arrecadar.");
+        // --- ZERAR MÉTIRCAS INDEPENDENTES ---
+        window.zerarMetrica = (chaveNoFirebase, nomeDaMetrica) => {
+            if(confirm(`⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR a métrica de ${nomeDaMetrica}?`)) {
+                set(ref(db, `sistema/${chaveNoFirebase}`), 0).then(() => {
+                    alert(`${nomeDaMetrica} zerado com sucesso!`);
                 });
             }
         };
@@ -321,10 +333,10 @@
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
         // ========================================================
-        // A MÁGICA ACONTECE AQUI: ADICIONAR SALDO + GERAR EXTRATO
+        // ADICIONAR SALDO + GERAR EXTRATO DE DEPÓSITO
         // ========================================================
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
-            let valorStr = prompt(`Adicionar Saldo para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor a ADICIONAR:`, "10.00");
+            let valorStr = prompt(`Adicionar Saldo para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor do DEPÓSITO a adicionar:`, "10.00");
             if(valorStr === null || valorStr === "") return;
             
             let valorNum = parseFloat(valorStr.replace(',','.'));
@@ -335,14 +347,14 @@
             // 1. Atualiza a carteira do usuário
             set(ref(db, `usuarios/${id}/saldo`), parseFloat(novoSaldo.toFixed(2))).then(() => {
                 
-                // 2. GERA O COMPROVANTE (PUSH) NO HISTÓRICO DE TRANSAÇÕES
+                // 2. GERA O COMPROVANTE NO EXTRATO DO JOGADOR
                 push(ref(db, `usuarios/${id}/transacoes`), {
                     tipo: "DEPÓSITO",
                     valor: valorNum.toFixed(2),
                     data: new Date().toISOString()
                 });
 
-                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados e extrato gerado para ${id}.`);
+                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados e extrato gerado para o jogador ${id}.`);
                 document.getElementById('searchInput').value = ''; 
             });
         };
