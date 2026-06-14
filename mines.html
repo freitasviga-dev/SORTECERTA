@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SorteCerta - Mines</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --gold: #f1c40f;
+            --green: #00e676;
+            --red: #e74c3c;
+            --text-main: #f4f4f5;
+            --text-muted: #8b8b93;
+            --tile-bg: #27272a;
+            --tile-hover: #3f3f46;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; touch-action: manipulation; }
+
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-y: auto; }
+
+        /* HEADER */
+        .header {
+            width: 100%; background: rgba(18, 18, 20, 0.95); border-bottom: 1px solid #27272a;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; position: sticky; top: 0; z-index: 100;
+        }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; }
+        .logo-mines { font-weight: 900; color: var(--gold); letter-spacing: 1px; font-size: 20px; text-transform: uppercase; }
+        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); cursor: pointer; }
+
+        .game-container { width: 100%; max-width: 450px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+
+        /* PAINEL DE MULTIPLICADOR (TOPO DO JOGO) */
+        .multiplier-panel {
+            background: linear-gradient(90deg, #18281b, #121214); border: 1px solid #1e3a24;
+            border-radius: 12px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .mult-info { display: flex; flex-direction: column; }
+        .mult-label { font-size: 10px; color: var(--green); text-transform: uppercase; font-weight: bold; }
+        .mult-value { font-size: 24px; font-weight: 900; color: #fff; }
+        .profit-value { font-size: 18px; color: var(--green); font-weight: bold; }
+
+        /* TABULEIRO DO MINES (5x5) */
+        .board-container {
+            background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; padding: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8); position: relative;
+        }
+        
+        .mines-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; aspect-ratio: 1/1;
+        }
+
+        .tile {
+            background: var(--tile-bg); border-radius: 8px; border: 1px solid #333;
+            cursor: pointer; transition: all 0.2s ease; position: relative;
+            box-shadow: 0 4px 0 #111; display: flex; justify-content: center; align-items: center;
+            font-size: 32px; perspective: 1000px;
+        }
+        .tile:active:not(.revealed):not(.disabled) { transform: translateY(4px); box-shadow: 0 0 0 #111; }
+        
+        .tile-inner { width: 100%; height: 100%; position: absolute; transition: transform 0.4s; transform-style: preserve-3d; display: flex; justify-content: center; align-items: center; }
+        .tile.revealed .tile-inner { transform: rotateY(180deg); }
+        
+        .tile-front, .tile-back { width: 100%; height: 100%; position: absolute; backface-visibility: hidden; display: flex; justify-content: center; align-items: center; border-radius: 8px; }
+        .tile-front { background: linear-gradient(145deg, #3f3f46, #27272a); }
+        .tile-front::after { content: ''; width: 40%; height: 40%; background: rgba(255,255,255,0.05); border-radius: 50%; } /* Detalhe visual */
+        
+        .tile-back { transform: rotateY(180deg); }
+        .tile.gem .tile-back { background: radial-gradient(circle, #00b37e, #004d36); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .tile.bomb .tile-back { background: radial-gradient(circle, #e74c3c, #7b241c); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        
+        .tile.disabled { cursor: not-allowed; opacity: 0.8; }
+        .tile.dimmed { filter: brightness(0.4); } /* Usado quando o jogo acaba para ofuscar os não clicados */
+
+        /* CONTROLES INFERIORES */
+        .controls { background: var(--bg-card); border: 1px solid #27272a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .control-row { display: flex; gap: 10px; }
+        .input-group { flex: 1; display: flex; flex-direction: column; background: #000; border: 1px solid #333; border-radius: 10px; padding: 5px 10px; }
+        .input-label { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
+        .bet-input, .bomb-select { background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; width: 100%; outline: none; margin-top: 2px; }
+        .bomb-select { appearance: none; cursor: pointer; color: var(--red); }
+
+        /* BOTÃO PRINCIPAL */
+        .btn-action {
+            width: 100%; height: 60px; border-radius: 12px; border: none; color: #fff; font-size: 20px;
+            font-weight: 900; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            transition: all 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .btn-action:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 rgba(0,0,0,0.3); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-bet { background: linear-gradient(180deg, var(--gold) 0%, #b8860b 100%); box-shadow: 0 6px 0 #8a6508; color: #000; }
+        .btn-cashout { background: linear-gradient(180deg, var(--green) 0%, #00875f 100%); box-shadow: 0 6px 0 #005239; }
+        
+        .btn-sub { font-size: 12px; opacity: 0.9; font-weight: bold; }
+
+        /* OVERLAY MENSAGEM */
+        .game-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); border: 2px solid var(--green); color: var(--green); padding: 15px 30px; border-radius: 12px; font-weight: 900; font-size: 20px; z-index: 10; display: none; text-align: center; box-shadow: 0 10px 30px rgba(0,230,118,0.3); width: 80%; }
+        .game-message.loss { border-color: var(--red); color: var(--red); box-shadow: 0 10px 30px rgba(231,76,60,0.3); }
+
+        @keyframes popOut { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="logo-mines"><i class="fa-solid fa-bomb" style="color: var(--red);"></i> Mines</div>
+        <div class="balance-badge" onclick="window.location.href='saldo.html'" id="displaySaldoTop">R$ 0,00</div>
+    </header>
+
+    <div class="game-container">
+        
+        <div class="multiplier-panel">
+            <div class="mult-info">
+                <span class="mult-label">Multiplicador</span>
+                <span class="mult-value" id="txtMultiplier">1.00x</span>
+            </div>
+            <div class="mult-info" style="align-items: flex-end;">
+                <span class="mult-label">Lucro Potencial</span>
+                <span class="profit-value" id="txtProfit">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div class="mines-grid" id="grid">
+                </div>
+            <div class="game-message" id="gameMessage"></div>
+        </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="input-group">
+                    <span class="input-label">Aposta (R$)</span>
+                    <input type="number" class="bet-input" id="inputBet" value="1.00" step="1.00" min="1.00">
+                </div>
+                <div class="input-group">
+                    <span class="input-label">Minas</span>
+                    <select class="bomb-select" id="inputBombs">
+                        <option value="3">3 Minas</option>
+                        <option value="5">5 Minas</option>
+                        <option value="10">10 Minas</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-action btn-bet" id="btnMainAction" onclick="handleMainAction()">
+                <span id="btnMainText">APOSTAR</span>
+                <span class="btn-sub" id="btnSubText">R$ 1.00</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+
+        // IDENTIFICAÇÃO E VARIÁVEIS DO SISTEMA
+        let idDispositivo = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('usuario_tracker_id', idDispositivo);
+
+        let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let margemLucro = 0.30;
+        let modoJogo = "normal";
+        let estadoSequencia = 0;
+        let valorPremioForcado = 0;
+
+        // ESTADO DO JOGO ('idle', 'playing', 'ended')
+        let gameState = 'idle';
+        let currentBet = 1.00;
+        let numBombs = 3;
+        
+        let currentMultiplier = 1.00;
+        let gemsRevealed = 0;
+        let totalTiles = 25;
+        let baseEdge = 0.95; // 5% de vantagem da casa no cálculo visual
+
+        // ÁUDIO (Bip e Boom)
+        const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+
+        // UI ELEMENTS
+        const gridEl = document.getElementById('grid');
+        const btnMain = document.getElementById('btnMainAction');
+        const msgOverlay = document.getElementById('gameMessage');
+
+        // FIREBASE SYNC
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                if (gameState === 'idle' || gameState === 'ended') bancaAtual = parseFloat(dados.saldo || 0);
+                if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
+                
+                let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                if (iscaLida > 0 && estadoSequencia === 0) {
+                    valorPremioForcado = iscaLida;
+                    estadoSequencia = 1; // FASE 1: Vai perder 1 ou 2x antes
+                    set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                }
+            } else {
+                set(ref(db, 'usuarios/' + idDispositivo), { saldo: 0, modo: "normal", forcarGanho: 0 });
+            }
+            updateBalanceUI();
+        });
+
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
+            caixaDaCasa = parseFloat(snapshot.val() || 0);
+        });
+
+        function updateBalanceUI() {
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // ATUALIZA O BOTÃO AO DIGITAR APOSTA
+        document.getElementById('inputBet').addEventListener('input', (e) => {
+            if(gameState !== 'idle') return;
+            let val = parseFloat(e.target.value);
+            if(!isNaN(val) && val > 0) {
+                currentBet = val;
+                document.getElementById('btnSubText').innerText = "R$ " + currentBet.toFixed(2);
+            }
+        });
+
+        // INICIALIZA O TABULEIRO VAZIO
+        function createBoard() {
+            gridEl.innerHTML = '';
+            for(let i=0; i<totalTiles; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.id = i;
+                tile.innerHTML = `
+                    <div class="tile-inner">
+                        <div class="tile-front"></div>
+                        <div class="tile-back"></div>
+                    </div>
+                `;
+                tile.addEventListener('click', () => handleTileClick(tile));
+                gridEl.appendChild(tile);
+            }
+        }
+        createBoard();
+
+        // MOTOR DO BOTÃO PRINCIPAL
+        window.handleMainAction = function() {
+            if(gameState === 'idle' || gameState === 'ended') {
+                startGame();
+            } else if (gameState === 'playing' && gemsRevealed > 0) {
+                cashout();
+            }
+        }
+
+        function startGame() {
+            currentBet = parseFloat(document.getElementById('inputBet').value);
+            numBombs = parseInt(document.getElementById('inputBombs').value);
+
+            if (bancaAtual < currentBet) { alert("Saldo Insuficiente!"); return; }
+            if (ctxAudio.state === 'suspended') ctxAudio.resume();
+
+            // Desconta aposta e vai pro caixa
+            bancaAtual -= currentBet;
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + currentBet).toFixed(2)));
+            updateBalanceUI();
+
+            // Setup
+            gameState = 'playing';
+            gemsRevealed = 0;
+            currentMultiplier = 1.00;
+            updateHUD();
+
+            msgOverlay.style.display = 'none';
+            document.getElementById('inputBet').disabled = true;
+            document.getElementById('inputBombs').disabled = true;
+            
+            createBoard(); // Reseta os blocos
+
+            // Muda botão para Cashout Desativado (precisa achar 1 estrela primeiro)
+            btnMain.className = 'btn-action btn-cashout';
+            btnMain.disabled = true;
+            document.getElementById('btnMainText').innerText = "SACAR";
+            document.getElementById('btnSubText').innerText = "Abra 1 casa";
+        }
+
+        // A MÁGICA DA DECISÃO QUÂNTICA (TABULEIRO DINÂMICO)
+        function handleTileClick(tile) {
+            if(gameState !== 'playing' || tile.classList.contains('revealed')) return;
+
+            tocarSomClick();
+
+            // Cálculo do PRÓXIMO multiplicador SE ele acertar uma gema agora
+            let tilesLeft = totalTiles - gemsRevealed;
+            let safeTilesLeft = tilesLeft - numBombs;
+            
+            // Fórmula do multiplicador da casa
+            let stepMult = tilesLeft / safeTilesLeft; 
+            let nextMultiplier = currentMultiplier * stepMult;
+            let visualNextMult = 1 + ((nextMultiplier - 1) * baseEdge); // Aplica a vantagem da casa visualmente
+            
+            let possibleWin = currentBet * visualNextMult;
+
+            // ==========================================
+            // CÉREBRO DA RETENÇÃO (A MÁQUINA DE ESTADOS)
+            // ==========================================
+            let isBomb = false;
+
+            // 1. FASE DE AGRESSÃO (Frustração antes de pagar a Isca)
+            if (estadoSequencia === 1) {
+                // Deixa ele clicar 1 ou 2 vezes, depois quebra.
+                if (gemsRevealed >= Math.floor(Math.random() * 2) + 1) {
+                    isBomb = true;
+                }
+            }
+            // 2. FASE DA ISCA (Pagando o prêmio exato)
+            else if (estadoSequencia === 2) {
+                if (possibleWin >= valorPremioForcado) {
+                    // Ele atingiu o valor que a casa mandou pagar. Se ele tentar clicar de novo, explode!
+                    // Ou podemos forçar o botão de saque a piscar e impedir cliques. Vamos explodir pra forçar o respeito.
+                    if(possibleWin > (valorPremioForcado * 1.5)) isBomb = true; 
+                    else isBomb = false; // Deixa ele sacar
+                }
+            }
+            // 3. FASE AGRESSIVA OU DRENAGEM
+            else if (modoJogo === 'agressivo' || estadoSequencia === 3) {
+                // Muito rápido pra quebrar (1 ou 2 cliques no máximo)
+                if (gemsRevealed >= Math.floor(Math.random() * 2)) {
+                    isBomb = true;
+                }
+            }
+            // 4. MODO NORMAL (O AUDITOR DO COFRE - RTP)
+            else {
+                let cofreLiberado = caixaDaCasa * (1 - margemLucro);
+                
+                if (possibleWin > cofreLiberado || (modoJogo === 'desfarcado' && visualNextMult > 3.00)) {
+                    // O banco não tem dinheiro pra pagar. FORÇAR BOMBA!
+                    isBomb = true;
+                } else {
+                    // O banco tem dinheiro, deixa a aleatoriedade agir naturalmente
+                    // Chance natural de bater numa bomba = (Bombs / TilesRestantes)
+                    let naturalBombChance = numBombs / tilesLeft;
+                    if (Math.random() < naturalBombChance) {
+                        isBomb = true;
+                    }
+                }
+            }
+
+            // ==========================================
+            // APLICAÇÃO DO RESULTADO NO TILE
+            // ==========================================
+            tile.classList.add('revealed');
+            
+            if (isBomb) {
+                tile.classList.add('bomb');
+                tile.querySelector('.tile-back').innerHTML = '💣';
+                triggerLoss();
+            } else {
+                tile.classList.add('gem');
+                tile.querySelector('.tile-back').innerHTML = '💎';
+                
+                gemsRevealed++;
+                currentMultiplier = nextMultiplier;
+                let displayMult = 1 + ((currentMultiplier - 1) * baseEdge);
+                
+                updateHUD(displayMult);
+                
+                // Libera o botão de Saque
+                btnMain.disabled = false;
+                document.getElementById('btnSubText').innerText = "R$ " + (currentBet * displayMult).toFixed(2);
+                
+                // Verifica Vitória Máxima (limpou o tabuleiro)
+                if(gemsRevealed === (totalTiles - numBombs)) {
+                    cashout();
+                }
+            }
+        }
+
+        function updateHUD(mult = 1.00) {
+            document.getElementById('txtMultiplier').innerText = mult.toFixed(2) + "x";
+            document.getElementById('txtProfit').innerText = "R$ " + (currentBet * mult).toFixed(2);
+        }
+
+        // SACAR LUCRO
+        function cashout() {
+            if(gameState !== 'playing') return;
+            gameState = 'ended';
+            
+            let finalMult = 1 + ((currentMultiplier - 1) * baseEdge);
+            let winAmount = currentBet * finalMult;
+            
+            // Creditar Jogador
+            bancaAtual += winAmount;
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            
+            // Descontar do Cofre Global
+            let novoCofre = Math.max(0, caixaDaCasa - winAmount);
+            set(ref(db, 'sistema/caixa_global'), parseFloat(novoCofre.toFixed(2)));
+
+            // Controle de Máquina de Estado da Isca
+            if (estadoSequencia === 2 && winAmount >= valorPremioForcado) {
+                estadoSequencia = 3;
+                set(ref(db, 'usuarios/' + idDispositivo + '/modo'), 'agressivo'); 
+            }
+
+            tocarSomWin();
+            revealRest(true); // Mostra onde estavam as bombas "imaginárias"
+            
+            msgOverlay.innerHTML = `LUCROU!<br><span style="color:#fff;">R$ ${winAmount.toFixed(2)}</span>`;
+            msgOverlay.className = 'game-message';
+            msgOverlay.style.display = 'block';
+            msgOverlay.style.animation = 'popOut 0.5s forwards';
+
+            resetControls();
+        }
+
+        // BATEU NA BOMBA
+        function triggerLoss() {
+            gameState = 'ended';
+            
+            // Avança a máquina de estado se ele perdeu durante a fase 1 de agressão
+            if (estadoSequencia === 1) {
+                estadoSequencia = 2; // Agora o próximo jogo vai ser a Isca
+            }
+
+            tocarSomBomb();
+            revealRest(false);
+            
+            msgOverlay.innerHTML = `EXPLODIU!<br><span style="color:#fff;">Você perdeu R$ ${currentBet.toFixed(2)}</span>`;
+            msgOverlay.className = 'game-message loss';
+            msgOverlay.style.display = 'block';
+            msgOverlay.style.animation = 'popOut 0.5s forwards';
+
+            resetControls();
+        }
+
+        // MOSTRAR O RESTO DO TABULEIRO (Para dar credibilidade visual)
+        function revealRest(playerWon) {
+            let tiles = document.querySelectorAll('.tile:not(.revealed)');
+            // Conta quantas bombas faltam espalhar
+            let bombsToPlace = playerWon ? numBombs : (numBombs - 1); 
+            
+            // Mistura os tiles restantes
+            let tilesArray = Array.from(tiles);
+            tilesArray.sort(() => Math.random() - 0.5);
+
+            tilesArray.forEach((tile, index) => {
+                tile.classList.add('disabled');
+                tile.classList.add('dimmed');
+                tile.classList.add('revealed');
+                
+                if(index < bombsToPlace) {
+                    tile.classList.add('bomb');
+                    tile.querySelector('.tile-back').innerHTML = '💣';
+                } else {
+                    tile.classList.add('gem');
+                    tile.querySelector('.tile-back').innerHTML = '💎';
+                }
+            });
+        }
+
+        function resetControls() {
+            btnMain.className = 'btn-action btn-bet';
+            btnMain.disabled = false;
+            document.getElementById('btnMainText').innerText = "APOSTAR NOVAMENTE";
+            document.getElementById('btnSubText').innerText = "R$ " + currentBet.toFixed(2);
+            
+            document.getElementById('inputBet').disabled = false;
+            document.getElementById('inputBombs').disabled = false;
+        }
+
+        // EFEITOS SONOROS BÁSICOS
+        function tocarSomClick() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(600, ctxAudio.currentTime); g.gain.setValueAtTime(0.1, ctxAudio.currentTime); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 0.1); } catch(e){} }
+        function tocarSomBomb() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(100, ctxAudio.currentTime); o.frequency.exponentialRampToValueAtTime(10, ctxAudio.currentTime + 0.5); g.gain.setValueAtTime(0.2, ctxAudio.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctxAudio.currentTime + 0.5); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 0.5); } catch(e){} }
+        function tocarSomWin() { try { let o = ctxAudio.createOscillator(), g = ctxAudio.createGain(); o.type = 'square'; o.frequency.setValueAtTime(400, ctxAudio.currentTime); o.frequency.setValueAtTime(600, ctxAudio.currentTime + 0.1); g.gain.setValueAtTime(0.1, ctxAudio.currentTime); o.connect(g); g.connect(ctxAudio.destination); o.start(); o.stop(ctxAudio.currentTime + 0.3); } catch(e){} }
+    </script>
+</body>
+</html>
