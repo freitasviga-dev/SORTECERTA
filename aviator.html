@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SorteCerta - Aviator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --red-crash: #e74c3c;
+            --green-win: #2ecc71;
+            --text-main: #f4f4f5;
+            --text-muted: #8b8b93;
+            --gold: #f1c40f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; touch-action: manipulation; }
+
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+
+        /* HEADER */
+        .header {
+            width: 100%; background: rgba(18, 18, 20, 0.95); border-bottom: 1px solid #27272a;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+        }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; }
+        .logo-aviator { font-weight: 900; color: #e74c3c; font-style: italic; letter-spacing: 1px; font-size: 20px; text-transform: uppercase; }
+        .logo-aviator i { color: #fff; }
+        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green-win); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green-win); cursor: pointer; }
+
+        .game-container { width: 100%; max-width: 500px; padding: 10px; display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 60px); }
+
+        /* TELA DE VOO (CANVAS) */
+        .flight-screen {
+            background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; width: 100%; height: 50%;
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+        
+        /* LINHA DO GRÁFICO E AVIÃO */
+        .graph-curve { position: absolute; bottom: -50px; left: -50px; width: 200%; height: 200%; border-radius: 50%; border: 4px solid #e74c3c; opacity: 0; transition: all 0.1s linear; transform-origin: bottom left; box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
+        .plane-icon { position: absolute; font-size: 35px; color: #e74c3c; z-index: 10; opacity: 0; transition: all 0.1s linear; filter: drop-shadow(0 0 10px rgba(231,76,60,0.8)); }
+        
+        /* FUNDO ESTRELADO ANIMADO */
+        .stars { position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 30px 30px; opacity: 0.1; }
+        .stars.moving { animation: moveStars 10s linear infinite; }
+
+        /* DISPLAY DO MULTIPLICADOR */
+        .multiplier-display { z-index: 20; text-align: center; }
+        .multiplier-text { font-size: 65px; font-weight: 900; color: #fff; font-family: 'Arial Black', sans-serif; transition: color 0.2s; }
+        .status-text { font-size: 14px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: -10px; }
+
+        .flew-away .multiplier-text { color: var(--red-crash); }
+        .flew-away .status-text { color: var(--red-crash); }
+        
+        .waiting-text { font-size: 24px; color: var(--gold); font-weight: bold; animation: pulse 1.5s infinite; display: none; }
+
+        /* HISTÓRICO DE CRASHES */
+        .crash-history { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
+        .crash-history::-webkit-scrollbar { display: none; }
+        .history-badge { background: #1a1a1e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid #333; }
+        .history-badge.blue { color: #3498db; }
+        .history-badge.purple { color: #9b59b6; }
+        .history-badge.pink { color: #e84393; }
+
+        /* CONTROLES DE APOSTA */
+        .control-panel { background: var(--bg-card); border: 1px solid #27272a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .bet-inputs { display: flex; justify-content: space-between; align-items: center; background: #000; border-radius: 12px; border: 1px solid #333; padding: 5px; }
+        .btn-adjust { background: #1a1a1e; border: none; color: var(--text-muted); width: 40px; height: 40px; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .btn-adjust:active { background: #333; }
+        .bet-amount-input { background: transparent; border: none; color: #fff; font-size: 20px; font-weight: 900; text-align: center; width: 100%; outline: none; }
+
+        .bet-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .chip { background: #1a1a1e; border: 1px solid #333; color: var(--text-muted); border-radius: 8px; padding: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s; }
+        .chip:active { background: #333; }
+
+        /* BOTÃO AÇÃO PRINCIPAL */
+        .btn-action {
+            width: 100%; height: 70px; border-radius: 16px; border: none; color: #fff; font-size: 24px;
+            font-weight: 900; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            transition: all 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .btn-action:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 rgba(0,0,0,0.3); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* ESTADOS DO BOTÃO */
+        .btn-bet { background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 6px 0 #145a32; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .btn-cashout { background: linear-gradient(180deg, #e67e22, #d35400); box-shadow: 0 6px 0 #873600; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .btn-cancel { background: linear-gradient(180deg, #e74c3c, #c0392b); box-shadow: 0 6px 0 #7b241c; }
+        
+        .btn-subtext { font-size: 12px; font-weight: normal; opacity: 0.9; }
+
+        /* NOTIFICAÇÃO DE GANHO */
+        .win-notification { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(46, 204, 113, 0.9); border: 2px solid #fff; color: #fff; padding: 10px 20px; border-radius: 30px; font-weight: 900; font-size: 16px; z-index: 100; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap; }
+
+        @keyframes moveStars { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1.02); } }
+        @keyframes floatUp { 0% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -50px); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="logo-aviator">Aviator <i class="fa-solid fa-plane-up"></i></div>
+        <div class="balance-badge" onclick="window.location.href='saldo.html'" id="displaySaldoTop">R$ 0,00</div>
+    </header>
+
+    <div class="game-container">
+        
+        <div class="crash-history" id="historyBar">
+            <div class="history-badge blue">1.24x</div>
+            <div class="history-badge pink">2.50x</div>
+            <div class="history-badge blue">1.10x</div>
+            <div class="history-badge purple">5.60x</div>
+            <div class="history-badge blue">1.02x</div>
+        </div>
+
+        <div class="flight-screen" id="flightScreen">
+            <div class="stars" id="bgStars"></div>
+            
+            <div class="graph-curve" id="graphCurve"></div>
+            <i class="fa-solid fa-plane plane-icon" id="planeIcon"></i>
+            
+            <div class="multiplier-display" id="multiplierContainer">
+                <div class="waiting-text" id="waitingText">PREPARANDO...</div>
+                <div id="activeMultiplierBox">
+                    <div class="multiplier-text" id="txtMultiplier">1.00x</div>
+                    <div class="status-text" id="txtStatus">Aguardando</div>
+                </div>
+            </div>
+
+            <div class="win-notification" id="winNotification">Você Ganhou R$ 0,00</div>
+        </div>
+
+        <div class="control-panel">
+            <div class="bet-inputs">
+                <button class="btn-adjust" onclick="adjustBet(-1)" id="btnMinus">-</button>
+                <input type="number" class="bet-amount-input" id="inputBet" value="1.00" step="1.00" min="1.00">
+                <button class="btn-adjust" onclick="adjustBet(1)" id="btnPlus">+</button>
+            </div>
+            
+            <div class="bet-chips">
+                <button class="chip" onclick="setBet(5)">R$ 5</button>
+                <button class="chip" onclick="setBet(10)">R$ 10</button>
+                <button class="chip" onclick="setBet(20)">R$ 20</button>
+                <button class="chip" onclick="setBet(50)">R$ 50</button>
+            </div>
+
+            <button class="btn-action btn-bet" id="btnMainAction" onclick="handleMainAction()">
+                <span id="btnMainText">APOSTAR</span>
+                <span class="btn-subtext" id="btnSubText">R$ 1.00</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // CONFIGURAÇÃO DO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // VARIÁVEIS GERAIS
+        let idDispositivo = localStorage.getItem('usuario_tracker_id') || 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('usuario_tracker_id', idDispositivo);
+
+        let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let margemLucro = 0.30;
+        let modoJogo = "normal";
+        let estadoSequencia = 0;
+        let valorPremioForcado = 0;
+        
+        // ESTADOS DO JOGO: 'idle', 'betting', 'flying', 'cashed_out', 'crashed'
+        let gameState = 'idle'; 
+        let currentBet = 1.00;
+        let activeBetAmount = 0;
+        
+        let multiplier = 1.00;
+        let crashPoint = 1.00;
+        let flightInterval;
+        let flightTime = 0;
+
+        // ELEMENTOS DA UI
+        const btnMain = document.getElementById('btnMainAction');
+        const txtMultiplier = document.getElementById('txtMultiplier');
+        const flightScreen = document.getElementById('flightScreen');
+        const plane = document.getElementById('planeIcon');
+        const curve = document.getElementById('graphCurve');
+
+        // FIREBASE SYNC
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                if (gameState !== 'flying' && gameState !== 'cashed_out') bancaAtual = parseFloat(dados.saldo || 0);
+                if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
+                
+                let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                if (iscaLida > 0 && estadoSequencia === 0) {
+                    valorPremioForcado = iscaLida;
+                    estadoSequencia = 1; // 1 = Preparar ganho forçado
+                    set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                }
+            } else {
+                set(ref(db, 'usuarios/' + idDispositivo), { saldo: 0, modo: "normal", forcarGanho: 0 });
+            }
+            updateBalanceUI();
+        });
+
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
+            caixaDaCasa = parseFloat(snapshot.val() || 0);
+        });
+
+        function updateBalanceUI() {
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // CONTROLES DE APOSTA
+        window.adjustBet = function(dir) {
+            if(gameState === 'flying') return;
+            let val = parseFloat(document.getElementById('inputBet').value);
+            val += dir;
+            if(val < 1) val = 1;
+            setBet(val);
+        }
+
+        window.setBet = function(val) {
+            if(gameState === 'flying') return;
+            currentBet = val;
+            document.getElementById('inputBet').value = currentBet.toFixed(2);
+            document.getElementById('btnSubText').innerText = "R$ " + currentBet.toFixed(2);
+        }
+
+        document.getElementById('inputBet').addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if(!isNaN(val) && val > 0) {
+                currentBet = val;
+                document.getElementById('btnSubText').innerText = "R$ " + currentBet.toFixed(2);
+            }
+        });
+
+        // AÇÃO PRINCIPAL (MÁQUINA DE ESTADOS DO BOTÃO)
+        window.handleMainAction = function() {
+            if (gameState === 'idle' || gameState === 'crashed') {
+                // TENTAR APOSTAR
+                if (bancaAtual < currentBet) {
+                    alert("Saldo Insuficiente!");
+                    return;
+                }
+                
+                // DEDUZIR BANCA
+                bancaAtual -= currentBet;
+                activeBetAmount = currentBet;
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+                
+                // ALIMENTAR COFRE
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + currentBet).toFixed(2)));
+
+                updateBalanceUI();
+                prepareRound();
+
+            } else if (gameState === 'betting') {
+                // CANCELAR APOSTA ANTES DO VOO
+                bancaAtual += activeBetAmount;
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa - activeBetAmount).toFixed(2)));
+                
+                gameState = 'idle';
+                resetUI();
+
+            } else if (gameState === 'flying') {
+                // FAZER CASHOUT (SACAR)
+                processCashout();
+            }
+        }
+
+        // MÁQUINA DE ESTADOS DO JOGO E MATEMÁTICA RTP
+        function prepareRound() {
+            gameState = 'betting';
+            btnMain.className = 'btn-action btn-cancel';
+            document.getElementById('btnMainText').innerText = "CANCELAR";
+            
+            flightScreen.classList.remove('flew-away');
+            document.getElementById('activeMultiplierBox').style.display = 'none';
+            document.getElementById('waitingText').style.display = 'block';
+            plane.style.opacity = '0';
+            curve.style.opacity = '0';
+
+            // GERAR CRASH POINT BASEADO NA INTELIGÊNCIA DA CASA
+            generateCrashPoint();
+
+            setTimeout(startFlight, 3000);
+        }
+
+        function generateCrashPoint() {
+            // 1. FORÇAR GANHO (Isca Armada)
+            if (estadoSequencia === 1 && valorPremioForcado > 0) {
+                // Se a aposta é 10 e ele precisa ganhar 50, o crash point TEM que ser no mínimo 5.00x + folga
+                let targetMult = valorPremioForcado / activeBetAmount;
+                crashPoint = targetMult + (Math.random() * 2); 
+                
+                // O jogo vai cobrar esse valor forçado nos próximos giros
+                estadoSequencia = 3; 
+                set(ref(db, 'usuarios/' + idDispositivo + '/modo'), 'agressivo');
+                return;
+            }
+
+            // 2. MODO AGRESSIVO (Drenagem - Crash Rápido)
+            if (modoJogo === 'agressivo' || estadoSequencia === 3) {
+                // 70% de chance de crash instantâneo (Loss total)
+                if (Math.random() < 0.70) {
+                    crashPoint = 1.00;
+                    return;
+                }
+                // Se escapar, crashea antes de 1.30x
+                crashPoint = 1.01 + (Math.random() * 0.29);
+                return;
+            }
+
+            // 3. MODO NORMAL (RTP Pool Audit)
+            // Lógica Real de Aviator: 1 / Math.random(), com margem da casa.
+            // SorteCerta Edge: 5% de crash em 1.00x garantido para matar robôs e autobets.
+            if (Math.random() < 0.05) {
+                crashPoint = 1.00;
+                return;
+            }
+
+            let rawCrash = 1.01 / (1 - Math.random());
+            
+            // VERIFICAÇÃO DO COFRE: O prêmio máximo permitido por essa aposta
+            let maxPagaPeloCofre = caixaDaCasa * (1 - margemLucro);
+            let maxMultPermitido = maxPagaPeloCofre / activeBetAmount;
+
+            // Se o random gerou um crash absurdo que quebra a banca, limitamos!
+            if (rawCrash > maxMultPermitido) {
+                // Limita ao que o cofre pode pagar, ou corta para um valor baixo seguro
+                crashPoint = Math.max(1.05, maxMultPermitido * Math.random());
+            } else if (modoJogo === 'desfarcado' && rawCrash > 4.00) {
+                // Modo disfarçado não deixa passar de 4x nunca
+                crashPoint = 1.10 + (Math.random() * 2.5);
+            } else {
+                crashPoint = rawCrash;
+            }
+
+            // Arredonda para 2 casas
+            crashPoint = parseFloat(crashPoint.toFixed(2));
+        }
+
+        function startFlight() {
+            gameState = 'flying';
+            multiplier = 1.00;
+            flightTime = 0;
+
+            document.getElementById('waitingText').style.display = 'none';
+            document.getElementById('activeMultiplierBox').style.display = 'block';
+            document.getElementById('txtStatus').innerText = "Voando...";
+            document.getElementById('bgStars').classList.add('moving');
+
+            // UI do Avião
+            plane.style.opacity = '1'; curve.style.opacity = '1';
+            plane.style.bottom = '10px'; plane.style.left = '10px';
+            curve.style.transform = 'scale(0.1)';
+
+            // Mudar botão para CASHOUT
+            btnMain.className = 'btn-action btn-cashout';
+            document.getElementById('btnMainText').innerText = "SACAR";
+            updateCashoutBtn();
+
+            // Lógica Instant Crash
+            if (crashPoint <= 1.00) {
+                triggerCrash();
+                return;
+            }
+
+            // Loop de atualização (60 FPS aprox)
+            flightInterval = setInterval(() => {
+                flightTime += 50; 
+                
+                // Fórmula de curva exponencial clássica de Crash Games
+                multiplier = Math.pow(Math.E, 0.00006 * flightTime);
+
+                if (multiplier >= crashPoint) {
+                    multiplier = crashPoint;
+                    triggerCrash();
+                } else {
+                    txtMultiplier.innerText = multiplier.toFixed(2) + "x";
+                    if(gameState === 'flying') updateCashoutBtn();
+                    animatePlane();
+                }
+            }, 50);
+        }
+
+        function animatePlane() {
+            // Animação CSS baseada no multiplicador para dar sensação de subida
+            let prog = Math.min((multiplier - 1) / 3, 1); // Normaliza para o visual
+            let x = 10 + (prog * 60); // %
+            let y = 10 + (prog * 60); // %
+            
+            plane.style.left = `${x}%`;
+            plane.style.bottom = `${y}%`;
+            curve.style.transform = `scale(${0.1 + (prog * 1.5)})`;
+        }
+
+        function updateCashoutBtn() {
+            let winAmount = activeBetAmount * multiplier;
+            document.getElementById('btnSubText').innerText = "R$ " + winAmount.toFixed(2);
+        }
+
+        // CASHOUT MANUSEADO PELO JOGADOR
+        function processCashout() {
+            clearInterval(flightInterval);
+            gameState = 'cashed_out';
+            
+            let winAmount = parseFloat((activeBetAmount * multiplier).toFixed(2));
+            
+            // ADICIONAR SALDO AO JOGADOR
+            bancaAtual += winAmount;
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            
+            // DESCONTAR DO COFRE GLOBAL
+            let novoCofre = Math.max(0, caixaDaCasa - winAmount);
+            set(ref(db, 'sistema/caixa_global'), parseFloat(novoCofre.toFixed(2)));
+
+            updateBalanceUI();
+
+            // UI DE SUCESSO
+            btnMain.className = 'btn-action btn-bet';
+            btnMain.disabled = true;
+            document.getElementById('btnMainText').innerText = "AGUARDE...";
+            document.getElementById('btnSubText').innerText = "";
+            
+            showWinNotification(winAmount, multiplier);
+
+            // O avião continua voando visualmente até o crash verdadeiro para criar FOMO
+            let fakeFlightTime = flightTime;
+            let fakeFlightInterval = setInterval(() => {
+                fakeFlightTime += 50;
+                let fakeMult = Math.pow(Math.E, 0.00006 * fakeFlightTime);
+                if (fakeMult >= crashPoint) {
+                    clearInterval(fakeFlightInterval);
+                    triggerCrashVisualOnly(crashPoint);
+                } else {
+                    txtMultiplier.innerText = fakeMult.toFixed(2) + "x";
+                    animatePlaneVisualOnly(fakeMult);
+                }
+            }, 50);
+        }
+
+        function animatePlaneVisualOnly(mult) {
+            let prog = Math.min((mult - 1) / 3, 1);
+            plane.style.left = `${10 + (prog * 60)}%`;
+            plane.style.bottom = `${10 + (prog * 60)}%`;
+            curve.style.transform = `scale(${0.1 + (prog * 1.5)})`;
+        }
+
+        function triggerCrashVisualOnly(finalMult) {
+            flightScreen.classList.add('flew-away');
+            txtMultiplier.innerText = finalMult.toFixed(2) + "x";
+            document.getElementById('txtStatus').innerText = "VOOU PARA LONGE";
+            document.getElementById('bgStars').classList.remove('moving');
+            
+            plane.style.opacity = '0';
+            plane.style.transform = "translate(50px, -50px)";
+
+            addToHistory(finalMult);
+            setTimeout(resetUI, 3000);
+        }
+
+        // CRASH - JOGADOR PERDEU
+        function triggerCrash() {
+            clearInterval(flightInterval);
+            gameState = 'crashed';
+            
+            flightScreen.classList.add('flew-away');
+            txtMultiplier.innerText = crashPoint.toFixed(2) + "x";
+            document.getElementById('txtStatus').innerText = "VOOU PARA LONGE";
+            document.getElementById('bgStars').classList.remove('moving');
+            
+            plane.style.opacity = '0';
+            plane.style.transform = "translate(50px, -50px)";
+
+            addToHistory(crashPoint);
+            setTimeout(resetUI, 3000);
+        }
+
+        function showWinNotification(amount, mult) {
+            const notif = document.getElementById('winNotification');
+            notif.innerHTML = `Sacou <b>${mult.toFixed(2)}x</b><br>Ganhou R$ ${amount.toFixed(2)}`;
+            notif.style.display = 'block';
+            notif.style.animation = 'floatUp 2s forwards';
+            setTimeout(() => {
+                notif.style.display = 'none';
+                notif.style.animation = '';
+            }, 2000);
+        }
+
+        function addToHistory(mult) {
+            const historyBar = document.getElementById('historyBar');
+            const el = document.createElement('div');
+            el.className = 'history-badge';
+            if(mult < 1.5) el.classList.add('blue');
+            else if(mult < 10) el.classList.add('purple');
+            else el.classList.add('pink');
+            el.innerText = mult.toFixed(2) + "x";
+            historyBar.prepend(el);
+            if(historyBar.children.length > 15) historyBar.removeChild(historyBar.lastChild);
+        }
+
+        function resetUI() {
+            gameState = 'idle';
+            btnMain.disabled = false;
+            btnMain.className = 'btn-action btn-bet';
+            document.getElementById('btnMainText').innerText = "APOSTAR";
+            document.getElementById('btnSubText').innerText = "R$ " + currentBet.toFixed(2);
+            
+            plane.style.transform = "none";
+            curve.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>
