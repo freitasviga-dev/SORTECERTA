@@ -192,7 +192,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        /* ATENÇÃO AQUI: ADICIONEI O COMANDO "push" PARA CRIAR O EXTRATO */
+        import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // --- SISTEMA DE LOGIN ---
         const _0xkey = [91, 110, 121, 121, 116, 119, 55, 59, 55, 55, 53, 53];
@@ -229,7 +230,7 @@
 
         let isManutencao = false;
 
-        // --- 1. MÉTRICAS FINANCEIRAS AUTOMÁTICAS ---
+        // --- MÉTRICAS FINANCEIRAS AUTOMÁTICAS ---
         onValue(ref(db, 'sistema'), (snapshot) => {
             const sys = snapshot.val() || {};
             let caixa = parseFloat(sys.caixa_global || 0);
@@ -254,7 +255,6 @@
 
         window.toggleManutencao = () => { set(ref(db, 'sistema/manutencao'), !isManutencao); };
 
-        // ZERAR O COFRE (NOVA FUNÇÃO)
         window.zerarCofrePrompt = () => {
             if(confirm("⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR o lucro da casa?\n\nO Cofre Global (RTP) voltará para R$ 0,00 e o algoritmo passará a focar na recuperação de caixa.")) {
                 set(ref(db, 'sistema/caixa_global'), 0).then(() => {
@@ -263,7 +263,7 @@
             }
         };
 
-        // --- 2. LISTA E GESTÃO DE USUÁRIOS ---
+        // --- LISTA E GESTÃO DE USUÁRIOS ---
         let usersDataGlobal = {};
 
         onValue(ref(db, 'usuarios'), (snapshot) => {
@@ -279,7 +279,7 @@
             let contador = 0;
 
             for (let id in data) {
-                if (searchTerm && !id.toLowerCase().includes(searchTerm)) continue; // Filtro de Pesquisa
+                if (searchTerm && !id.toLowerCase().includes(searchTerm)) continue;
 
                 contador++;
                 const u = data[id];
@@ -311,7 +311,7 @@
                 `;
             }
 
-            document.getElementById('contadorUsers').innerText = Object.keys(data).length; // Total real de cadastrados
+            document.getElementById('contadorUsers').innerText = Object.keys(data).length;
             
             if (contador === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#555;">Nenhuma conta encontrada.</td></tr>';
@@ -320,9 +320,9 @@
 
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
-        // --- 3. AÇÕES RÁPIDAS (Sem manter selecionado) ---
-        
-        // ADICIONAR SALDO
+        // ========================================================
+        // A MÁGICA ACONTECE AQUI: ADICIONAR SALDO + GERAR EXTRATO
+        // ========================================================
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
             let valorStr = prompt(`Adicionar Saldo para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor a ADICIONAR:`, "10.00");
             if(valorStr === null || valorStr === "") return;
@@ -331,13 +331,22 @@
             if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
+            
+            // 1. Atualiza a carteira do usuário
             set(ref(db, `usuarios/${id}/saldo`), parseFloat(novoSaldo.toFixed(2))).then(() => {
-                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados na conta de ${id}.`);
-                document.getElementById('searchInput').value = ''; // Limpa a pesquisa após a ação
+                
+                // 2. GERA O COMPROVANTE (PUSH) NO HISTÓRICO DE TRANSAÇÕES
+                push(ref(db, `usuarios/${id}/transacoes`), {
+                    tipo: "DEPÓSITO",
+                    valor: valorNum.toFixed(2),
+                    data: new Date().toISOString()
+                });
+
+                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados e extrato gerado para ${id}.`);
+                document.getElementById('searchInput').value = ''; 
             });
         };
 
-        // EXCLUIR CONTA
         window.excluirContaPrompt = (id) => {
             if(confirm(`⚠️ ALERTA VERMELHO!\nTem certeza que deseja APAGAR PERMANENTEMENTE a conta de ${id}?`)) {
                 remove(ref(db, `usuarios/${id}`)).then(() => {
@@ -346,7 +355,6 @@
             }
         };
 
-        // ATIVAR MODO INFLUENCIADOR (RTM PAGANDO INFINITO)
         window.toggleAdminMode = (id, isCurrentlyAdmin) => {
             let novoModo = isCurrentlyAdmin ? 'normal' : 'influenciador';
             let msg = isCurrentlyAdmin ? 
