@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SorteCerta - Fortune Dragon</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #1a0505;
+            --bg-card: rgba(40, 10, 10, 0.85);
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --green: #2ecc71;
+            --dragon-red: #d32f2f;
+            --text-main: #f4f4f5;
+            --border-color: rgba(241, 196, 15, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background-color: var(--bg-main); 
+            background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, transparent 80%);
+            color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* HEADER DE JOGO */
+        .game-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid var(--border-color);
+            padding-top: calc(15px + env(safe-area-inset-top)); z-index: 100;
+        }
+        .btn-back { color: var(--gold); font-size: 20px; text-decoration: none; }
+        .balance-display { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; font-weight: 900; color: var(--gold); display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        
+        /* TELA DO JOGO */
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
+        
+        .game-logo { font-size: 32px; font-weight: 900; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        /* MÁQUINA DE SLOT */
+        .slot-machine {
+            background: linear-gradient(180deg, #2a0000 0%, #000 100%); border: 3px solid var(--gold);
+            border-radius: 16px; padding: 15px; width: 100%; max-width: 350px;
+            box-shadow: 0 10px 40px rgba(241, 196, 15, 0.2), inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .slot-item {
+            background: #111; border: 1px solid #333; border-radius: 10px; height: 80px;
+            display: flex; align-items: center; justify-content: center; font-size: 45px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9); position: relative; overflow: hidden;
+        }
+        .slot-item.spinning { animation: blurSpin 0.1s infinite linear; }
+        .slot-item.win { background: rgba(241, 196, 15, 0.2); border-color: var(--gold); animation: pulseWin 0.5s infinite alternate; }
+
+        /* CONTROLES */
+        .controls { width: 100%; max-width: 350px; margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .bet-control { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; }
+        .btn-bet { background: #222; color: var(--gold); border: 1px solid var(--gold); width: 40px; height: 40px; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-bet:active { background: var(--gold); color: #000; }
+        .bet-amount { font-size: 20px; font-weight: 900; color: #fff; }
+        
+        .btn-spin {
+            background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000;
+            border: none; padding: 20px; border-radius: 15px; font-size: 22px; font-weight: 900;
+            text-transform: uppercase; box-shadow: 0 8px 0 #8a6508, 0 15px 30px rgba(241, 196, 15, 0.4);
+            cursor: pointer; transition: 0.1s; letter-spacing: 2px;
+        }
+        .btn-spin:active { transform: translateY(8px); box-shadow: 0 0 0 #8a6508; }
+        .btn-spin:disabled { filter: grayscale(1); cursor: not-allowed; transform: translateY(8px); box-shadow: none; }
+
+        /* POPUP DE GANHO */
+        .win-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+            background: radial-gradient(circle, #ff0000, #4a0000); border: 3px solid var(--gold);
+            padding: 30px; border-radius: 20px; text-align: center; opacity: 0; pointer-events: none;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; box-shadow: 0 0 50px rgba(241, 196, 15, 0.5);
+        }
+        .win-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+        .win-popup h2 { font-size: 24px; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; font-weight: 900; text-shadow: 0 2px 5px #000; }
+        .win-value { font-size: 40px; color: #fff; font-weight: 900; text-shadow: 0 4px 10px #000; }
+
+        @keyframes blurSpin { 0% { transform: translateY(-20px); filter: blur(2px); } 100% { transform: translateY(20px); filter: blur(2px); } }
+        @keyframes pulseWin { 0% { box-shadow: inset 0 0 10px var(--gold); } 100% { box-shadow: inset 0 0 30px var(--gold); } }
+    </style>
+</head>
+<body>
+
+    <script>
+        if (!localStorage.getItem('usuario_tracker_id')) { window.location.href = 'login.html'; }
+    </script>
+
+    <header class="game-header">
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i> Sair</a>
+        <div class="balance-display">
+            <i class="fa-solid fa-wallet"></i> <span id="headerBalance">R$ 0,00</span>
+        </div>
+    </header>
+
+    <div class="game-area">
+        <div class="game-logo"><i class="fa-solid fa-dragon"></i> Fortune Dragon</div>
+        
+        <div class="slot-machine">
+            <div class="slot-grid" id="slotGrid">
+                <div class="slot-item">🧧</div><div class="slot-item">🐉</div><div class="slot-item">🪙</div>
+                <div class="slot-item">🐲</div><div class="slot-item">🧧</div><div class="slot-item">🏮</div>
+                <div class="slot-item">🏮</div><div class="slot-item">🪙</div><div class="slot-item">🐉</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="bet-control">
+                <button class="btn-bet" onclick="mudarAposta(-1)">-</button>
+                <div class="bet-amount">R$ <span id="betValue">2.00</span></div>
+                <button class="btn-bet" onclick="mudarAposta(1)">+</button>
+            </div>
+            <button class="btn-spin" id="btnSpin" onclick="girar()">GIRAR</button>
+        </div>
+    </div>
+
+    <div class="win-popup" id="winPopup">
+        <h2>MEGA GANHO!</h2>
+        <div class="win-value" id="winAmountValue">R$ 0,00</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
+        let bancaAtual = 0;
+        let valorAposta = 2.00;
+        let modoJogador = 'normal';
+        let isSpinning = false;
+
+        const simbolos = ['🐉', '🐲', '🧧', '🏮', '🪙'];
+
+        // SINCRONIZAR DADOS DO USUÁRIO EM TEMPO REAL
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val() || {};
+            bancaAtual = parseFloat(dados.saldo || 0);
+            modoJogador = dados.modo || 'normal'; // AQUI ESTÁ A CHAVE MESTRA!
+            document.getElementById('headerBalance').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        });
+
+        // CONTROLE DE APOSTA
+        window.mudarAposta = (direcao) => {
+            if(isSpinning) return;
+            const passos = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00];
+            let indexAtual = passos.indexOf(valorAposta);
+            let novoIndex = indexAtual + direcao;
+            if(novoIndex >= 0 && novoIndex < passos.length) {
+                valorAposta = passos[novoIndex];
+                document.getElementById('betValue').innerText = valorAposta.toFixed(2);
+            }
+        };
+
+        // FUNÇÃO PRINCIPAL: GIRAR E CALCULAR GANHOS
+        window.girar = async () => {
+            if(isSpinning) return;
+            if(bancaAtual < valorAposta) return alert("Saldo insuficiente para esta aposta.");
+
+            isSpinning = true;
+            const btnSpin = document.getElementById('btnSpin');
+            const grid = document.querySelectorAll('.slot-item');
+            btnSpin.disabled = true;
+
+            // 1. DESCONTA A APOSTA IMEDIATAMENTE NO FIREBASE
+            let novoSaldo = bancaAtual - valorAposta;
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), novoSaldo);
+            
+            // Adiciona lucro ao caixa global do sistema
+            const refCaixa = ref(db, 'sistema/caixa_global');
+            get(refCaixa).then(snap => {
+                set(refCaixa, (parseFloat(snap.val() || 0) + valorAposta));
+            });
+
+            // 2. INICIA ANIMAÇÃO VISUAL
+            grid.forEach(el => { el.classList.remove('win'); el.classList.add('spinning'); });
+
+            setTimeout(async () => {
+                grid.forEach(el => el.classList.remove('spinning'));
+
+                // 3. O CÉREBRO DO JOGO (DECISÃO DE PAGAMENTO BASEADA NO ADMIN)
+                let ganhou = false;
+                let valorGanho = 0;
+                let gridResult = [];
+
+                if(modoJogador === 'influenciador') {
+                    // MODO LIVE ATIVADO: Força vitórias gigantes na maioria das vezes
+                    ganhou = Math.random() < 0.8; // 80% de chance de mega ganho
+                    if(ganhou) {
+                        valorGanho = valorAposta * (Math.floor(Math.random() * 15) + 5); // Ganha de 5x a 20x
+                        let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
+                        gridResult = Array(9).fill(simboloVencedor); // Tela toda igual
+                    }
+                } else {
+                    // MODO NORMAL (CASSINO): A casa tem a vantagem
+                    ganhou = Math.random() < 0.15; // Apenas 15% de chance de ganhar
+                    if(ganhou) {
+                        valorGanho = valorAposta * (Math.random() * 1.5 + 0.5); // Ganha de 0.5x a 2x
+                        let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
+                        gridResult = Array(9).fill('').map(() => Math.random() < 0.4 ? simboloVencedor : simbolos[Math.floor(Math.random() * simbolos.length)]);
+                    }
+                }
+
+                // 4. MOSTRAR RESULTADOS NA TELA
+                if(!ganhou) {
+                    // Preenche aleatório se perdeu
+                    gridResult = Array(9).fill('').map(() => simbolos[Math.floor(Math.random() * simbolos.length)]);
+                }
+
+                grid.forEach((el, index) => { el.innerText = gridResult[index]; });
+
+                // 5. SE GANHOU, PAGA O DINHEIRO NO FIREBASE
+                if(ganhou && valorGanho > 0) {
+                    grid.forEach(el => el.classList.add('win'));
+                    
+                    let saldoAposVitoria = novoSaldo + valorGanho;
+                    await set(ref(db, `usuarios/${idDispositivo}/saldo`), saldoAposVitoria);
+                    
+                    // Mostra o Popup
+                    const popup = document.getElementById('winPopup');
+                    document.getElementById('winAmountValue').innerText = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    popup.classList.add('show');
+                    
+                    setTimeout(() => { popup.classList.remove('show'); isSpinning = false; btnSpin.disabled = false; }, 3000);
+                } else {
+                    isSpinning = false; btnSpin.disabled = false;
+                }
+
+            }, 1500); // Tempo rodando
+        };
+    </script>
+</body>
+</html>
