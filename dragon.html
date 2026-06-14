@@ -1,8 +1,13 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>Fortune Dragon | SorteCerta</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -23,6 +28,16 @@ l<!DOCTYPE html>
             background-image: radial-gradient(circle at 50% 0%, var(--dragon-red) 0%, #000 80%);
             color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
+
+        /* --- TELA DE ENTRADA (FULLSCREEN) --- */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #3a0000, #000); z-index: 999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+        }
+        #startScreen i { font-size: 80px; color: var(--gold); margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(241, 196, 15, 0.5)); }
+        #startScreen h2 { color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; }
+        .btn-start { background: var(--gold); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 20px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
 
         /* --- HEADER & SALDO --- */
         .top-bar {
@@ -52,8 +67,8 @@ l<!DOCTYPE html>
             width: 100%; max-width: 380px; box-shadow: 0 15px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.9);
             position: relative; overflow: hidden;
         }
-        .slot-machine::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(180deg, rgba(0,0,0,0.6), transparent); z-index: 10; }
-        .slot-machine::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(0deg, rgba(0,0,0,0.6), transparent); z-index: 10; }
+        .slot-machine::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(180deg, rgba(0,0,0,0.6), transparent); z-index: 10; pointer-events: none; }
+        .slot-machine::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(0deg, rgba(0,0,0,0.6), transparent); z-index: 10; pointer-events: none; }
 
         .reels-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #000; padding: 6px; border-radius: 10px; border: 1px solid #333; }
         
@@ -66,9 +81,21 @@ l<!DOCTYPE html>
             transition: 0.1s;
         }
         
-        /* EFEITOS DE GIRO E VITÓRIA */
+        /* EFEITOS DE GIRO E VITÓRIA DE PRECISÃO */
         .spinning .symbol-box { animation: slotSpin 0.15s infinite linear; filter: blur(3px); color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
-        .win-anim { background: radial-gradient(circle, rgba(243, 156, 18, 0.4), #111) !important; border-color: var(--gold-light) !important; animation: winPulse 0.6s infinite alternate; z-index: 5; box-shadow: 0 0 20px rgba(243, 156, 18, 0.5) !important; }
+        .symbol-box.win-anim { background: radial-gradient(circle, rgba(243, 156, 18, 0.4), #111) !important; border-color: var(--gold-light) !important; animation: winPulse 0.6s infinite alternate; z-index: 5; box-shadow: 0 0 20px rgba(243, 156, 18, 0.5) !important; }
+
+        /* AVISO DE GANHO NORMAL SOBRE AS BOBINAS */
+        .normal-win-badge {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            background: rgba(0,0,0,0.9); border: 2px solid var(--gold); border-radius: 20px;
+            padding: 15px 35px; display: flex; flex-direction: column; align-items: center;
+            z-index: 50; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(243, 156, 18, 0.3); pointer-events: none;
+        }
+        .normal-win-badge.show { transform: translate(-50%, -50%) scale(1); }
+        .normal-win-badge span:first-child { color: var(--gold-light); font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
+        .normal-win-badge span:last-child { color: #fff; font-size: 28px; font-weight: 900; letter-spacing: -1px; }
 
         /* --- PAINEL DE CONTROLE PG SOFT --- */
         .control-panel {
@@ -83,13 +110,11 @@ l<!DOCTYPE html>
 
         .spin-controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
         
-        /* Botões Laterais (Turbo/Auto) */
         .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 60px; height: 60px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .btn-side span { font-size: 9px; font-weight: bold; margin-top: 3px; text-transform: uppercase; }
         .btn-side.active { color: var(--gold-light); border-color: var(--gold-dark); box-shadow: 0 0 15px rgba(243, 156, 18, 0.3); }
         .btn-side:active { transform: scale(0.9); }
 
-        /* Botão de Giro Principal */
         .btn-spin-wrapper { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 50px; border: 1px solid #333; }
         .btn-bet-adjust { background: transparent; border: none; color: #fff; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
         .btn-bet-adjust:active { color: var(--gold-light); transform: scale(0.8); }
@@ -119,6 +144,7 @@ l<!DOCTYPE html>
         .system-toast.show { opacity: 1; top: 100px; }
 
         /* --- ANIMAÇÕES --- */
+        @keyframes startPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes slotSpin { 0% { transform: translateY(-30px); } 100% { transform: translateY(30px); } }
         @keyframes winPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
@@ -129,6 +155,12 @@ l<!DOCTYPE html>
     </style>
 </head>
 <body>
+
+    <div id="startScreen">
+        <i class="fa-solid fa-dragon"></i>
+        <h2>Fortune Dragon</h2>
+        <div class="btn-start">Toque para Iniciar</div>
+    </div>
 
     <script>
         if (!localStorage.getItem('usuario_tracker_id')) { window.location.href = 'login.html'; }
@@ -152,6 +184,11 @@ l<!DOCTYPE html>
         <div class="dragon-mascot">🐉</div>
         
         <div class="slot-machine">
+            <div id="normalWinBadge" class="normal-win-badge">
+                <span>GANHO!</span>
+                <span id="normalWinValue">R$ 0,00</span>
+            </div>
+
             <div class="reels-container" id="reelsContainer">
                 <div class="reel" id="reel1">
                     <div class="symbol-box">🧧</div><div class="symbol-box">🪙</div><div class="symbol-box">🏮</div>
@@ -213,23 +250,36 @@ l<!DOCTYPE html>
         };
         const db = getDatabase(initializeApp(firebaseConfig));
 
-        // VARIÁVEIS GLOBAIS DE ESTADO DO JOGO
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         let bancaAtual = 0;
-        let modoJogador = 'normal'; // CHAVE MESTRA
+        let modoJogador = 'normal';
         let isSpinning = false;
         let isTurbo = false;
         let audioLigado = false;
 
-        // ESCALADA DE APOSTAS OFICIAL (Iniciando em R$ 0,40)
+        document.getElementById('startScreen').addEventListener('click', function() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e => console.log(e)); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+            else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
+            
+            this.style.display = 'none';
+            
+            const bgMusic = document.getElementById('bgMusic');
+            if(bgMusic) {
+                bgMusic.play().catch(e => console.log(e));
+                audioLigado = true;
+                const btn = document.getElementById('audioBtn');
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btn.style.color = 'var(--green)';
+            }
+        });
+
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00];
         let indexAposta = 0;
         let apostaAtual = apostasPermitidas[indexAposta];
-
-        // SÍMBOLOS DO JOGO (Dragão = Wild)
         const simbolos = ['🐉', '🧧', '🏮', '🪙', '🧨', '🪢'];
 
-        // SINCRONIZAR FIREBASE EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             bancaAtual = parseFloat(dados.saldo || 0);
@@ -237,16 +287,15 @@ l<!DOCTYPE html>
             document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         });
 
-        // FUNÇÕES DE ÁUDIO
-        const bgMusic = document.getElementById('bgMusic');
         const sfxSpin = document.getElementById('sfxSpin');
         const sfxStop = document.getElementById('sfxStop');
         const sfxWin = document.getElementById('sfxWin');
-        bgMusic.volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
+        document.getElementById('bgMusic').volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
 
         window.toggleAudio = function() {
             audioLigado = !audioLigado;
             const btn = document.getElementById('audioBtn');
+            const bgMusic = document.getElementById('bgMusic');
             if(audioLigado) {
                 bgMusic.play().catch(()=>{});
                 btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
@@ -280,9 +329,6 @@ l<!DOCTYPE html>
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ==========================================
-        // MOTOR DE GIRO E MATEMÁTICA (ADMIN HOOK)
-        // ==========================================
         window.iniciarGiro = async function() {
             if(isSpinning) return;
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite para jogar."); return; }
@@ -294,29 +340,26 @@ l<!DOCTYPE html>
 
             if(audioLigado) { sfxSpin.currentTime = 0; sfxSpin.play(); }
 
-            // 1. DESCONTA A APOSTA NO FIREBASE (Custo da Rodada)
+            // Zera visuais da rodada anterior
+            document.getElementById('normalWinBadge').classList.remove('show');
+            document.querySelectorAll('.symbol-box').forEach(box => box.classList.remove('win-anim'));
+
             let novoSaldo = bancaAtual - apostaAtual;
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), novoSaldo);
             get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), (parseFloat(snap.val() || 0) + apostaAtual)));
 
-            // 2. PREPARA AS BOBINAS PARA GIRAR
             const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
-            reels.forEach(reel => {
-                reel.classList.add('spinning');
-                // Tira o brilho de ganhos passados
-                Array.from(reel.children).forEach(box => box.classList.remove('win-anim'));
-            });
+            reels.forEach(reel => reel.classList.add('spinning'));
 
-            // 3. DECIDE O RESULTADO POR TRÁS DOS PANOS (ADMIN vs NORMAL)
             let ganhou = false;
             let valorGanho = 0;
             let telaFinal = [[], [], []];
+            let linhasVencedoras = []; // Guarda as posições que bateram [coluna, linha]
 
             if(modoJogador === 'influenciador') {
-                // MODO LIVE ATIVADO PELO PAINEL: Chove dinheiro!
-                ganhou = Math.random() < 0.85; // 85% de bater forrado
+                ganhou = Math.random() < 0.85; 
                 if(ganhou) {
-                    let multiplicador = Math.floor(Math.random() * (50 - 10 + 1)) + 10; // Paga de 10x a 50x
+                    let multiplicador = Math.floor(Math.random() * (50 - 10 + 1)) + 10;
                     valorGanho = apostaAtual * multiplicador;
                     let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
                     telaFinal = [
@@ -324,81 +367,82 @@ l<!DOCTYPE html>
                         [simboloVencedor, simboloVencedor, simboloVencedor],
                         [simboloVencedor, simboloVencedor, simboloVencedor]
                     ];
+                    // Tela inteira acende
+                    linhasVencedoras = [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]];
                 }
             } else {
-                // MODO NORMAL: Cassino lucrando
-                ganhou = Math.random() < 0.12; // Apenas 12% de chance de ganhar algo
+                ganhou = Math.random() < 0.12; 
                 if(ganhou) {
-                    let multiplicador = (Math.random() * 2) + 0.5; // Paga micharia (0.5x a 2.5x)
+                    let multiplicador = (Math.random() * 2) + 0.5;
                     valorGanho = apostaAtual * multiplicador;
                     let simboloVencedor = simbolos[Math.floor(Math.random() * simbolos.length)];
-                    // Faz uma linha de vitória visual básica
+                    // Força a vitória APENAS na linha do meio
                     telaFinal = [
                         [simbolos[0], simboloVencedor, simbolos[1]],
                         [simbolos[2], simboloVencedor, simbolos[3]],
                         [simbolos[4], simboloVencedor, simbolos[5]]
                     ];
+                    // Apenas a linha do meio (índice 1 de cada coluna) acende
+                    linhasVencedoras = [[0,1], [1,1], [2,1]];
                 }
             }
 
-            // Se for perca, preenche com símbolos totalmente aleatórios
             if(!ganhou) {
                 for(let c=0; c<3; c++) {
                     for(let l=0; l<3; l++) {
                         telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)];
                     }
                 }
-                // Evita que a linha do meio fique igual por acidente
-                if(telaFinal[0][1] === telaFinal[1][1] && telaFinal[1][1] === telaFinal[2][1]) {
-                    telaFinal[2][1] = simbolos[0]; 
-                }
+                if(telaFinal[0][1] === telaFinal[1][1] && telaFinal[1][1] === telaFinal[2][1]) { telaFinal[2][1] = simbolos[0]; }
             }
 
-            // 4. ANIMAÇÃO DE PARADA COLUNA POR COLUNA
-            let delayBase = isTurbo ? 300 : 800; // Turbo para rápido, normal demora
+            let delayBase = isTurbo ? 300 : 800; 
             
             for(let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     reels[i].classList.remove('spinning');
                     if(audioLigado) { sfxStop.currentTime = 0; sfxStop.play(); }
                     
-                    // Aplica os símbolos decididos
                     const boxes = reels[i].querySelectorAll('.symbol-box');
                     boxes[0].innerText = telaFinal[i][0];
                     boxes[1].innerText = telaFinal[i][1];
                     boxes[2].innerText = telaFinal[i][2];
 
-                    // Na última coluna, resolve o pagamento
                     if(i === 2) {
-                        finalizarGiro(ganhou, valorGanho, novoSaldo);
+                        finalizarGiro(ganhou, valorGanho, novoSaldo, linhasVencedoras);
                     }
                 }, delayBase * (i + 1));
             }
         };
 
-        // 5. ENCERRAMENTO E PAGAMENTO
-        async function finalizarGiro(ganhou, valorGanho, saldoAtualizado) {
+        async function finalizarGiro(ganhou, valorGanho, saldoAtualizado, linhasVencedoras) {
             const btnGirar = document.getElementById('btnGirar');
             btnGirar.classList.remove('is-spinning');
             
             if(ganhou && valorGanho > 0) {
                 if(audioLigado) { sfxSpin.pause(); sfxWin.currentTime = 0; sfxWin.play(); }
                 
-                // Faz a tela piscar
-                document.querySelectorAll('.symbol-box').forEach(box => box.classList.add('win-anim'));
+                // Acende EXATAMENTE as caixas que formaram a conexão
+                const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+                linhasVencedoras.forEach(pos => {
+                    let col = pos[0]; let row = pos[1];
+                    reels[col].querySelectorAll('.symbol-box')[row].classList.add('win-anim');
+                });
                 
-                // Paga no Firebase
                 let saldoAposVitoria = saldoAtualizado + valorGanho;
                 await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoAposVitoria.toFixed(2)));
 
-                // Mostra Mega Ganho se for pancada alta
+                // Decide se mostra o Banner Normal ou o Mega Ganho
                 if(valorGanho >= (apostaAtual * 5)) {
                     const popup = document.getElementById('megaWinScreen');
                     document.getElementById('megaWinValor').innerText = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
                     popup.classList.add('show');
                     setTimeout(() => { popup.classList.remove('show'); liberarMaquina(btnGirar); }, 4000);
                 } else {
-                    setTimeout(() => liberarMaquina(btnGirar), 1500);
+                    const normalBadge = document.getElementById('normalWinBadge');
+                    document.getElementById('normalWinValue').innerText = "R$ " + valorGanho.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    normalBadge.classList.add('show');
+                    setTimeout(() => { normalBadge.classList.remove('show'); liberarMaquina(btnGirar); }, 2500);
                 }
             } else {
                 liberarMaquina(btnGirar);
@@ -406,11 +450,9 @@ l<!DOCTYPE html>
         }
 
         function liberarMaquina(btn) {
-            document.querySelectorAll('.symbol-box').forEach(box => box.classList.remove('win-anim'));
             isSpinning = false;
             btn.disabled = false;
         }
-
     </script>
 </body>
 </html>
