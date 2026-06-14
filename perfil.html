@@ -2,118 +2,220 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SorteCerta | Painel do Jogador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SorteCerta - Meu Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #050505;
-            --bg-card: #121214;
+            --bg-main: #0a0a0c;
+            --bg-card: rgba(24, 24, 27, 0.7);
             --gold: #f1c40f;
             --gold-dark: #b8860b;
-            --green: #00e676;
-            --text-main: #ffffff;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
-            --border-color: #27272a;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 90px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        /* HEADER */
-        .header { position: sticky; top: 0; background: #0a0a0c; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; z-index: 100; }
-        .page-title { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 90px; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
 
-        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+        /* --- HEADER BANCÁRIO --- */
+        .header {
+            position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .btn-back:active { background: rgba(255,255,255,0.1); color: #fff; }
+        .page-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        /* PROFILE CARD */
-        .profile-card { background: #121214; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .avatar { width: 55px; height: 55px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #000; }
-        .user-id-box { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-        .user-id { font-family: monospace; color: var(--gold); background: #000; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 20px 15px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-        /* WALLET CARD */
-        .wallet-card { background: linear-gradient(135deg, #1a1a1e 0%, #0a0a0c 100%); border-radius: 16px; padding: 25px; margin-bottom: 25px; border: 1px solid var(--border-color); }
-        .wallet-balance { font-size: 36px; font-weight: 900; color: var(--green); margin: 10px 0; }
-        .btn-action-group { display: flex; gap: 10px; }
-        .btn-action { flex: 1; padding: 14px; border-radius: 10px; font-weight: bold; text-decoration: none; text-align: center; font-size: 13px; text-transform: uppercase; }
-        .btn-dep { background: var(--green); color: #000; }
-        .btn-saq { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
-
-        /* MENU LIST */
-        .menu-list { display: flex; flex-direction: column; gap: 12px; }
-        .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; }
-        .menu-left { display: flex; align-items: center; gap: 15px; }
-        .menu-icon { width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        /* --- CARTÃO DE USUÁRIO (ID) --- */
+        .profile-card {
+            background: linear-gradient(135deg, rgba(26, 26, 30, 0.9) 0%, rgba(10, 10, 12, 0.9) 100%); border: 1px solid var(--gold);
+            border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1); position: relative; overflow: hidden; backdrop-filter: blur(10px);
+        }
+        .profile-card::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(241,196,15,0.2) 0%, transparent 70%); }
         
-        /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #121214; border: 1px solid var(--gold); border-radius: 16px; width: 100%; max-width: 400px; padding: 25px; }
-        .modal-title { font-size: 18px; font-weight: 900; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .modal-body { font-size: 13px; color: #ccc; line-height: 1.6; max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
-        .btn-close { width: 100%; background: var(--gold); border: none; padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #000; border: 2px solid #fff; z-index: 1; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
+        .user-info { z-index: 1; flex: 1; }
+        .user-name { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+        
+        .user-id-box { display: flex; align-items: center; gap: 8px; }
+        .user-id { font-family: monospace; color: var(--gold); background: rgba(241, 196, 15, 0.1); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid rgba(241, 196, 15, 0.3); letter-spacing: 1px; }
+        .btn-copy-id { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; font-size: 14px; transition: 0.2s; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .btn-copy-id:active { color: var(--green); border-color: var(--green); transform: scale(0.95); }
+
+        /* --- CARTÃO DE SALDO --- */
+        .wallet-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .wallet-header { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+        .wallet-header i { color: var(--green); }
+        .wallet-balance { font-size: 36px; font-weight: 900; color: var(--green); margin-bottom: 25px; letter-spacing: -1px; }
+        
+        .wallet-actions { display: flex; gap: 12px; }
+        .btn-action { flex: 1; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 13px; text-align: center; text-decoration: none; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-dep { background: linear-gradient(135deg, #00e676, #00b359); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
+        .btn-saq { background: rgba(241, 196, 15, 0.05); border: 1px solid var(--gold); color: var(--gold); }
+
+        /* --- LISTA DE MENUS --- */
+        .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
+        .menu-item:active { background: rgba(255,255,255,0.05); transform: scale(0.98); }
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .menu-text { font-size: 14px; font-weight: 700; }
+        .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 14px; }
+
+        .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 10px; }
+
+        /* --- MENU INFERIOR FOCADO --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item i { font-size: 24px; transition: 0.2s; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
+
+        /* --- MODAIS DE POPUP --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 400px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .modal-body { font-size: 13px; color: #ccc; line-height: 1.6; overflow-y: auto; margin-bottom: 20px; flex: 1; padding-right: 5px; }
+        .btn-close-modal { width: 100%; background: #333; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex-shrink: 0; transition: 0.2s; }
+        .btn-close-modal:active { background: #555; }
+
+        /* Estilos do Histórico */
+        .trans-list { display: flex; flex-direction: column; gap: 10px; }
+        .trans-card { background: #121214; border: 1px solid #27272a; padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .trans-info { display: flex; align-items: center; gap: 10px; }
+        .trans-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .icon-dep { background: rgba(46, 204, 113, 0.1); color: var(--green); }
+        .icon-saq { background: rgba(231, 76, 60, 0.1); color: var(--red); }
+        .trans-type { font-size: 12px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .trans-date { font-size: 10px; color: #777; }
+        .trans-val { font-size: 14px; font-weight: 900; }
+        .val-dep { color: var(--green); }
+        .val-saq { color: var(--red); }
+
     </style>
 </head>
 <body>
 
+    <script>
+        if (!localStorage.getItem('usuario_tracker_id')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
     <header class="header">
-        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="page-title">Perfil</div>
-        <div style="width: 40px;"></div>
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <div class="page-title">Área do Jogador</div>
+        <div style="width:40px;"></div>
     </header>
 
     <div class="container">
+        
         <div class="profile-card">
             <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
             <div class="user-info">
-                <div class="user-name">Jogador VIP</div>
+                <div class="user-name" id="displayUserName">MEMBRO VIP</div>
                 <div class="user-id-box">
                     <span class="user-id" id="displayUserId">CARREGANDO...</span>
+                    <button class="btn-copy-id" onclick="copiarID()" id="btnCopyIcon"><i class="fa-regular fa-copy"></i></button>
                 </div>
             </div>
         </div>
 
         <div class="wallet-card">
-            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Saldo Disponível</div>
+            <div class="wallet-header"><i class="fa-solid fa-shield-check"></i> Saldo Real Disponível</div>
             <div class="wallet-balance" id="displaySaldo">R$ 0,00</div>
-            <div class="btn-action-group">
+            <div class="wallet-actions">
                 <a href="saldo.html" class="btn-action btn-dep"><i class="fa-solid fa-plus"></i> Depositar</a>
-                <a href="saque.html" class="btn-action btn-saq"><i class="fa-solid fa-money-bill-transfer"></i> Sacar</a>
+                <a href="saque.html" class="btn-action btn-saq"><i class="fa-solid fa-paper-plane"></i> Sacar</a>
             </div>
         </div>
 
         <div class="menu-list">
-            <a href="#" class="menu-item">
+            <a class="menu-item" onclick="abrirHistorico()">
                 <div class="menu-left">
-                    <div class="menu-icon"><i class="fa-solid fa-clock-rotate-left" style="color: #3498db;"></i></div>
-                    <span class="menu-text">Transações</span>
+                    <div class="menu-icon" style="color: #3498db;"><i class="fa-solid fa-list-ul"></i></div>
+                    <span class="menu-text">Extrato e Transações</span>
                 </div>
+                <i class="fa-solid fa-chevron-right"></i>
             </a>
-            <a href="#" class="menu-item" onclick="abrirTermos()">
+
+            <a href="#" id="linkSuporte" target="_blank" class="menu-item">
                 <div class="menu-left">
-                    <div class="menu-icon"><i class="fa-solid fa-file-contract" style="color: #f1c40f;"></i></div>
+                    <div class="menu-icon" style="color: #25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+                    <span class="menu-text">Suporte Financeiro</span>
+                </div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a class="menu-item" onclick="abrirTermos()">
+                <div class="menu-left">
+                    <div class="menu-icon" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i></div>
                     <span class="menu-text">Termos e Condições</span>
                 </div>
+                <i class="fa-solid fa-chevron-right"></i>
             </a>
-            <a href="#" class="menu-item" onclick="sairDaConta()">
+
+            <a class="menu-item" onclick="sairDaConta()">
                 <div class="menu-left">
-                    <div class="menu-icon"><i class="fa-solid fa-power-off" style="color: #e74c3c;"></i></div>
-                    <span class="menu-text" style="color: #e74c3c;">Sair da Conta</span>
+                    <div class="menu-icon" style="color: #e74c3c;"><i class="fa-solid fa-power-off"></i></div>
+                    <span class="menu-text" style="color: #e74c3c;">Desconectar Conta</span>
                 </div>
+                <i class="fa-solid fa-chevron-right"></i>
             </a>
         </div>
+
+        <div class="app-version">SorteCerta V2.0.1 - Criptografia SSL 256-bit ativada.</div>
     </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>Cassino</span>
+        </a>
+        <a href="perfil.html" class="nav-item active">
+            <i class="fa-solid fa-user-astronaut"></i>
+            <span>Minha Conta</span>
+        </a>
+    </nav>
 
     <div class="modal-overlay" id="modalTermos">
         <div class="modal-content">
-            <div class="modal-title"><i class="fa-solid fa-file-contract"></i> Termos da Casa</div>
+            <div class="modal-title" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i> Políticas da Plataforma</div>
             <div class="modal-body">
-                <p><strong>1. Funcionamento do Sistema (RTP):</strong> A plataforma opera com algoritmos automatizados de RNG. Resultados são gerados conforme taxas de retorno (RTP) pré-definidas para garantir a fluidez da casa.</p><br>
-                <p><strong>2. Pagamentos:</strong> Todas as movimentações são processadas via PIX. Depósitos são creditados instantaneamente. Saques estão sujeitos à auditoria de até 24h para validação de segurança.</p><br>
-                <p><strong>3. Regras de Integridade:</strong> Proibido uso de robôs ou softwares de terceiros. A detecção de anomalias na conta resulta em bloqueio imediato para auditoria financeira.</p><br>
-                <p><strong>4. Conformidade:</strong> Ao utilizar o sistema, o usuário declara estar ciente de que o jogo é uma forma de entretenimento e concorda com as políticas de auditoria vigentes.</p>
+                <p><strong>1. Funcionamento do Sistema (RTP):</strong> A SorteCerta utiliza algoritmos de geração de resultados aleatórios (RNG) com taxas de retorno (RTP) pré-configuradas. O sistema processa apostas e pagamentos de forma totalmente automatizada.</p><br>
+                <p><strong>2. Pagamentos e Transações:</strong> Todos os depósitos e saques são processados via PIX. O prazo de compensação é imediato para depósitos e até 24 horas para auditoria de saques, visando a segurança do seu saldo.</p><br>
+                <p><strong>3. Regras de Integridade:</strong> É terminantemente proibido o uso de qualquer software de terceiros ou robôs para manipular resultados. A casa reserva-se o direito de anular ganhos provenientes de falhas técnicas ou comportamentos atípicos que violem a integridade da plataforma.</p><br>
+                <p><strong>4. Aceitação:</strong> Ao utilizar a SorteCerta, o usuário reconhece que o jogo é uma forma de entretenimento e aceita as políticas internas de funcionamento e auditoria da casa.</p>
             </div>
-            <button class="btn-close" onclick="fecharTermos()">Entendi</button>
+            <button class="btn-close-modal" onclick="fecharModal('modalTermos')">Entendi e Concordo</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalHistorico">
+        <div class="modal-content">
+            <div class="modal-title" style="color: #3498db;"><i class="fa-solid fa-clock-rotate-left"></i> Extrato de Conta</div>
+            <div class="modal-body" id="listaTransacoes">
+                <div style="text-align: center; color: #777; padding: 20px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>Buscando histórico...</p>
+                </div>
+            </div>
+            <button class="btn-close-modal" onclick="fecharModal('modalHistorico')">Fechar Extrato</button>
         </div>
     </div>
 
@@ -121,26 +223,98 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const db = getDatabase(initializeApp({
+        // FIREBASE SETUP
+        const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
-        }));
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        // PUXAR ID DO USUÁRIO
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
         document.getElementById('displayUserId').innerText = idDispositivo;
+        
+        // Esconder parte do número de telefone se for um número válido
+        if(idDispositivo && idDispositivo.length >= 10 && !idDispositivo.includes('TIGER')) {
+            document.getElementById('displayUserName').innerText = "Membro Final " + idDispositivo.slice(-4);
+        }
 
+        // SUPORTE WHATSAPP
+        const phoneDestination = "5583996469538";
+        document.getElementById('linkSuporte').href = `https://wa.me/${phoneDestination}?text=Olá,%20preciso%20falar%20com%20o%20financeiro.%20Meu%20ID%20é:%20${idDispositivo}`;
+
+        // COPIAR ID
+        window.copiarID = function() {
+            navigator.clipboard.writeText(idDispositivo).then(() => {
+                const btn = document.getElementById('btnCopyIcon');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.style.color = 'var(--green)';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i>'; btn.style.color = 'var(--text-muted)'; }, 2000);
+            });
+        }
+
+        // SALDO EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-            document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(snapshot.val() || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            const saldo = snapshot.val() || 0;
+            document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         });
 
-        window.abrirTermos = () => document.getElementById('modalTermos').style.display = 'flex';
-        window.fecharTermos = () => document.getElementById('modalTermos').style.display = 'none';
+        // MODAIS E LÓGICAS DE JANELA
+        window.abrirTermos = function() { document.getElementById('modalTermos').style.display = 'flex'; }
+        window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
-        window.sairDaConta = () => {
-            if(confirm("Deseja realmente desconectar sua conta?")) {
+        // HISTÓRICO DE TRANSAÇÕES VIA FIREBASE
+        window.abrirHistorico = function() {
+            document.getElementById('modalHistorico').style.display = 'flex';
+            const containerLista = document.getElementById('listaTransacoes');
+            
+            onValue(ref(db, 'usuarios/' + idDispositivo + '/transacoes'), (snapshot) => {
+                const transacoes = snapshot.val();
+                
+                if (!transacoes) {
+                    containerLista.innerHTML = `<div style="text-align: center; color: #777; padding: 20px;"><i class="fa-solid fa-receipt" style="font-size: 30px; margin-bottom: 10px; opacity:0.5;"></i><p>Nenhuma transação financeira registrada.</p></div>`;
+                    return;
+                }
+
+                containerLista.innerHTML = '<div class="trans-list"></div>';
+                const listDiv = containerLista.querySelector('.trans-list');
+
+                // Inverte para os mais recentes ficarem no topo
+                const historicoArray = Object.values(transacoes).reverse();
+
+                historicoArray.forEach(t => {
+                    const isDep = (t.tipo === 'DEPÓSITO' || t.tipo === 'DEPOSITO');
+                    const iconClass = isDep ? 'icon-dep' : 'icon-saq';
+                    const valClass = isDep ? 'val-dep' : 'val-saq';
+                    const iconShape = isDep ? 'fa-arrow-down' : 'fa-arrow-up';
+                    const prefix = isDep ? '+' : '-';
+
+                    // Formata valor
+                    let valorFormatado = parseFloat(t.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                    listDiv.innerHTML += `
+                        <div class="trans-card">
+                            <div class="trans-info">
+                                <div class="trans-icon ${iconClass}"><i class="fa-solid ${iconShape}"></i></div>
+                                <div>
+                                    <div class="trans-type">${t.tipo} PIX</div>
+                                    <div class="trans-date">Confirmado</div>
+                                </div>
+                            </div>
+                            <div class="trans-val ${valClass}">${prefix} R$ ${valorFormatado}</div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // DESCONECTAR CONTA
+        window.sairDaConta = function() {
+            if(confirm("Encerrar sessão no dispositivo? Você precisará fazer login novamente.")) {
                 localStorage.removeItem('usuario_tracker_id');
-                window.location.href = 'index.html';
+                window.location.href = 'login.html';
             }
         }
     </script>
