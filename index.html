@@ -3,11 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a0c">
-    
     <title>SorteCerta - O Melhor Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -23,7 +18,7 @@
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body { 
             background-color: var(--bg-main); 
@@ -42,17 +37,17 @@
         #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
         #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; }
 
-        /* --- HEADER PREMIUM E REAJUSTADO --- */
+        /* --- HEADER PREMIUM --- */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.85);
             backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center; padding: 12px 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            padding-top: calc(12px + env(safe-area-inset-top)); /* Evita corte no iPhone (Notch) */
+            padding-top: calc(12px + env(safe-area-inset-top));
         }
         
         .brand-logo { display: flex; align-items: center; text-decoration: none; }
-        .brand-logo img { height: 32px; object-fit: contain; } 
+        .brand-logo span { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px; }
         
         .user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); }
         .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 5px; }
@@ -61,13 +56,18 @@
         
         .action-buttons { display: flex; gap: 5px; }
         .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; }
-        
-        /* BOTÃO DE DEPOSITAR NEON */
         .btn-deposit { 
             background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; 
             padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; 
             text-transform: uppercase; white-space: nowrap; border: 1px solid #fff;
             animation: neonGlow 1.5s infinite alternate; 
+        }
+
+        .btn-login-header {
+            background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000; font-weight: 900; padding: 8px 16px; border-radius: 20px;
+            font-size: 11px; text-decoration: none; text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
         }
 
         .container { max-width: 800px; margin: 90px auto 0; padding: 15px; }
@@ -92,7 +92,7 @@
         .hero-banner::after { content: '🐯'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.15; transform: rotate(-15deg); filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.8)); }
         .hero-banner h1 { font-size: 28px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.5); }
         .hero-banner p { font-size: 14px; color: #eee; margin-bottom: 20px; z-index: 2; max-width: 65%; font-weight: 500; }
-        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; }
+        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; cursor: pointer;}
         .btn-play-now:active { transform: translateY(5px); box-shadow: 0 0 0 #8a6508; }
 
         /* --- CATEGORIAS VIVAS --- */
@@ -101,13 +101,13 @@
         .cat-btn { text-decoration: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.3s; backdrop-filter: blur(5px); }
         .cat-btn.active { background: rgba(241, 196, 15, 0.15); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2); }
 
-        /* --- GRID DE JOGOS (GLASSMORPHISM) --- */
+        /* --- GRID DE JOGOS --- */
         .section-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .section-title i { color: var(--gold); font-size: 20px; }
         
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-bottom: 40px; }
         
-        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; text-decoration: none; border: 1px solid var(--border-color); transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); }
+        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; text-decoration: none; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
         .game-card:active { transform: scale(0.92); border-color: var(--gold); }
         .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
         
@@ -129,21 +129,20 @@
             position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: rgba(10, 10, 12, 0.95); border: 1px solid var(--green); border-radius: 50px;
             padding: 8px 20px; display: flex; align-items: center; gap: 12px; opacity: 0;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
-            box-shadow: 0 10px 25px rgba(0, 230, 118, 0.2); width: max-content; max-width: 90%;
+            transition: all 0.5s; z-index: 999; box-shadow: 0 10px 25px rgba(0, 230, 118, 0.2); width: max-content; max-width: 90%;
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .live-win-icon { background: var(--green); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .live-win-text { font-size: 12px; color: #ddd; line-height: 1.3; }
         .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; }
 
-        /* --- MENU INFERIOR FOCADO --- */
+        /* --- MENU INFERIOR --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
             backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
             padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
         .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
         .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
@@ -171,91 +170,74 @@
 
     <nav class="navbar">
         <a href="index.html" class="brand-logo">
-            <span style="font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
+            <span style="color: #fff;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
         </a>
         
-        <div class="user-panel">
-            <div class="balance-box">
-                <span class="balance-label">Saldo</span>
-                <span class="balance" id="displaySaldo">R$ 0,00</span>
-            </div>
-            <div class="action-buttons">
-                <a href="saque.html" class="btn-withdraw">Sacar</a>
-                <a href="saldo.html" class="btn-deposit">Depositar</a>
-            </div>
+        <div id="userPanelContainer">
+            <a href="login.html" class="btn-login-header"><i class="fa-solid fa-user"></i> ENTRAR</a>
         </div>
     </nav>
 
-    <div class="floating-audio" id="btnAudio" onclick="toggleAudio()">
-        <i class="fa-solid fa-volume-xmark"></i>
-    </div>
+    <div class="floating-audio" id="btnAudio" onclick="toggleAudio()"><i class="fa-solid fa-volume-xmark"></i></div>
 
     <div class="container">
         
         <div class="hero-banner">
             <h1>Fortune Tiger</h1>
             <p>O tigre está multiplicando bancas! Aproveite o RTP alto de hoje e faça sua sorte.</p>
-            <a href="tiger.html" class="btn-play-now">Jogar Agora</a>
+            <div class="game-link btn-play-now" data-game="tiger.html">Jogar Agora</div>
         </div>
 
         <div class="categories">
-            <a href="index.html" class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</a>
-            <a href="aviator.html" class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</a>
-            <a href="roleta.html" class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</a>
+            <a href="#" class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</a>
+            <a href="#" class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</a>
+            <a href="#" class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</a>
         </div>
 
         <h2 class="section-title"><i class="fa-solid fa-star"></i> Cassino Originals</h2>
         
         <div class="games-grid">
-            <a href="tiger.html" class="game-card">
+            <div class="game-card game-link" data-game="tiger.html">
                 <div class="hot-badge">98% RTP</div>
                 <div class="game-cover gc-tiger">🐯</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Tiger</div>
                     <div class="game-provider">PG Soft</div>
                 </div>
-            </a>
+            </div>
 
-            <a href="aviator.html" class="game-card">
+            <div class="game-card game-link" data-game="aviator.html">
                 <div class="game-cover gc-aviator">✈️</div>
                 <div class="game-info">
                     <div class="game-name">Aviator Pro</div>
                     <div class="game-provider">Spribe</div>
                 </div>
-            </a>
+            </div>
 
-            <a href="mines.html" class="game-card">
+            <div class="game-card game-link" data-game="mines.html">
                 <div class="game-cover gc-mines">💣</div>
                 <div class="game-info">
                     <div class="game-name">Mines</div>
                     <div class="game-provider">Spribe</div>
                 </div>
-            </a>
+            </div>
 
-            <a href="roleta.html" class="game-card">
+            <div class="game-card game-link" data-game="roleta.html">
                 <div class="hot-badge">NOVO</div>
                 <div class="game-cover gc-roulette">🎡</div>
                 <div class="game-info">
                     <div class="game-name">Roleta Turbo</div>
                     <div class="game-provider">Originals</div>
                 </div>
-            </a>
+            </div>
             
-            <a href="ox.html" class="game-card">
+            <div class="game-card game-link" data-game="ox.html">
                 <div class="game-cover gc-ox">🐂</div>
                 <div class="game-info">
                     <div class="game-name">Fortune Ox</div>
                     <div class="game-provider">PG Soft</div>
                 </div>
-            </a>
-
-            <a href="#" class="game-card" onclick="alert('O Fortune Dragon está passando por auditoria e será liberado em breve!')">
-                <div class="game-cover gc-dragon">🐉</div>
-                <div class="game-info">
-                    <div class="game-name">Fortune Dragon</div>
-                    <div class="game-provider">Em Breve</div>
-                </div>
-            </a>
+            </div>
         </div>
 
     </div>
@@ -273,7 +255,7 @@
             <i class="fa-solid fa-gamepad"></i>
             <span>Cassino</span>
         </a>
-        <a href="perfil.html" class="nav-item">
+        <a class="nav-item game-link" data-game="perfil.html">
             <i class="fa-solid fa-user-astronaut"></i>
             <span>Minha Conta</span>
         </a>
@@ -281,7 +263,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // FIREBASE SETUP
         const firebaseConfig = {
@@ -292,27 +274,48 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 1. GERAÇÃO DE ID E REGISTRO AUTOMÁTICO NO BANCO
-        let idDispositivo = localStorage.getItem('usuario_tracker_id');
-        if (!idDispositivo) {
-            idDispositivo = 'TIGER-' + Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('usuario_tracker_id', idDispositivo);
+        // A MÁGICA DA VITRINE: Verifica se o usuário tem login salvo no celular
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
+
+        if (idDispositivo) {
+            // JOGADOR ESTÁ LOGADO! Mostra o saldo no topo e libera os links
+            document.getElementById('userPanelContainer').innerHTML = `
+                <div class="user-panel">
+                    <div class="balance-box">
+                        <span class="balance-label">Saldo</span>
+                        <span class="balance" id="displaySaldo">R$ 0,00</span>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="saque.html" class="btn-withdraw">Sacar</a>
+                        <a href="saldo.html" class="btn-deposit">Depositar</a>
+                    </div>
+                </div>
+            `;
+
+            // Puxa o saldo em tempo real do banco de dados
+            onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+                const saldo = snapshot.val() || 0;
+                const saldoDisplay = document.getElementById('displaySaldo');
+                if(saldoDisplay) saldoDisplay.innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            });
+
+            // Libera os cliques nas imagens dos jogos para ir pro jogo real
+            document.querySelectorAll('.game-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    window.location.href = this.getAttribute('data-game');
+                });
+            });
+
+        } else {
+            // É UM VISITANTE! Se ele clicar em qualquer jogo, manda pro Login!
+            document.querySelectorAll('.game-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    window.location.href = 'login.html';
+                });
+            });
         }
 
-        const userRef = ref(db, 'usuarios/' + idDispositivo);
-        get(userRef).then((snapshot) => {
-            if (!snapshot.exists()) {
-                set(userRef, { saldo: 0, modo: 'normal', forcarGanho: 0 });
-            }
-        });
-
-        // 2. PUXAR SALDO EM TEMPO REAL
-        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-            const saldo = snapshot.val() || 0;
-            document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        });
-
-        // 3. ESCUTA DO BOTÃO DE MANUTENÇÃO (TRAVA O SITE)
+        // --- SISTEMA GERAL DE MANUTENÇÃO ---
         onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
             const isManutencao = snapshot.val() || false;
             const tela = document.getElementById('telaManutencao');
@@ -325,11 +328,10 @@
             }
         });
 
-        // 4. LÓGICA DE ÁUDIO AMBIENTE FLUTUANTE
+        // --- LÓGICA DE ÁUDIO AMBIENTE FLUTUANTE ---
         const bgMusic = document.getElementById('bgMusic');
         const btnAudio = document.getElementById('btnAudio');
         let audioStarted = false;
-
         bgMusic.volume = 0.2;
 
         document.body.addEventListener('click', () => {
@@ -353,7 +355,7 @@
             }
         }
 
-        // 5. LÓGICA DO POPUP DE GANHOS (PROVA SOCIAL)
+        // --- PROVA SOCIAL FALSA ---
         const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger", "***chef"];
         const jogosFake = ["Tiger", "Aviator", "Roleta", "Ox", "Mines"];
         
