@@ -17,45 +17,46 @@
             --text-main: #f4f4f5;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; touch-action: manipulation; }
-        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 20px; }
 
-        .header { width: 100%; background: rgba(18, 18, 20, 0.95); border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; }
-        .btn-back { color: #8b8b93; text-decoration: none; font-size: 18px; }
-        .logo-roulette { font-weight: 900; color: var(--gold); letter-spacing: 1px; font-size: 20px; text-transform: uppercase; }
-        .balance-badge { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); }
+        .header { width: 100%; background: rgba(18, 18, 20, 0.95); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .logo-roulette { font-weight: 900; color: var(--gold); }
+        .balance-badge { background: #1a1a1e; color: var(--green); padding: 5px 12px; border-radius: 20px; font-weight: 900; border: 1px solid var(--green); }
 
-        .game-container { width: 100%; max-width: 450px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .game-container { width: 100%; max-width: 450px; padding: 15px; }
 
-        .roulette-arena { background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .roulette-arena { background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .wheel-container { position: relative; width: 220px; height: 220px; }
         
-        .wheel-container { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; }
-        
-        /* CORREÇÃO DO GRADIENTE: Verde (0-10), Vermelho (10-185), Preto (185-360) */
+        /* CORREÇÃO DAS CORES: Verde(0-30), Vermelho(30-195), Preto(195-360) */
         .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #333; 
-                 background: conic-gradient( var(--green) 0deg 18deg, var(--red) 18deg 185deg, var(--black) 185deg 360deg ); 
-                 box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99); position: relative; }
+                 background: conic-gradient( var(--green) 0deg 30deg, var(--red) 30deg 195deg, var(--black) 195deg 360deg ); 
+                 transition: transform 3.5s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
         
         .wheel::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: linear-gradient(145deg, #f1c40f, #b8860b); border-radius: 50%; border: 3px solid #000; z-index: 5; }
-        .marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #fff; z-index: 10; }
+        .marker { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid #fff; z-index: 10; }
 
-        .result-display { margin-top: 20px; font-size: 24px; font-weight: 900; background: #000; padding: 10px 30px; border-radius: 12px; border: 2px solid #333; }
+        .bet-table { display: flex; gap: 10px; width: 100%; margin-top: 20px; }
+        .bet-zone { flex: 1; height: 70px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid #333; }
+        .bet-zone.red { background: var(--red); color: white; }
+        .bet-zone.green { background: var(--green); color: black; flex: 0.5; }
+        .bet-zone.black { background: var(--black); color: white; }
+        .chip-stack { font-size: 11px; margin-top: 4px; font-weight: 900; }
 
-        .bet-table { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
-        .bet-zone { flex: 1; height: 80px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
-        .bet-zone.red { background: var(--red); color: #fff; }
-        .bet-zone.green { background: var(--green); color: #000; flex: 0.6; }
-        .bet-zone.black { background: #222; color: #fff; border: 1px solid #444; }
-        
-        .chip-stack { position: absolute; top: 5px; right: 5px; background: #fff; color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px; display: none; }
-        .btn-spin { width: 100%; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; padding: 15px; font-weight: 900; border-radius: 10px; cursor: pointer; }
+        .chips-container { display: flex; justify-content: space-between; background: #000; padding: 10px; border-radius: 12px; margin: 15px 0; }
+        .chip-btn { padding: 10px; border-radius: 50%; border: 2px dashed #666; background: #222; color: #fff; font-weight: bold; cursor: pointer; }
+        .chip-btn.active { border: 2px solid var(--gold); color: var(--gold); }
+
+        .btn-spin { width: 100%; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; padding: 15px; font-weight: 900; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
+        .game-message { margin-top: 15px; text-align: center; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="logo-roulette">Turbo Roleta</div>
+        <a href="index.html" style="color:white;"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="logo-roulette">ROLETA TURBO</div>
         <div class="balance-badge" id="displaySaldoTop">R$ 0,00</div>
     </header>
 
@@ -65,31 +66,92 @@
                 <div class="marker"></div>
                 <div class="wheel" id="wheel"></div>
             </div>
-            <div class="result-display" id="resultDisplay">Aposte!</div>
-            <div class="game-message" id="gameMessage"></div>
+            <div class="game-message" id="gameMessage">Aposte para girar!</div>
         </div>
 
         <div class="bet-table">
-            <div class="bet-zone red" onclick="placeBet('red')">VERMELHO <div class="chip-stack" id="stack-red">R$ 0</div></div>
-            <div class="bet-zone green" onclick="placeBet('green')">ZERO <div class="chip-stack" id="stack-green">R$ 0</div></div>
-            <div class="bet-zone black" onclick="placeBet('black')">PRETO <div class="chip-stack" id="stack-black">R$ 0</div></div>
+            <div class="bet-zone red" onclick="placeBet('red')">RED<div class="chip-stack" id="stack-red" style="display:none;">R$ 0</div></div>
+            <div class="bet-zone green" onclick="placeBet('green')">0<div class="chip-stack" id="stack-green" style="display:none;">R$ 0</div></div>
+            <div class="bet-zone black" onclick="placeBet('black')">BLACK<div class="chip-stack" id="stack-black" style="display:none;">R$ 0</div></div>
         </div>
 
-        <button class="btn-spin" id="btnSpin" onclick="spinRoulette()">GIRAR</button>
+        <div class="chips-container">
+            <button class="chip-btn active" onclick="selectChip(1, this)">1</button>
+            <button class="chip-btn" onclick="selectChip(5, this)">5</button>
+            <button class="chip-btn" onclick="selectChip(10, this)">10</button>
+            <button class="chip-btn" onclick="selectChip(50, this)">50</button>
+        </div>
+
+        <button class="btn-spin" id="btnSpin" onclick="spinRoulette()">GIRAR ROLETA</button>
     </div>
 
     <script type="module">
-        // ... [Mesma lógica de Firebase anterior] ...
-        // Importante: A lógica de stopAngle agora está sincronizada com o novo CSS:
-        // Verde: 0-18 graus. Vermelho: 18-185 graus. Preto: 185-360 graus.
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        function calculateStopAngle(color) {
-            if (color === 'green') return 360 - (Math.random() * 16 + 1); 
-            if (color === 'red') return 360 - (Math.random() * 160 + 20); 
-            if (color === 'black') return 360 - (Math.random() * 160 + 190);
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+
+        let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        let bancaAtual = 0.00;
+        let selectedChip = 1;
+        let bets = { red: 0, green: 0, black: 0 };
+        let isSpinning = false;
+
+        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
+            bancaAtual = parseFloat(snapshot.val() || 0);
+            document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toFixed(2);
+        });
+
+        window.selectChip = (val, el) => {
+            selectedChip = val;
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
         }
-        
-        // ... resto do seu código JS aqui ...
+
+        window.placeBet = (color) => {
+            if(isSpinning || bancaAtual < selectedChip) return;
+            bancaAtual -= selectedChip;
+            bets[color] += selectedChip;
+            document.getElementById('stack-' + color).innerText = "R$ " + bets[color];
+            document.getElementById('stack-' + color).style.display = 'block';
+            updateBalanceUI();
+        }
+
+        function updateBalanceUI() { document.getElementById('displaySaldoTop').innerText = "R$ " + bancaAtual.toFixed(2); }
+
+        window.spinRoulette = () => {
+            if(isSpinning || (bets.red === 0 && bets.green === 0 && bets.black === 0)) return;
+            isSpinning = true;
+            document.getElementById('btnSpin').disabled = true;
+
+            // Lógica: 0-30 = Green, 30-195 = Red, 195-360 = Black
+            // A gente gira pra cair onde a casa precisa.
+            const result = Math.random() * 360; 
+            const wheel = document.getElementById('wheel');
+            wheel.style.transform = `rotate(${1440 + result}deg)`;
+            
+            setTimeout(() => {
+                let color = result < 30 ? 'green' : (result < 195 ? 'red' : 'black');
+                let multiplier = color === 'green' ? 14 : 2;
+                
+                if(bets[color] > 0) {
+                    let win = bets[color] * multiplier;
+                    bancaAtual += win;
+                    alert("Você ganhou R$ " + win.toFixed(2) + " na cor " + color.toUpperCase());
+                } else {
+                    alert("Você perdeu!");
+                }
+                
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+                bets = { red: 0, green: 0, black: 0 };
+                location.reload();
+            }, 3600);
+        }
     </script>
 </body>
 </html>
