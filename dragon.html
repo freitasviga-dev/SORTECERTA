@@ -20,12 +20,11 @@
             background-color: #050000; 
             background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, #050000 85%);
             color: #ffffff; 
-            min-height: 100vh; min-height: 100dvh; /* Evita que o Safari coma o rodapé */
+            min-height: 100vh; min-height: 100dvh;
             overflow: hidden; display: flex; flex-direction: column;
             overscroll-behavior: none;
         }
 
-        /* PORTA DE ENTRADA */
         #startScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0a0000; z-index: 9999999;
@@ -36,7 +35,6 @@
         #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; font-size: 20px; }
         .btn-start { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 20px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); font-size: 14px; }
 
-        /* JOGO PRINCIPAL */
         #mainUI {
             display: flex; flex-direction: column; 
             height: 100vh; height: 100dvh; width: 100%;
@@ -44,7 +42,7 @@
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
-        /* CABEÇALHO */
+        /* HEADER LIMPO (Apenas voltar e áudio) */
         .header-bar {
             padding: 8px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
@@ -54,7 +52,7 @@
         .top-actions { display: flex; gap: 15px; align-items: center; }
         .btn-top { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
-        /* ÁREA DA MÁQUINA */
+        /* LOGO CENTRAL E MÁQUINA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 5px; }
         
         .game-logo {
@@ -84,7 +82,6 @@
         .spinning .symbol-box { animation: slotSpin 0.1s infinite linear; filter: blur(2px); color: transparent; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
         .symbol-box.win-anim { background: radial-gradient(circle, rgba(241, 196, 15, 0.4), #111) !important; border-color: #f1c40f !important; animation: winPulse 0.5s infinite alternate; z-index: 5; box-shadow: 0 0 20px rgba(241, 196, 15, 0.6) !important; }
 
-        /* POPUP DE GANHO NORMAL */
         .normal-win-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
             background: #000; border: 2px solid #f1c40f; border-radius: 12px;
@@ -96,7 +93,7 @@
         .normal-win-badge span:first-child { color: #f1c40f; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
         .normal-win-badge span:last-child { color: #fff; font-size: 20px; font-weight: 900; }
 
-        /* RODAPÉ E VALORES */
+        /* FOOTER E CONTROLES */
         .footer-container {
             width: 100%; background: rgba(0,0,0,0.95); border-top: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; padding: 10px;
@@ -107,16 +104,13 @@
         .val-column { display: flex; flex-direction: column; flex: 1; }
         .val-column.saldo { align-items: flex-start; }
         .val-column.aposta { align-items: flex-end; }
-        
         .val-title { font-size: 9px; text-transform: uppercase; font-weight: 700; margin-bottom: 1px; letter-spacing: 0.5px; }
         .val-title.saldo { color: #fff; }
         .val-title.aposta { color: #b8860b; }
-        
         .val-value { font-weight: 900; letter-spacing: -0.5px; }
         .val-value.saldo { font-size: 20px; color: #00e676; }
         .val-value.aposta { font-size: 15px; color: #aaa; }
 
-        /* CONTROLES INFERIORES */
         .spin-controls { width: 100%; max-width: 340px; display: flex; justify-content: space-around; align-items: center; }
         .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 50px; height: 50px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .btn-side span { font-size: 8px; font-weight: 900; margin-top: 2px; text-transform: uppercase; }
@@ -139,7 +133,6 @@
         .btn-spin-main.auto-active .auto-count { display: block; }
         .btn-spin-main.auto-active { background: radial-gradient(circle at 30% 30%, #e74c3c, #900000); box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
 
-        /* MENU AUTO SPIN */
         .auto-spin-menu {
             position: absolute; bottom: 100%; right: 20px; background: #0a0a0a;
             border: 1px solid #b8860b; border-radius: 12px; padding: 10px;
@@ -150,7 +143,6 @@
         .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .auto-btn-option:active { background: #b8860b; color: #000; }
 
-        /* TELA DE MEGA GANHO */
         .mega-win-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000f5;
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; cursor: pointer;
@@ -160,7 +152,6 @@
         .mw-value { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 4px 20px #b8860b; }
         .mw-hint { color: #888; font-size: 10px; margin-top: 20px; text-transform: uppercase; animation: pulse 1s infinite; }
 
-        /* TOAST DE SISTEMA */
         .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 100px; }
 
@@ -194,6 +185,7 @@
 
         <div class="header-bar">
             <div class="btn-back" onclick="window.voltarParaLobby()"><i class="fa-solid fa-chevron-left"></i></div>
+            
             <div class="top-actions">
                 <div class="btn-top" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
             </div>
@@ -253,10 +245,12 @@
 
                 <div class="btn-spin-wrapper">
                     <button class="btn-bet-adjust" onclick="mudarAposta(-1)"><i class="fa-solid fa-minus"></i></button>
+                    
                     <button class="btn-spin-main" id="btnGirar" onclick="cliqueBotaoPrincipal()">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span class="auto-count" id="autoCountDisplay">0</span>
                     </button>
+                    
                     <button class="btn-bet-adjust" onclick="mudarAposta(1)"><i class="fa-solid fa-plus"></i></button>
                 </div>
 
@@ -289,20 +283,19 @@
         const db = getDatabase(initializeApp(firebaseConfig));
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
-        // VARIÁVEIS DO JOGO E PROTOCOLOS DE SEGURANÇA
+        // VARIÁVEIS DE SISTEMA E ANTI-LOSS
         let bancaAtual = 0; let modoJogador = 'normal'; let isSpinning = false; let isTurbo = false; let audioLigado = false;
         let girosAutoRestantes = 0; let menuAutoAberto = false;
         
-        let roletasGirandoCritico = false; // Trava o saldo se sair no meio da animação
+        let roletasGirandoCritico = false; 
         let saldoAntesDoGiro = 0;
         window.spinTimeouts = [];
         window.megaWinTimeout = null; 
 
-        // O DRAGÃO É O CORINGA (WILD)
+        // O DRAGÃO É O CORINGA OFICIAL
         const CORINGA = '🐉';
         const simbolos = ['🐉', '🧧', '🏮', '🪙', '🧨', '🪢'];
         
-        // 5 LINHAS OFICIAIS DE PAGAMENTO
         const paylines = [
             [[0,1], [1,1], [2,1]], // Meio
             [[0,0], [1,0], [2,0]], // Topo
@@ -311,7 +304,7 @@
             [[0,2], [1,1], [2,0]]  // Diagonal /
         ];
 
-        // INICIALIZAÇÃO
+        // START SCREEN
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { 
@@ -322,7 +315,7 @@
             if(bgMusic) { bgMusic.play().catch(e=>{}); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
         });
 
-        // ÁUDIO E CONTROLES
+        // ÁUDIO E SILENCIADOR TOTAL
         const bgMusic = document.getElementById('bgMusic');
         const sfxSpin = document.getElementById('sfxSpin'); 
         const sfxStop = document.getElementById('sfxStop'); 
@@ -335,10 +328,24 @@
             if(sfxWin) sfxWin.pause();
         };
 
+        window.toggleAudio = function() {
+            audioLigado = !audioLigado; 
+            const btn = document.getElementById('audioBtn');
+            if(audioLigado) { 
+                bgMusic.play().catch(()=>{}); 
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; 
+                btn.style.color = '#00e676'; 
+            } else { 
+                // Pausa TUDO na mesma hora
+                pausarTodoAudio();
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; 
+                btn.style.color = '#f1c40f'; 
+            }
+        };
+
         window.voltarParaLobby = function() {
             pausarTodoAudio();
             cancelarRodadaDeEmergencia(); 
-            // Fecha via Iframe no Lobby se estiver embarcado
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage("fecharIframe", "*");
             } else {
@@ -346,12 +353,11 @@
             }
         };
 
-        // PROTOCOLO 5: ANTI-LOSS SE FECHAR O NAVEGADOR DURANTE O GIRO
+        // PROTOCOLO DE REEMBOLSO (ANTI-LOSS)
         function cancelarRodadaDeEmergencia() {
             if (roletasGirandoCritico) {
                 window.spinTimeouts.forEach(t => clearTimeout(t));
                 window.spinTimeouts = [];
-                // Reembolsa o dinheiro instantaneamente e formata
                 set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoAntesDoGiro.toFixed(2)));
                 
                 roletasGirandoCritico = false; isSpinning = false; girosAutoRestantes = 0;
@@ -385,15 +391,8 @@
             const dados = snapshot.val() || {}; 
             bancaAtual = parseFloat(dados.saldo || 0); 
             modoJogador = dados.modo || 'normal';
-            // Valor real no topo, sem limitações.
             document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
-
-        window.toggleAudio = function() {
-            audioLigado = !audioLigado; const btn = document.getElementById('audioBtn');
-            if(audioLigado) { bgMusic.play().catch(()=>{}); btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#00e676'; } 
-            else { bgMusic.pause(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#f1c40f'; }
-        };
 
         window.toggleTurbo = function() { isTurbo = !isTurbo; const btn = document.getElementById('btnTurbo'); if(isTurbo) btn.classList.add('active'); else btn.classList.remove('active'); };
 
@@ -451,10 +450,10 @@
             }
         };
 
-        // LÓGICA DO CORINGA - VERIFICA SE A LINHA É VÁLIDA
+        // LÓGICA DO CORINGA REVISADA
         function verificaVitoriaLinha(s1, s2, s3) {
             const cartasSemCoringa = [s1, s2, s3].filter(s => s !== CORINGA);
-            if (cartasSemCoringa.length === 0) return true; // Três dragões
+            if (cartasSemCoringa.length === 0) return true; 
             return cartasSemCoringa.every(s => s === cartasSemCoringa[0]); 
         }
 
@@ -463,7 +462,6 @@
             if(isSpinning) return;
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
 
-            // Configuração para o Anti-Loss e Estado da Máquina
             isSpinning = true; 
             roletasGirandoCritico = true;
             saldoAntesDoGiro = bancaAtual;
@@ -477,7 +475,6 @@
             document.getElementById('normalWinBadge').classList.remove('show');
             document.querySelectorAll('.symbol-box').forEach(box => box.classList.remove('win-anim'));
 
-            // Subtrai o saldo com precisão
             let novoSaldo = bancaAtual - apostaAtual;
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
             get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2))));
@@ -487,7 +484,6 @@
 
             let ganhou = false; let valorGanho = 0; let telaFinal = [[], [], []]; let linhasVencedorasInfo = [];
 
-            // INFLUENCIADOR (ADMIN) VS NORMAL
             if(modoJogador === 'influenciador') {
                 if(window.adminPerdas === undefined) window.adminPerdas = 0;
 
@@ -503,8 +499,6 @@
                     let lixo = simbolos.filter(s => s !== simboloBase && s !== CORINGA);
 
                     for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = lixo[Math.floor(Math.random() * lixo.length)]; }
-                    
-                    // Coloca Coringa no meio das vitórias aleatoriamente
                     linhaWin.forEach(pos => { telaFinal[pos[0]][pos[1]] = (simboloBase !== CORINGA && Math.random() < 0.4) ? CORINGA : simboloBase; });
                     linhasVencedorasInfo = [linhaWin];
                 }
@@ -524,14 +518,22 @@
                 }
             }
 
-            // QUEBRADOR DE FALSO POSITIVO INTELIGENTE (Resolve o bug dos Dois Dragões)
+            // O BLOCO DE PERDA QUE EU TINHA APAGADO SEM QUERER (Isto resolve o bug do 'undefined')
+            if(!ganhou) {
+                for(let c=0; c<3; c++) { 
+                    for(let l=0; l<3; l++) {
+                        telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)]; 
+                    }
+                }
+            }
+
+            // QUEBRADOR DE FALSO POSITIVO BLINDADO (Resolve o bug dos Dois Dragões)
             let temFalsoPositivo = true;
             let tentativasSeguranca = 0;
             
             while(temFalsoPositivo && tentativasSeguranca < 30) {
                 temFalsoPositivo = false;
                 paylines.forEach(linha => {
-                    // Ignora a linha de vitória legítima
                     if (ganhou && linhasVencedorasInfo.length > 0 && linha === linhasVencedorasInfo[0]) return;
                     
                     let s1 = telaFinal[linha[0][0]][linha[0][1]];
@@ -541,11 +543,9 @@
                     if(verificaVitoriaLinha(s1, s2, s3)) {
                         temFalsoPositivo = true;
                         
-                        // Quebra a linha trocando uma peça pelo meio, nunca usando o coringa
                         let proibidos = [s1, s3, CORINGA];
                         let trocaSegura = simbolos.filter(s => !proibidos.includes(s));
                         
-                        // Garante que não vai estragar a linha de ganho principal
                         let posLivre = linha.find(pos => !(ganhou && linhasVencedorasInfo[0].some(w => w[0] === pos[0] && w[1] === pos[1])));
                         
                         if(posLivre) {
@@ -567,7 +567,7 @@
                     boxes[0].innerText = telaFinal[i][0]; boxes[1].innerText = telaFinal[i][1]; boxes[2].innerText = telaFinal[i][2];
 
                     if(i === 2) {
-                        roletasGirandoCritico = false; // Animação acabou. É seguro fechar agora.
+                        roletasGirandoCritico = false; 
                         finalizarGiro(ganhou, valorGanho, novoSaldo, linhasVencedorasInfo);
                     }
                 }, delayBase * (i + 1));
