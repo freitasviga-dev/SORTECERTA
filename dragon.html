@@ -11,18 +11,16 @@
     <title>Fortune Dragon | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* TRAVA DE ZOOM E SCROLL DO NAVEGADOR */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
         
-        html { height: -webkit-fill-available; overscroll-behavior: none; }
+        html { height: -webkit-fill-available; }
         
         body { 
             background-color: #050000; 
             background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, #050000 85%);
             color: #ffffff; 
-            min-height: 100vh; min-height: 100dvh;
+            min-height: 100vh; min-height: 100dvh; 
             overflow: hidden; display: flex; flex-direction: column;
-            overscroll-behavior: none;
         }
 
         #startScreen {
@@ -42,17 +40,16 @@
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
-        /* HEADER LIMPO (Apenas voltar e áudio) */
         .header-bar {
             padding: 8px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
             padding-top: calc(8px + env(safe-area-inset-top)); z-index: 100;
         }
         .btn-back { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; }
+        
         .top-actions { display: flex; gap: 15px; align-items: center; }
         .btn-top { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
-        /* LOGO CENTRAL E MÁQUINA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 5px; }
         
         .game-logo {
@@ -93,25 +90,30 @@
         .normal-win-badge span:first-child { color: #f1c40f; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
         .normal-win-badge span:last-child { color: #fff; font-size: 20px; font-weight: 900; }
 
-        /* FOOTER E CONTROLES */
         .footer-container {
             width: 100%; background: rgba(0,0,0,0.95); border-top: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; padding: 10px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; position: relative;
         }
 
-        .val-display-bar { width: 100%; max-width: 340px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; padding: 0 5px; }
+        .val-display-bar {
+            width: 100%; max-width: 340px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; padding: 0 5px;
+        }
+        
         .val-column { display: flex; flex-direction: column; flex: 1; }
         .val-column.saldo { align-items: flex-start; }
         .val-column.aposta { align-items: flex-end; }
+        
         .val-title { font-size: 9px; text-transform: uppercase; font-weight: 700; margin-bottom: 1px; letter-spacing: 0.5px; }
         .val-title.saldo { color: #fff; }
         .val-title.aposta { color: #b8860b; }
+        
         .val-value { font-weight: 900; letter-spacing: -0.5px; }
         .val-value.saldo { font-size: 20px; color: #00e676; }
         .val-value.aposta { font-size: 15px; color: #aaa; }
 
         .spin-controls { width: 100%; max-width: 340px; display: flex; justify-content: space-around; align-items: center; }
+        
         .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 50px; height: 50px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .btn-side span { font-size: 8px; font-weight: 900; margin-top: 2px; text-transform: uppercase; }
         .btn-side.active { color: #f1c40f; border-color: #b8860b; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
@@ -274,16 +276,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
         const db = getDatabase(initializeApp(firebaseConfig));
-        const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
-        // VARIÁVEIS DE SISTEMA E ANTI-LOSS
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
         let bancaAtual = 0; let modoJogador = 'normal'; let isSpinning = false; let isTurbo = false; let audioLigado = false;
         let girosAutoRestantes = 0; let menuAutoAberto = false;
         
@@ -292,7 +292,6 @@
         window.spinTimeouts = [];
         window.megaWinTimeout = null; 
 
-        // O DRAGÃO É O CORINGA OFICIAL
         const CORINGA = '🐉';
         const simbolos = ['🐉', '🧧', '🏮', '🪙', '🧨', '🪢'];
         
@@ -304,7 +303,6 @@
             [[0,2], [1,1], [2,0]]  // Diagonal /
         ];
 
-        // START SCREEN
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { 
@@ -315,37 +313,23 @@
             if(bgMusic) { bgMusic.play().catch(e=>{}); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
         });
 
-        // ÁUDIO E SILENCIADOR TOTAL
         const bgMusic = document.getElementById('bgMusic');
         const sfxSpin = document.getElementById('sfxSpin'); 
         const sfxStop = document.getElementById('sfxStop'); 
         const sfxWin = document.getElementById('sfxWin');
         bgMusic.volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
 
+        // PARALISA O ÁUDIO DE FORMA AGRESSIVA
         const pausarTodoAudio = () => {
             if(bgMusic) bgMusic.pause();
             if(sfxSpin) sfxSpin.pause();
             if(sfxWin) sfxWin.pause();
         };
 
-        window.toggleAudio = function() {
-            audioLigado = !audioLigado; 
-            const btn = document.getElementById('audioBtn');
-            if(audioLigado) { 
-                bgMusic.play().catch(()=>{}); 
-                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; 
-                btn.style.color = '#00e676'; 
-            } else { 
-                // Pausa TUDO na mesma hora
-                pausarTodoAudio();
-                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; 
-                btn.style.color = '#f1c40f'; 
-            }
-        };
-
         window.voltarParaLobby = function() {
             pausarTodoAudio();
             cancelarRodadaDeEmergencia(); 
+            
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage("fecharIframe", "*");
             } else {
@@ -368,7 +352,7 @@
             }
         }
 
-        // EVENTOS DE BLINDAGEM MOBILE (Minimizar app, fechar tela)
+        // MONITORA SAÍDA DO NAVEGADOR
         document.addEventListener('visibilitychange', function() {
             if (document.hidden || document.visibilityState === 'hidden') { 
                 pausarTodoAudio();
@@ -377,13 +361,12 @@
             else if (audioLigado) { bgMusic.play().catch(e => {}); }
         });
 
+        // SAFARI/IPHONE EXTRA BLOCK (Garante que a música pare ao minimizar)
         window.addEventListener('pagehide', function() {
             pausarTodoAudio();
             cancelarRodadaDeEmergencia(); 
         });
-        window.addEventListener("beforeunload", function (e) { cancelarRodadaDeEmergencia(); });
 
-        // CONTROLES DE APOSTA
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00, 200.00, 250.00, 400.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
@@ -393,6 +376,12 @@
             modoJogador = dados.modo || 'normal';
             document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
+
+        window.toggleAudio = function() {
+            audioLigado = !audioLigado; const btn = document.getElementById('audioBtn');
+            if(audioLigado) { bgMusic.play().catch(()=>{}); btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#00e676'; } 
+            else { bgMusic.pause(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#f1c40f'; }
+        };
 
         window.toggleTurbo = function() { isTurbo = !isTurbo; const btn = document.getElementById('btnTurbo'); if(isTurbo) btn.classList.add('active'); else btn.classList.remove('active'); };
 
@@ -437,8 +426,10 @@
                 clearTimeout(window.megaWinTimeout);
                 popup.classList.remove('show');
                 isSpinning = false;
-                if(girosAutoRestantes > 0) { girosAutoRestantes--; atualizarBotaoAuto(); if(girosAutoRestantes > 0) iniciarGiro(); } 
-                else { iniciarGiro(); }
+                if(girosAutoRestantes > 0) {
+                    girosAutoRestantes--; atualizarBotaoAuto();
+                    if(girosAutoRestantes > 0) iniciarGiro(); 
+                } else { iniciarGiro(); }
             }
         };
 
@@ -450,14 +441,13 @@
             }
         };
 
-        // LÓGICA DO CORINGA REVISADA
+        // LÓGICA DO CORINGA - VERIFICA SE A LINHA É VÁLIDA
         function verificaVitoriaLinha(s1, s2, s3) {
             const cartasSemCoringa = [s1, s2, s3].filter(s => s !== CORINGA);
-            if (cartasSemCoringa.length === 0) return true; 
+            if (cartasSemCoringa.length === 0) return true; // Três dragões ganha
             return cartasSemCoringa.every(s => s === cartasSemCoringa[0]); 
         }
 
-        // MOTOR DO CASSINO
         window.iniciarGiro = async function() {
             if(isSpinning) return;
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
@@ -484,6 +474,7 @@
 
             let ganhou = false; let valorGanho = 0; let telaFinal = [[], [], []]; let linhasVencedorasInfo = [];
 
+            // A LÓGICA DE GERAR A TELA
             if(modoJogador === 'influenciador') {
                 if(window.adminPerdas === undefined) window.adminPerdas = 0;
 
@@ -518,22 +509,14 @@
                 }
             }
 
-            // O BLOCO DE PERDA QUE EU TINHA APAGADO SEM QUERER (Isto resolve o bug do 'undefined')
-            if(!ganhou) {
-                for(let c=0; c<3; c++) { 
-                    for(let l=0; l<3; l++) {
-                        telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)]; 
-                    }
-                }
-            }
-
-            // QUEBRADOR DE FALSO POSITIVO BLINDADO (Resolve o bug dos Dois Dragões)
+            // O MATA-LEÃO NO FALSO POSITIVO (A CORREÇÃO DO BUG DOS DOIS DRAGÕES)
             let temFalsoPositivo = true;
             let tentativasSeguranca = 0;
             
             while(temFalsoPositivo && tentativasSeguranca < 30) {
                 temFalsoPositivo = false;
                 paylines.forEach(linha => {
+                    // Se estivermos numa rodada de ganho, ignora a linha que foi sorteada para ganhar de verdade
                     if (ganhou && linhasVencedorasInfo.length > 0 && linha === linhasVencedorasInfo[0]) return;
                     
                     let s1 = telaFinal[linha[0][0]][linha[0][1]];
@@ -543,9 +526,12 @@
                     if(verificaVitoriaLinha(s1, s2, s3)) {
                         temFalsoPositivo = true;
                         
+                        // O SEGREDO: Em vez de trocar a ponta, trocamos o símbolo do MEIO para quebrar a conexão
+                        // O novo símbolo não pode ser igual às pontas e não pode ser o Coringa
                         let proibidos = [s1, s3, CORINGA];
                         let trocaSegura = simbolos.filter(s => !proibidos.includes(s));
                         
+                        // Garante que a substituição ocorra numa posição que não faz parte da vitória principal
                         let posLivre = linha.find(pos => !(ganhou && linhasVencedorasInfo[0].some(w => w[0] === pos[0] && w[1] === pos[1])));
                         
                         if(posLivre) {
