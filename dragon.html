@@ -11,7 +11,7 @@
     <title>Fortune Dragon | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* TRAVA DE ZOOM, OVERSCROLL E BARRA DO SAFARI */
+        /* PROTOCOLOS DE TELA E ZOOM BLINDADOS */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
         
         html { height: -webkit-fill-available; }
@@ -20,7 +20,6 @@
             background-color: #050000; 
             background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, #050000 85%);
             color: #ffffff; 
-            /* O 100dvh é o milagre que resolve a barra do Safari */
             min-height: 100vh; min-height: 100dvh; 
             overflow: hidden; display: flex; flex-direction: column;
         }
@@ -42,7 +41,6 @@
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
-        /* HEADER MAIS COMPACTO */
         .header-bar {
             padding: 8px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
@@ -54,7 +52,6 @@
         .top-actions { display: flex; gap: 15px; align-items: center; }
         .btn-top { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
-        /* ÁREA DA MÁQUINA - REDUZIDA PROPOSITALMENTE PARA CABER EM QUALQUER TELA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 5px; }
         
         .slot-machine {
@@ -69,8 +66,7 @@
         
         .symbol-box {
             background: linear-gradient(180deg, #222 0%, #111 100%); border: 1px solid #333;
-            border-radius: 6px; 
-            height: clamp(60px, 11vh, 85px); /* Se a tela for pequena, a caixinha encolhe! */
+            border-radius: 6px; height: clamp(60px, 11vh, 85px); 
             display: flex; align-items: center; justify-content: center;
             font-size: clamp(35px, 8vw, 45px); position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); transition: 0.1s;
         }
@@ -89,7 +85,7 @@
         .normal-win-badge span:first-child { color: #f1c40f; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
         .normal-win-badge span:last-child { color: #fff; font-size: 20px; font-weight: 900; }
 
-        /* FOOTER COMPACTO (Garante que caiba acima da barra do Safari) */
+        /* FOOTER DE RESPONSIVIDADE TRAVADA */
         .footer-container {
             width: 100%; background: rgba(0,0,0,0.95); border-top: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; padding: 10px;
@@ -145,13 +141,16 @@
         .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .auto-btn-option:active { background: #b8860b; color: #000; }
 
+        /* POPUP DE MEGA GANHO COM ONCLICK */
         .mega-win-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000ed;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000f5;
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+            cursor: pointer; /* Indica que é clicável */
         }
         .mega-win-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
         .mw-title { font-size: 40px; font-weight: 900; color: #f1c40f; text-transform: uppercase; text-shadow: 0 0 30px #b8860b, 0 5px 10px #000; margin-bottom: 20px; animation: bounce 1s infinite alternate; text-align: center; line-height: 1; }
         .mw-value { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 4px 20px #b8860b; }
+        .mw-hint { color: #888; font-size: 10px; margin-top: 20px; text-transform: uppercase; animation: pulse 1s infinite; }
 
         .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 100px; }
@@ -163,6 +162,7 @@
         @keyframes rotateSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes bounce { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
@@ -179,7 +179,7 @@
         </script>
 
         <audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-        <audio id="sfxSpin" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e718b525f.mp3?filename=slot-machine-spin-41272.mp3"></audio>
+        <audio id="sfxSpin" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_3329f63520.mp3?filename=wheel-spinning-38115.mp3"></audio>
         <audio id="sfxStop" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3"></audio>
         <audio id="sfxWin" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3"></audio>
 
@@ -188,6 +188,7 @@
             <div class="logo-mascot-tiny">🐉</div>
             
             <div class="top-actions">
+                <div class="btn-top" onclick="toggleFullscreen()" id="fsBtn"><i class="fa-solid fa-expand"></i></div>
                 <div class="btn-top" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
             </div>
         </div>
@@ -258,9 +259,10 @@
         </div>
     </div>
 
-    <div class="mega-win-overlay" id="megaWinScreen">
+    <div class="mega-win-overlay" id="megaWinScreen" onclick="pularMegaGanho()">
         <div class="mw-title">MEGA<br>GANHO!</div>
         <div class="mw-value" id="megaWinValor">R$ 0,00</div>
+        <div class="mw-hint">Toque para continuar</div>
     </div>
 
     <div class="system-toast" id="toastMsg">Saldo Insuficiente!</div>
@@ -279,6 +281,7 @@
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         let bancaAtual = 0; let modoJogador = 'normal'; let isSpinning = false; let isTurbo = false; let audioLigado = false;
         let girosAutoRestantes = 0; let menuAutoAberto = false;
+        window.megaWinTimeout = null; // Guarda o tempo do Mega Ganho para poder cancelar no clique
 
         const paylines = [
             [[0,1], [1,1], [2,1]], 
@@ -289,6 +292,11 @@
         ];
 
         document.getElementById('startScreen').addEventListener('click', function() {
+            let elem = document.documentElement;
+            const fsBtn = document.getElementById('fsBtn');
+            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>{}); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
+            
             this.style.opacity = '0';
             setTimeout(() => { 
                 this.style.display = 'none'; 
@@ -296,7 +304,21 @@
             }, 300);
             
             const bgMusic = document.getElementById('bgMusic');
-            if(bgMusic) { bgMusic.play().catch(e=>console.log(e)); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
+            if(bgMusic) { bgMusic.play().catch(e=>{}); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
+        });
+
+        // --- SISTEMA DE PAUSA INTELIGENTE (VISIBILITY API) ---
+        // Desliga a música assim que o cara sai do navegador, minimiza ou trava a tela
+        document.addEventListener('visibilitychange', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            if (document.hidden) {
+                bgMusic.pause();
+            } else {
+                // Só volta a tocar se o áudio não estiver mutado pelo jogador
+                if (audioLigado) {
+                    bgMusic.play().catch(e => console.log(e));
+                }
+            }
         });
 
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00, 200.00, 250.00, 400.00, 500.00];
@@ -312,6 +334,20 @@
 
         const sfxSpin = document.getElementById('sfxSpin'); const sfxStop = document.getElementById('sfxStop'); const sfxWin = document.getElementById('sfxWin');
         document.getElementById('bgMusic').volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
+
+        window.toggleFullscreen = function() {
+            let elem = document.documentElement;
+            const fsBtn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>{}); }
+                else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+                fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+                fsBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+            }
+        };
 
         window.toggleAudio = function() {
             audioLigado = !audioLigado; const btn = document.getElementById('audioBtn'); const bgMusic = document.getElementById('bgMusic');
@@ -356,6 +392,31 @@
             else { btnMain.classList.remove('auto-active'); btnAuto.classList.remove('active'); }
         }
 
+        // --- SISTEMA DE CLIQUE RÁPIDO NO MEGA GANHO ---
+        window.pularMegaGanho = function() {
+            const popup = document.getElementById('megaWinScreen');
+            if(popup.classList.contains('show')) {
+                clearTimeout(window.megaWinTimeout);
+                popup.classList.remove('show');
+                
+                isSpinning = false;
+                if(girosAutoRestantes > 0) {
+                    girosAutoRestantes--; atualizarBotaoAuto();
+                    if(girosAutoRestantes > 0) iniciarGiro(); // Se tiver no Auto, continua rasgando
+                } else {
+                    iniciarGiro(); // Se for manual, o clique já engata o próximo giro
+                }
+            }
+        };
+
+        window.liberarMaquinaGlob = function(tempo) {
+            isSpinning = false;
+            if(girosAutoRestantes > 0) {
+                girosAutoRestantes--; atualizarBotaoAuto();
+                if(girosAutoRestantes > 0) { setTimeout(() => { if(girosAutoRestantes > 0) iniciarGiro(); }, tempo || 1000); }
+            }
+        };
+
         window.iniciarGiro = async function() {
             if(isSpinning) return;
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
@@ -381,12 +442,9 @@
                 if(window.adminPerdas === undefined) window.adminPerdas = 0;
 
                 if(window.adminPerdas < 4 + Math.floor(Math.random() * 3)) {
-                    ganhou = false;
-                    window.adminPerdas++;
+                    ganhou = false; window.adminPerdas++;
                 } else {
-                    ganhou = true;
-                    window.adminPerdas = 0; 
-                    
+                    ganhou = true; window.adminPerdas = 0; 
                     let multiplicadorInteiro = Math.floor(Math.random() * (40 - 15 + 1)) + 15;
                     valorGanho = Math.round(apostaAtual * multiplicadorInteiro);
                     
@@ -416,14 +474,10 @@
 
             if(!ganhou) {
                 for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)]; }
-                
                 paylines.forEach(linha => {
-                    let s1 = telaFinal[linha[0][0]][linha[0][1]];
-                    let s2 = telaFinal[linha[1][0]][linha[1][1]];
-                    let s3 = telaFinal[linha[2][0]][linha[2][1]];
+                    let s1 = telaFinal[linha[0][0]][linha[0][1]]; let s2 = telaFinal[linha[1][0]][linha[1][1]]; let s3 = telaFinal[linha[2][0]][linha[2][1]];
                     if(s1 === s2 && s2 === s3) {
-                        let troca = simbolos.filter(s => s !== s3);
-                        telaFinal[linha[2][0]][linha[2][1]] = troca[0];
+                        let troca = simbolos.filter(s => s !== s3); telaFinal[linha[2][0]][linha[2][1]] = troca[0];
                     }
                 });
             }
@@ -446,7 +500,6 @@
         async function finalizarGiro(ganhou, valorGanho, saldoAtualizado, linhasWin) {
             const btnGirar = document.getElementById('btnGirar');
             btnGirar.classList.remove('is-spinning');
-            
             let tempoParaProximo = isTurbo ? 400 : 1000;
             
             if(ganhou && valorGanho > 0) {
@@ -465,24 +518,19 @@
                 if(valorGanho >= (apostaAtual * 10)) {
                     document.getElementById('megaWinValor').innerText = valorFormatado;
                     document.getElementById('megaWinScreen').classList.add('show');
-                    tempoParaProximo = 4500;
-                    setTimeout(() => { document.getElementById('megaWinScreen').classList.remove('show'); liberarMaquina(); }, 4000);
+                    
+                    // Guarda o tempo num ID global pra poder ser cancelado pelo clique
+                    window.megaWinTimeout = setTimeout(() => { 
+                        document.getElementById('megaWinScreen').classList.remove('show'); 
+                        window.liberarMaquinaGlob(4500); 
+                    }, 4000);
                 } else {
                     document.getElementById('normalWinValue').innerText = valorFormatado;
                     document.getElementById('normalWinBadge').classList.add('show');
-                    tempoParaProximo = 2000;
-                    setTimeout(() => { document.getElementById('normalWinBadge').classList.remove('show'); liberarMaquina(); }, 1800);
+                    setTimeout(() => { document.getElementById('normalWinBadge').classList.remove('show'); window.liberarMaquinaGlob(2000); }, 1800);
                 }
             } else {
-                liberarMaquina();
-            }
-
-            function liberarMaquina() {
-                isSpinning = false;
-                if(girosAutoRestantes > 0) {
-                    girosAutoRestantes--; atualizarBotaoAuto();
-                    if(girosAutoRestantes > 0) { setTimeout(() => { if(girosAutoRestantes > 0) iniciarGiro(); }, tempoParaProximo); }
-                }
+                window.liberarMaquinaGlob(tempoParaProximo);
             }
         }
     </script>
