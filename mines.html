@@ -162,9 +162,9 @@
         <div class="btn-start">Jogar Agora</div>
     </div>
 
-    <audio id="sfxClick" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3"></audio>
-    <audio id="sfxGem" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3"></audio>
-    <audio id="sfxBomb" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2f9b884d.mp3?filename=explosion-39897.mp3"></audio>
+    <audio id="sfxClick" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto"></audio>
+    <audio id="sfxGem" src="https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg" preload="auto"></audio>
+    <audio id="sfxBomb" src="https://actions.google.com/sounds/v1/weapons/explosion.ogg" preload="auto"></audio>
 
     <div class="header-bar">
         <div class="btn-back" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
@@ -237,7 +237,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
@@ -267,9 +266,6 @@
         const sfxClick = document.getElementById('sfxClick'); 
         const sfxGem = document.getElementById('sfxGem'); 
         const sfxBomb = document.getElementById('sfxBomb');
-        if(sfxClick) sfxClick.volume = 0.4; 
-        if(sfxGem) sfxGem.volume = 0.6; 
-        if(sfxBomb) sfxBomb.volume = 0.8;
 
         const pausarTodoAudio = () => { 
             if(sfxClick) sfxClick.pause(); 
@@ -282,15 +278,35 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // START SCREEN
+        // START SCREEN E O SEGREDO DO DESBLOQUEIO DE ÁUDIO NO IPHONE
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { this.style.display = 'none'; }, 300);
             
-            // Ativa o áudio visualmente ao entrar
             audioLigado = true;
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
+
+            // Truque de Segurança: Toca todos os sons mudos no clique para o iPhone liberar as faixas
+            [sfxClick, sfxGem, sfxBomb].forEach(audio => {
+                if(audio) {
+                    audio.volume = 0;
+                    let playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }).catch(e => {});
+                    }
+                }
+            });
+
+            // Restaura os volumes oficiais
+            setTimeout(() => {
+                if(sfxClick) sfxClick.volume = 0.5; 
+                if(sfxGem) sfxGem.volume = 0.7; 
+                if(sfxBomb) sfxBomb.volume = 0.8;
+            }, 100);
         });
 
         // EVENT LISTENERS DE CONTROLE
