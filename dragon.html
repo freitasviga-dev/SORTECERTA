@@ -11,12 +11,18 @@
     <title>Fortune Dragon | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* TRAVA DE ZOOM, OVERSCROLL E BARRA DO SAFARI */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
+        
+        html { height: -webkit-fill-available; }
         
         body { 
             background-color: #050000; 
             background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, #050000 85%);
-            color: #ffffff; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+            color: #ffffff; 
+            /* O 100dvh é o milagre que resolve a barra do Safari */
+            min-height: 100vh; min-height: 100dvh; 
+            overflow: hidden; display: flex; flex-direction: column;
         }
 
         #startScreen {
@@ -25,45 +31,48 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
             transition: opacity 0.3s ease;
         }
-        #startScreen i { font-size: 80px; color: #f1c40f; margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(241, 196, 15, 0.5)); }
-        #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; }
-        .btn-start { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 20px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
+        #startScreen i { font-size: 70px; color: #f1c40f; margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(241, 196, 15, 0.5)); }
+        #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; font-size: 20px; }
+        .btn-start { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 20px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); font-size: 14px; }
 
         #mainUI {
-            display: flex; flex-direction: column; height: 100vh; width: 100%;
+            display: flex; flex-direction: column; 
+            height: 100vh; height: 100dvh; width: 100%;
             opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
+        /* HEADER MAIS COMPACTO */
         .header-bar {
-            padding: 10px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
+            padding: 8px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
-            padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100;
+            padding-top: calc(8px + env(safe-area-inset-top)); z-index: 100;
         }
-        .btn-back { color: #f1c40f; font-size: 22px; cursor: pointer; padding: 5px; }
-        .logo-mascot-tiny { font-size: 22px; filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.5)); }
+        .btn-back { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; }
+        .logo-mascot-tiny { font-size: 20px; filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.5)); }
         
-        /* NOVO: AGRUPAMENTO DOS BOTÕES DO TOPO */
-        .top-actions { display: flex; gap: 18px; align-items: center; }
-        .btn-top { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
+        .top-actions { display: flex; gap: 15px; align-items: center; }
+        .btn-top { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
-        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 10px; }
+        /* ÁREA DA MÁQUINA - REDUZIDA PROPOSITALMENTE PARA CABER EM QUALQUER TELA */
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 5px; }
         
         .slot-machine {
             background: linear-gradient(180deg, #4a0000 0%, #1a0000 100%);
-            border: 3px solid #f1c40f; border-radius: 12px; padding: 8px;
-            width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9);
+            border: 3px solid #f1c40f; border-radius: 12px; padding: 6px;
+            width: 100%; max-width: 340px; box-shadow: 0 8px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.9);
             position: relative; overflow: hidden;
         }
 
-        .reels-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #333; }
-        .reel { display: flex; flex-direction: column; gap: 6px; }
+        .reels-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: #000; padding: 5px; border-radius: 8px; border: 1px solid #333; }
+        .reel { display: flex; flex-direction: column; gap: 5px; }
         
         .symbol-box {
             background: linear-gradient(180deg, #222 0%, #111 100%); border: 1px solid #333;
-            border-radius: 6px; height: calc((100vw * 0.92 - 40px) / 3 * 0.95); max-height: 90px;
+            border-radius: 6px; 
+            height: clamp(60px, 11vh, 85px); /* Se a tela for pequena, a caixinha encolhe! */
             display: flex; align-items: center; justify-content: center;
-            font-size: 40px; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); transition: 0.1s;
+            font-size: clamp(35px, 8vw, 45px); position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); transition: 0.1s;
         }
         
         .spinning .symbol-box { animation: slotSpin 0.1s infinite linear; filter: blur(2px); color: transparent; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
@@ -71,55 +80,56 @@
 
         .normal-win-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            background: #000; border: 2px solid #f1c40f; border-radius: 15px;
-            padding: 12px 30px; display: flex; flex-direction: column; align-items: center;
+            background: #000; border: 2px solid #f1c40f; border-radius: 12px;
+            padding: 10px 25px; display: flex; flex-direction: column; align-items: center;
             z-index: 50; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 5px 20px rgba(0,0,0,0.8); pointer-events: none;
         }
         .normal-win-badge.show { transform: translate(-50%, -50%) scale(1); }
-        .normal-win-badge span:first-child { color: #f1c40f; font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
-        .normal-win-badge span:last-child { color: #fff; font-size: 24px; font-weight: 900; }
+        .normal-win-badge span:first-child { color: #f1c40f; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
+        .normal-win-badge span:last-child { color: #fff; font-size: 20px; font-weight: 900; }
 
+        /* FOOTER COMPACTO (Garante que caiba acima da barra do Safari) */
         .footer-container {
-            width: 100%; background: rgba(0,0,0,0.9); border-top: 1px solid #333;
-            display: flex; flex-direction: column; align-items: center; padding: 12px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 20; position: relative;
+            width: 100%; background: rgba(0,0,0,0.95); border-top: 1px solid #333;
+            display: flex; flex-direction: column; align-items: center; padding: 10px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; position: relative;
         }
 
         .val-display-bar {
-            width: 100%; max-width: 350px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding: 0 5px;
+            width: 100%; max-width: 340px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; padding: 0 5px;
         }
         
         .val-column { display: flex; flex-direction: column; flex: 1; }
         .val-column.saldo { align-items: flex-start; }
         .val-column.aposta { align-items: flex-end; }
         
-        .val-title { font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 1px; letter-spacing: 0.5px; }
+        .val-title { font-size: 9px; text-transform: uppercase; font-weight: 700; margin-bottom: 1px; letter-spacing: 0.5px; }
         .val-title.saldo { color: #fff; }
         .val-title.aposta { color: #b8860b; }
         
         .val-value { font-weight: 900; letter-spacing: -0.5px; }
-        .val-value.saldo { font-size: 22px; color: #00e676; }
-        .val-value.aposta { font-size: 16px; color: #aaa; }
+        .val-value.saldo { font-size: 20px; color: #00e676; }
+        .val-value.aposta { font-size: 15px; color: #aaa; }
 
-        .spin-controls { width: 100%; max-width: 350px; display: flex; justify-content: space-around; align-items: center; }
+        .spin-controls { width: 100%; max-width: 340px; display: flex; justify-content: space-around; align-items: center; }
         
-        .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 55px; height: 55px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .btn-side span { font-size: 9px; font-weight: 900; margin-top: 2px; text-transform: uppercase; }
+        .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 50px; height: 50px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .btn-side span { font-size: 8px; font-weight: 900; margin-top: 2px; text-transform: uppercase; }
         .btn-side.active { color: #f1c40f; border-color: #b8860b; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
 
-        .btn-spin-wrapper { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 50px; border: 1px solid #222; }
-        .btn-bet-adjust { background: transparent; border: none; color: #fff; font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
+        .btn-spin-wrapper { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 50px; border: 1px solid #222; }
+        .btn-bet-adjust { background: transparent; border: none; color: #fff; font-size: 20px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
         .btn-bet-adjust:active { color: #f1c40f; transform: scale(0.8); }
         
         .btn-spin-main {
-            width: 80px; height: 80px; border-radius: 50%; border: 3px solid #000;
+            width: 75px; height: 75px; border-radius: 50%; border: 3px solid #000;
             background: radial-gradient(circle at 30% 30%, #f1c40f, #b8860b);
             box-shadow: 0 0 20px rgba(241, 196, 15, 0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
             display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;
         }
-        .btn-spin-main i { font-size: 34px; color: #111; transition: 0.2s; }
-        .btn-spin-main .auto-count { font-size: 30px; font-weight: 900; color: #111; display: none; }
+        .btn-spin-main i { font-size: 30px; color: #111; transition: 0.2s; }
+        .btn-spin-main .auto-count { font-size: 28px; font-weight: 900; color: #111; display: none; }
         .btn-spin-main.is-spinning i { animation: rotateSpin 0.8s infinite linear; }
         .btn-spin-main.auto-active i { display: none; }
         .btn-spin-main.auto-active .auto-count { display: block; }
@@ -127,12 +137,12 @@
 
         .auto-spin-menu {
             position: absolute; bottom: 100%; right: 20px; background: #0a0a0a;
-            border: 1px solid #b8860b; border-radius: 12px; padding: 12px;
+            border: 1px solid #b8860b; border-radius: 12px; padding: 10px;
             display: flex; flex-direction: column; gap: 6px; transform: translateY(20px);
-            opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; width: 90px; margin-bottom: 8px;
+            opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; width: 85px; margin-bottom: 8px;
         }
         .auto-spin-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-        .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 10px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 15px; }
+        .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .auto-btn-option:active { background: #b8860b; color: #000; }
 
         .mega-win-overlay {
@@ -140,11 +150,11 @@
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
         }
         .mega-win-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-        .mw-title { font-size: 45px; font-weight: 900; color: #f1c40f; text-transform: uppercase; text-shadow: 0 0 30px #b8860b, 0 5px 10px #000; margin-bottom: 20px; animation: bounce 1s infinite alternate; text-align: center; line-height: 1; }
-        .mw-value { font-size: 55px; font-weight: 900; color: #fff; text-shadow: 0 4px 20px #b8860b; }
+        .mw-title { font-size: 40px; font-weight: 900; color: #f1c40f; text-transform: uppercase; text-shadow: 0 0 30px #b8860b, 0 5px 10px #000; margin-bottom: 20px; animation: bounce 1s infinite alternate; text-align: center; line-height: 1; }
+        .mw-value { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 4px 20px #b8860b; }
 
-        .system-toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-        .system-toast.show { opacity: 1; top: 110px; }
+        .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+        .system-toast.show { opacity: 1; top: 100px; }
 
         @keyframes startPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
@@ -178,7 +188,6 @@
             <div class="logo-mascot-tiny">🐉</div>
             
             <div class="top-actions">
-                <div class="btn-top" onclick="toggleFullscreen()" id="fsBtn"><i class="fa-solid fa-expand"></i></div>
                 <div class="btn-top" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
             </div>
         </div>
@@ -272,19 +281,14 @@
         let girosAutoRestantes = 0; let menuAutoAberto = false;
 
         const paylines = [
-            [[0,1], [1,1], [2,1]], // Meio
-            [[0,0], [1,0], [2,0]], // Topo
-            [[0,2], [1,2], [2,2]], // Fundo
-            [[0,0], [1,1], [2,2]], // Diagonal \
-            [[0,2], [1,1], [2,0]]  // Diagonal /
+            [[0,1], [1,1], [2,1]], 
+            [[0,0], [1,0], [2,0]], 
+            [[0,2], [1,2], [2,2]], 
+            [[0,0], [1,1], [2,2]], 
+            [[0,2], [1,1], [2,0]]  
         ];
 
         document.getElementById('startScreen').addEventListener('click', function() {
-            let elem = document.documentElement;
-            const fsBtn = document.getElementById('fsBtn');
-            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
-            
             this.style.opacity = '0';
             setTimeout(() => { 
                 this.style.display = 'none'; 
@@ -308,21 +312,6 @@
 
         const sfxSpin = document.getElementById('sfxSpin'); const sfxStop = document.getElementById('sfxStop'); const sfxWin = document.getElementById('sfxWin');
         document.getElementById('bgMusic').volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
-
-        // LÓGICA DE TELA CHEIA MANUAL
-        window.toggleFullscreen = function() {
-            let elem = document.documentElement;
-            const fsBtn = document.getElementById('fsBtn');
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); }
-                else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-                fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-            } else {
-                if (document.exitFullscreen) { document.exitFullscreen(); }
-                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-                fsBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-            }
-        };
 
         window.toggleAudio = function() {
             audioLigado = !audioLigado; const btn = document.getElementById('audioBtn'); const bgMusic = document.getElementById('bgMusic');
