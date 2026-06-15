@@ -7,6 +7,11 @@
     
     <title>Mines | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="preload" href="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3" as="audio">
+    <link rel="preload" href="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3" as="audio">
+    <link rel="preload" href="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2f9b884d.mp3?filename=explosion-39897.mp3" as="audio">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
         html { height: -webkit-fill-available; overscroll-behavior: none; }
@@ -17,16 +22,27 @@
             display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: none;
         }
 
+        /* BOTÕES 3D (PROFUNDIDADE GERAL) */
+        .btn-3d {
+            transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease;
+            cursor: pointer;
+        }
+        .btn-3d:active {
+            transform: translateY(4px) !important;
+            box-shadow: none !important;
+            border-bottom-width: 0px !important;
+            margin-top: 4px; /* Compensa o visual para não empurrar os itens abaixo */
+        }
+
         /* HEADER */
         .header-bar {
             padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex; justify-content: space-between; align-items: center;
             padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .btn-back { color: #fff; font-size: 20px; cursor: pointer; padding: 5px; opacity: 0.8; transition: 0.2s; }
-        .btn-back:active { opacity: 1; transform: scale(0.9); }
+        .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
         .logo-text { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .btn-top { color: #fff; font-size: 18px; cursor: pointer; padding: 5px; opacity: 0.8; }
+        .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
         /* JOGO */
         .game-area {
@@ -39,17 +55,20 @@
             margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.05);
         }
+        
         .mines-select {
-            background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 3px solid rgba(0,0,0,0.8);
             padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none; appearance: none;
         }
+        
         .next-multiplier {
             background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000;
             padding: 6px 15px; border-radius: 20px; font-size: 13px; font-weight: 900;
             box-shadow: 0 2px 10px rgba(241, 196, 15, 0.3); transition: 0.3s;
         }
 
-        /* GRID MINES */
+        /* GRID MINES COM EFEITO 3D FÍSICO */
         .mines-grid {
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%;
             background: rgba(0,0,0,0.1); padding: 8px; border-radius: 12px;
@@ -57,23 +76,23 @@
         }
         .tile {
             background: #1c3a76; border-radius: 8px; position: relative;
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 2px 5px rgba(0,0,0,0.3);
-            cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.1s ease;
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 4px 5px rgba(0,0,0,0.4);
+            border-bottom: 4px solid #0d214a; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease;
         }
         .tile::after { content: ''; position: absolute; width: 12px; height: 12px; background: rgba(0,0,0,0.15); border-radius: 50%; }
         
-        .tile:active:not(.opened) { transform: translateY(2px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); }
-        .tile.opened { background: #152b5e; box-shadow: inset 0 2px 5px rgba(0,0,0,0.4); transform: translateY(2px); cursor: default; }
+        .tile:active:not(.opened) { transform: translateY(4px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), 0 0px 0px rgba(0,0,0,0); border-bottom-width: 0px; }
+        .tile.opened { background: #152b5e; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); transform: translateY(4px); border-bottom-width: 0px; cursor: default; }
         .tile.opened::after { display: none; }
         
         .tile.gem { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .tile.gem::before { content: '💎'; font-size: 28px; filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6)); }
-        .tile.bomb { background: #e74c3c; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); animation: shake 0.4s ease-in-out; }
+        .tile.bomb { background: #e74c3c; box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); animation: shake 0.4s ease-in-out; }
         .tile.bomb::before { content: '💣'; font-size: 28px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
         .tile.bomb-reveal { opacity: 0.5; background: #8a2b2b; }
         .tile.bomb-reveal::before { content: '💣'; font-size: 24px; opacity: 0.8; }
 
-        /* CONTROLES */
+        /* CONTROLES E BOTÕES 3D */
         .controls-wrapper {
             width: 100%; background: #0c1f45; border-top: 2px solid #143570;
             padding: 15px; display: flex; flex-direction: column; gap: 12px;
@@ -82,32 +101,37 @@
 
         .action-row { display: flex; gap: 10px; }
         .btn-secondary {
-            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            color: #aaa; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 800;
-            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
+            flex: 1; background: rgba(0,0,0,0.3); color: #aaa; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 800;
+            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-bottom: none;
         }
-        .btn-secondary:active { background: rgba(0,0,0,0.5); transform: scale(0.98); }
-        .btn-secondary.auto-active { color: #f1c40f; border-color: #b8860b; background: rgba(241, 196, 15, 0.1); }
+        .btn-secondary.auto-active { color: #f1c40f; background: rgba(241, 196, 15, 0.1); border-color: #b8860b; }
 
         .bet-input-row {
             display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px;
             border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between;
         }
-        .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; }
-        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; }
-        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .bet-adjust:active { transform: scale(0.9); }
+        .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; }
+        .bet-display:active { background: rgba(255,255,255,0.1); }
+        .bet-adjust { 
+            background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; 
+        }
 
         .bet-button {
             width: 100%; background: linear-gradient(180deg, #00e676, #00b359);
             border: none; border-radius: 12px; padding: 16px; color: #000;
             font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3), inset 0 -3px 0 rgba(0,0,0,0.2);
-            cursor: pointer; transition: all 0.1s ease; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .bet-button:active { transform: translateY(3px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
-        .bet-button.cashout { background: linear-gradient(180deg, #f39c12, #d35400); box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3), inset 0 -3px 0 rgba(0,0,0,0.2); animation: pulseCashout 1.5s infinite alternate; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .bet-button.disabled { background: #555; box-shadow: none; color: #888; pointer-events: none; }
+        .bet-button.cashout { 
+            background: linear-gradient(180deg, #f39c12, #d35400); 
+            box-shadow: 0 6px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.3); border-bottom: 2px solid #6b2d00;
+            color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); 
+        }
+        .bet-button.disabled { background: #555; box-shadow: 0 6px 0 #222; border-bottom: 2px solid #111; color: #888; pointer-events: none; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; }
@@ -148,35 +172,34 @@
             transition: opacity 0.3s ease;
         }
         #startScreen h2 { color: #00e676; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; font-size: 24px; text-shadow: 0 0 10px rgba(0,230,118,0.5); }
-        .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4); font-size: 14px; animation: pulseCashout 1s infinite alternate; }
+        .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4); font-size: 14px; }
 
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
-        @keyframes pulseCashout { 0% { box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); } 100% { box-shadow: 0 4px 25px rgba(243, 156, 18, 0.6); } }
     </style>
 </head>
 <body>
 
     <div id="startScreen">
         <h2>Mines Crash</h2>
-        <div class="btn-start">Jogar Agora</div>
+        <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
-    <audio id="sfxClick" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto"></audio>
-    <audio id="sfxGem" src="https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg" preload="auto"></audio>
-    <audio id="sfxBomb" src="https://actions.google.com/sounds/v1/weapons/explosion.ogg" preload="auto"></audio>
+    <audio id="sfxClick" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3" preload="auto"></audio>
+    <audio id="sfxGem" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3" preload="auto"></audio>
+    <audio id="sfxBomb" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2f9b884d.mp3?filename=explosion-39897.mp3" preload="auto"></audio>
 
     <div class="header-bar">
-        <div class="btn-back" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
         <div class="logo-text">MINES</div>
         <div class="top-actions">
-            <div class="btn-top" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
+            <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
     </div>
 
     <div class="game-area">
         <div class="board-header">
-            <select class="mines-select" id="minesCount">
+            <select class="mines-select btn-3d" id="minesCount">
                 <option value="1">Minas: 1</option>
                 <option value="2">Minas: 2</option>
                 <option value="3" selected>Minas: 3</option>
@@ -194,18 +217,18 @@
 
     <div class="controls-wrapper">
         <div class="action-row">
-            <div class="btn-secondary" id="btnRandom"><i class="fa-solid fa-shuffle"></i> Aleatório</div>
-            <div class="btn-secondary" id="btnAuto"><i class="fa-solid fa-rotate"></i> Auto Jogo</div>
+            <div class="btn-secondary btn-3d" id="btnRandom"><i class="fa-solid fa-shuffle"></i> Aleatório</div>
+            <div class="btn-secondary btn-3d" id="btnAuto"><i class="fa-solid fa-rotate"></i> Auto Jogo</div>
         </div>
 
         <div class="bet-input-row">
             <div class="bet-label">Aposta</div>
-            <button class="bet-adjust" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
-            <div class="bet-display" id="displayAposta">R$ 1,00</div>
-            <button class="bet-adjust" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
+            <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+            <div class="bet-display" id="displayAposta" onclick="abrirInputAposta()">R$ 1,00</div>
+            <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
         </div>
 
-        <button class="bet-button" id="btnAction">
+        <button class="bet-button btn-3d" id="btnAction">
             <i class="fa-solid fa-play"></i> APOSTAR
         </button>
 
@@ -219,10 +242,10 @@
 
         <div class="auto-spin-menu" id="menuAuto">
             <div style="color: #f1c40f; font-size: 11px; font-weight: bold; text-align: center; margin-bottom: 5px;">RODADAS</div>
-            <div class="auto-btn-option" data-spins="10">10</div>
-            <div class="auto-btn-option" data-spins="30">30</div>
-            <div class="auto-btn-option" data-spins="50">50</div>
-            <div class="auto-btn-option" data-spins="100">100</div>
+            <div class="auto-btn-option btn-3d" data-spins="10">10</div>
+            <div class="auto-btn-option btn-3d" data-spins="30">30</div>
+            <div class="auto-btn-option btn-3d" data-spins="50">50</div>
+            <div class="auto-btn-option btn-3d" data-spins="100">100</div>
         </div>
     </div>
 
@@ -262,15 +285,24 @@
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
-        // CONFIGURAÇÃO DOS EFEITOS SONOROS
-        const sfxClick = document.getElementById('sfxClick'); 
-        const sfxGem = document.getElementById('sfxGem'); 
-        const sfxBomb = document.getElementById('sfxBomb');
+        // FUNÇÃO DE ÁUDIO SEM ATRASO (Força o reset do tempo)
+        const tocarSom = (id) => {
+            if(!audioLigado) return;
+            const audio = document.getElementById(id);
+            if(audio) {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.play().catch(e => {});
+            }
+        };
 
         const pausarTodoAudio = () => { 
-            if(sfxClick) sfxClick.pause(); 
-            if(sfxGem) sfxGem.pause(); 
-            if(sfxBomb) sfxBomb.pause(); 
+            const s1 = document.getElementById('sfxClick');
+            const s2 = document.getElementById('sfxGem');
+            const s3 = document.getElementById('sfxBomb');
+            if(s1) s1.pause(); 
+            if(s2) s2.pause(); 
+            if(s3) s3.pause(); 
         };
 
         function mostrarToast(msg) {
@@ -278,7 +310,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // START SCREEN E O SEGREDO DO DESBLOQUEIO DE ÁUDIO NO IPHONE
+        // START SCREEN (Desbloqueador de Áudio iOS)
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { this.style.display = 'none'; }, 300);
@@ -287,26 +319,21 @@
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
 
-            // Truque de Segurança: Toca todos os sons mudos no clique para o iPhone liberar as faixas
-            [sfxClick, sfxGem, sfxBomb].forEach(audio => {
+            // Desbloqueia os áudios tocando silenciado no primeiro clique
+            ['sfxClick', 'sfxGem', 'sfxBomb'].forEach(id => {
+                const audio = document.getElementById(id);
                 if(audio) {
                     audio.volume = 0;
-                    let playPromise = audio.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            audio.pause();
-                            audio.currentTime = 0;
-                        }).catch(e => {});
-                    }
+                    audio.play().then(() => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        // Restaura os volumes oficiais
+                        if(id === 'sfxClick') audio.volume = 0.5;
+                        if(id === 'sfxGem') audio.volume = 0.7;
+                        if(id === 'sfxBomb') audio.volume = 0.9;
+                    }).catch(e => {});
                 }
             });
-
-            // Restaura os volumes oficiais
-            setTimeout(() => {
-                if(sfxClick) sfxClick.volume = 0.5; 
-                if(sfxGem) sfxGem.volume = 0.7; 
-                if(sfxBomb) sfxBomb.volume = 0.8;
-            }, 100);
         });
 
         // EVENT LISTENERS DE CONTROLE
@@ -314,20 +341,37 @@
         document.getElementById('btnAudio').addEventListener('click', toggleAudio);
         document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
-        document.getElementById('minesCount').addEventListener('change', atualizarMultiplicadorPreview);
+        document.getElementById('minesCount').addEventListener('change', () => { tocarSom('sfxClick'); atualizarMultiplicadorPreview(); });
         document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
         document.getElementById('btnRandom').addEventListener('click', clickAleatorioUser);
         document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
 
         document.querySelectorAll('.auto-btn-option').forEach(btn => {
-            btn.addEventListener('click', function() { iniciarAutoJogo(parseInt(this.dataset.spins)); });
+            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
         });
+
+        // INPUT MANUAL DE APOSTA
+        window.abrirInputAposta = function() {
+            if(isGaming || isAutoModeActive) return;
+            let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
+            if(novoValor !== null) {
+                let parsed = parseFloat(novoValor.replace(',', '.'));
+                if(!isNaN(parsed) && parsed >= 0.10) {
+                    apostaAtual = Math.min(parsed, 500.00); // Limita em 500
+                    document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    tocarSom('sfxClick');
+                } else {
+                    mostrarToast("Valor inválido.");
+                }
+            }
+        };
 
         function toggleAudio() {
             audioLigado = !audioLigado; 
             const btn = document.getElementById('btnAudio');
             if(audioLigado) { 
                 btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; 
+                tocarSom('sfxClick');
             } else { 
                 pausarTodoAudio(); 
                 btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
@@ -335,6 +379,7 @@
         }
 
         function voltarParaLobby() {
+            tocarSom('sfxClick');
             pausarTodoAudio();
             pararAutoJogo();
             lidarComSaidaAbrupta();
@@ -355,9 +400,7 @@
         }
 
         document.addEventListener('visibilitychange', function() {
-            if (document.hidden || document.visibilityState === 'hidden') { 
-                pausarTodoAudio(); lidarComSaidaAbrupta(); pararAutoJogo();
-            } 
+            if (document.hidden || document.visibilityState === 'hidden') { lidarComSaidaAbrupta(); pararAutoJogo(); } 
         });
         window.addEventListener('pagehide', function() { lidarComSaidaAbrupta(); pararAutoJogo(); });
         window.addEventListener("beforeunload", function (e) { lidarComSaidaAbrupta(); });
@@ -375,13 +418,14 @@
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
                 indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
                 document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                if(audioLigado) { sfxClick.currentTime = 0; sfxClick.play(); }
+                tocarSom('sfxClick');
             }
         }
 
         // LÓGICA DO AUTO JOGO
         function toggleMenuAuto() {
-            if(isGaming || isAutoModeActive) { pararAutoJogo(); return; }
+            if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
+            tocarSom('sfxClick');
             document.getElementById('menuAuto').classList.toggle('show');
         }
 
@@ -455,7 +499,7 @@
             grid.innerHTML = '';
             for(let i=0; i<25; i++) {
                 const tile = document.createElement('div');
-                tile.className = 'tile';
+                tile.className = 'tile btn-3d';
                 tile.dataset.index = i;
                 tile.addEventListener('click', () => cliqueNoBloco(i));
                 grid.appendChild(tile);
@@ -465,6 +509,7 @@
         // AÇÃO DO BOTÃO PRINCIPAL (APOSTAR / SACAR)
         function cliqueBotaoApostar() {
             if(isAutoModeActive) return; 
+            tocarSom('sfxClick');
 
             if (isGaming) {
                 if (openedTiles === 0) return; 
@@ -476,7 +521,6 @@
 
         async function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return; }
-            if(audioLigado) { sfxClick.currentTime = 0; sfxClick.play(); }
 
             isGaming = true; openedTiles = 0; currentMultiplier = 1.00;
             
@@ -526,12 +570,12 @@
 
             if(board[index] === 1) {
                 // BOMBA
-                if(audioLigado) { sfxBomb.currentTime = 0; sfxBomb.play(); }
+                tocarSom('sfxBomb');
                 tile.classList.add('bomb');
                 finalizarJogoComDerrota();
             } else {
                 // DIAMANTE
-                if(audioLigado) { sfxGem.currentTime = 0; sfxGem.play(); }
+                tocarSom('sfxGem');
                 tile.classList.add('gem');
                 openedTiles++;
 
@@ -547,6 +591,7 @@
         }
 
         function clickAleatorioUser() {
+            tocarSom('sfxClick');
             if(!isGaming || isAutoModeActive) { mostrarToast("Inicie uma aposta primeiro."); return; }
             clickAleatorio();
         }
@@ -607,7 +652,6 @@
             
             document.getElementById('nextMultDisplay').innerText = calcularMultiplicador(parseInt(document.getElementById('minesCount').value), 1).toFixed(2) + "x";
 
-            if(audioLigado) { sfxGem.currentTime = 0; sfxGem.play(); }
             const toast = document.getElementById('winToast');
             document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
             toast.classList.add('show');
