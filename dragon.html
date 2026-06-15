@@ -4,21 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>Fortune Dragon | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* TRAVA DE ZOOM E SCROLL DO NAVEGADOR */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
         
-        html { height: -webkit-fill-available; }
+        html { height: -webkit-fill-available; overscroll-behavior: none; }
         
         body { 
             background-color: #050000; 
             background-image: radial-gradient(circle at 50% 0%, #3a0000 0%, #050000 85%);
             color: #ffffff; 
-            min-height: 100vh; min-height: 100dvh; 
+            min-height: 100vh; min-height: 100dvh; /* Evita que o Safari coma o rodapé */
             overflow: hidden; display: flex; flex-direction: column;
+            overscroll-behavior: none;
         }
 
+        /* PORTA DE ENTRADA */
         #startScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0a0000; z-index: 9999999;
@@ -29,6 +36,7 @@
         #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; font-size: 20px; }
         .btn-start { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; animation: startPulse 1s infinite alternate; margin-top: 20px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); font-size: 14px; }
 
+        /* JOGO PRINCIPAL */
         #mainUI {
             display: flex; flex-direction: column; 
             height: 100vh; height: 100dvh; width: 100%;
@@ -36,16 +44,17 @@
         }
         #mainUI.active { opacity: 1; pointer-events: auto; }
 
+        /* CABEÇALHO */
         .header-bar {
             padding: 8px 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
             padding-top: calc(8px + env(safe-area-inset-top)); z-index: 100;
         }
         .btn-back { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; }
-        
         .top-actions { display: flex; gap: 15px; align-items: center; }
         .btn-top { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
+        /* ÁREA DA MÁQUINA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 5px; }
         
         .game-logo {
@@ -75,6 +84,7 @@
         .spinning .symbol-box { animation: slotSpin 0.1s infinite linear; filter: blur(2px); color: transparent; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
         .symbol-box.win-anim { background: radial-gradient(circle, rgba(241, 196, 15, 0.4), #111) !important; border-color: #f1c40f !important; animation: winPulse 0.5s infinite alternate; z-index: 5; box-shadow: 0 0 20px rgba(241, 196, 15, 0.6) !important; }
 
+        /* POPUP DE GANHO NORMAL */
         .normal-win-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
             background: #000; border: 2px solid #f1c40f; border-radius: 12px;
@@ -86,16 +96,14 @@
         .normal-win-badge span:first-child { color: #f1c40f; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
         .normal-win-badge span:last-child { color: #fff; font-size: 20px; font-weight: 900; }
 
+        /* RODAPÉ E VALORES */
         .footer-container {
             width: 100%; background: rgba(0,0,0,0.95); border-top: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; padding: 10px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; position: relative;
         }
 
-        .val-display-bar {
-            width: 100%; max-width: 340px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; padding: 0 5px;
-        }
-        
+        .val-display-bar { width: 100%; max-width: 340px; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; padding: 0 5px; }
         .val-column { display: flex; flex-direction: column; flex: 1; }
         .val-column.saldo { align-items: flex-start; }
         .val-column.aposta { align-items: flex-end; }
@@ -108,8 +116,8 @@
         .val-value.saldo { font-size: 20px; color: #00e676; }
         .val-value.aposta { font-size: 15px; color: #aaa; }
 
+        /* CONTROLES INFERIORES */
         .spin-controls { width: 100%; max-width: 340px; display: flex; justify-content: space-around; align-items: center; }
-        
         .btn-side { background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #444; color: #888; width: 50px; height: 50px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .btn-side span { font-size: 8px; font-weight: 900; margin-top: 2px; text-transform: uppercase; }
         .btn-side.active { color: #f1c40f; border-color: #b8860b; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
@@ -131,6 +139,7 @@
         .btn-spin-main.auto-active .auto-count { display: block; }
         .btn-spin-main.auto-active { background: radial-gradient(circle at 30% 30%, #e74c3c, #900000); box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
 
+        /* MENU AUTO SPIN */
         .auto-spin-menu {
             position: absolute; bottom: 100%; right: 20px; background: #0a0a0a;
             border: 1px solid #b8860b; border-radius: 12px; padding: 10px;
@@ -141,6 +150,7 @@
         .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .auto-btn-option:active { background: #b8860b; color: #000; }
 
+        /* TELA DE MEGA GANHO */
         .mega-win-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000f5;
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; cursor: pointer;
@@ -150,6 +160,7 @@
         .mw-value { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 4px 20px #b8860b; }
         .mw-hint { color: #888; font-size: 10px; margin-top: 20px; text-transform: uppercase; animation: pulse 1s infinite; }
 
+        /* TOAST DE SISTEMA */
         .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 100px; }
 
@@ -183,7 +194,6 @@
 
         <div class="header-bar">
             <div class="btn-back" onclick="window.voltarParaLobby()"><i class="fa-solid fa-chevron-left"></i></div>
-            
             <div class="top-actions">
                 <div class="btn-top" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
             </div>
@@ -243,12 +253,10 @@
 
                 <div class="btn-spin-wrapper">
                     <button class="btn-bet-adjust" onclick="mudarAposta(-1)"><i class="fa-solid fa-minus"></i></button>
-                    
                     <button class="btn-spin-main" id="btnGirar" onclick="cliqueBotaoPrincipal()">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span class="auto-count" id="autoCountDisplay">0</span>
                     </button>
-                    
                     <button class="btn-bet-adjust" onclick="mudarAposta(1)"><i class="fa-solid fa-plus"></i></button>
                 </div>
 
@@ -272,33 +280,38 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // FIREBASE SETUP
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
             projectId: "sortecerta-75b77"
         };
         const db = getDatabase(initializeApp(firebaseConfig));
-
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
+
+        // VARIÁVEIS DO JOGO E PROTOCOLOS DE SEGURANÇA
         let bancaAtual = 0; let modoJogador = 'normal'; let isSpinning = false; let isTurbo = false; let audioLigado = false;
         let girosAutoRestantes = 0; let menuAutoAberto = false;
         
-        let roletasGirandoCritico = false; 
+        let roletasGirandoCritico = false; // Trava o saldo se sair no meio da animação
         let saldoAntesDoGiro = 0;
         window.spinTimeouts = [];
         window.megaWinTimeout = null; 
 
+        // O DRAGÃO É O CORINGA (WILD)
         const CORINGA = '🐉';
         const simbolos = ['🐉', '🧧', '🏮', '🪙', '🧨', '🪢'];
         
+        // 5 LINHAS OFICIAIS DE PAGAMENTO
         const paylines = [
-            [[0,1], [1,1], [2,1]], 
-            [[0,0], [1,0], [2,0]], 
-            [[0,2], [1,2], [2,2]], 
-            [[0,0], [1,1], [2,2]], 
-            [[0,2], [1,1], [2,0]]  
+            [[0,1], [1,1], [2,1]], // Meio
+            [[0,0], [1,0], [2,0]], // Topo
+            [[0,2], [1,2], [2,2]], // Fundo
+            [[0,0], [1,1], [2,2]], // Diagonal \
+            [[0,2], [1,1], [2,0]]  // Diagonal /
         ];
 
+        // INICIALIZAÇÃO
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { 
@@ -306,22 +319,26 @@
                 document.getElementById('mainUI').classList.add('active');
             }, 300);
             
-            const bgMusic = document.getElementById('bgMusic');
             if(bgMusic) { bgMusic.play().catch(e=>{}); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
         });
 
+        // ÁUDIO E CONTROLES
         const bgMusic = document.getElementById('bgMusic');
         const sfxSpin = document.getElementById('sfxSpin'); 
         const sfxStop = document.getElementById('sfxStop'); 
         const sfxWin = document.getElementById('sfxWin');
         bgMusic.volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
 
-        // O SISTEMA DE RETORNO INTELIGENTE (SEM MÚSICA FANTASMA)
-        window.voltarParaLobby = function() {
+        const pausarTodoAudio = () => {
             if(bgMusic) bgMusic.pause();
             if(sfxSpin) sfxSpin.pause();
+            if(sfxWin) sfxWin.pause();
+        };
+
+        window.voltarParaLobby = function() {
+            pausarTodoAudio();
             cancelarRodadaDeEmergencia(); 
-            
+            // Fecha via Iframe no Lobby se estiver embarcado
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage("fecharIframe", "*");
             } else {
@@ -329,32 +346,38 @@
             }
         };
 
-        // PROTOCOLO DE REEMBOLSO (ANTI-LOSS)
+        // PROTOCOLO 5: ANTI-LOSS SE FECHAR O NAVEGADOR DURANTE O GIRO
         function cancelarRodadaDeEmergencia() {
             if (roletasGirandoCritico) {
                 window.spinTimeouts.forEach(t => clearTimeout(t));
                 window.spinTimeouts = [];
+                // Reembolsa o dinheiro instantaneamente e formata
                 set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoAntesDoGiro.toFixed(2)));
                 
                 roletasGirandoCritico = false; isSpinning = false; girosAutoRestantes = 0;
                 atualizarBotaoAuto();
                 document.getElementById('btnGirar').classList.remove('is-spinning');
                 document.querySelectorAll('.symbol-box').forEach(b => b.parentElement.classList.remove('spinning'));
-                if(sfxSpin) sfxSpin.pause();
                 mostrarToast("Rodada cancelada. Saldo devolvido!");
             }
         }
 
+        // EVENTOS DE BLINDAGEM MOBILE (Minimizar app, fechar tela)
         document.addEventListener('visibilitychange', function() {
-            if (document.hidden) { 
-                bgMusic.pause(); 
+            if (document.hidden || document.visibilityState === 'hidden') { 
+                pausarTodoAudio();
                 cancelarRodadaDeEmergencia(); 
             } 
             else if (audioLigado) { bgMusic.play().catch(e => {}); }
         });
 
+        window.addEventListener('pagehide', function() {
+            pausarTodoAudio();
+            cancelarRodadaDeEmergencia(); 
+        });
         window.addEventListener("beforeunload", function (e) { cancelarRodadaDeEmergencia(); });
 
+        // CONTROLES DE APOSTA
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00, 200.00, 250.00, 400.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
@@ -362,6 +385,7 @@
             const dados = snapshot.val() || {}; 
             bancaAtual = parseFloat(dados.saldo || 0); 
             modoJogador = dados.modo || 'normal';
+            // Valor real no topo, sem limitações.
             document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
 
@@ -414,10 +438,8 @@
                 clearTimeout(window.megaWinTimeout);
                 popup.classList.remove('show');
                 isSpinning = false;
-                if(girosAutoRestantes > 0) {
-                    girosAutoRestantes--; atualizarBotaoAuto();
-                    if(girosAutoRestantes > 0) iniciarGiro(); 
-                } else { iniciarGiro(); }
+                if(girosAutoRestantes > 0) { girosAutoRestantes--; atualizarBotaoAuto(); if(girosAutoRestantes > 0) iniciarGiro(); } 
+                else { iniciarGiro(); }
             }
         };
 
@@ -429,16 +451,19 @@
             }
         };
 
+        // LÓGICA DO CORINGA - VERIFICA SE A LINHA É VÁLIDA
         function verificaVitoriaLinha(s1, s2, s3) {
             const cartasSemCoringa = [s1, s2, s3].filter(s => s !== CORINGA);
-            if (cartasSemCoringa.length === 0) return true; 
+            if (cartasSemCoringa.length === 0) return true; // Três dragões
             return cartasSemCoringa.every(s => s === cartasSemCoringa[0]); 
         }
 
+        // MOTOR DO CASSINO
         window.iniciarGiro = async function() {
             if(isSpinning) return;
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente. Deposite."); girosAutoRestantes = 0; atualizarBotaoAuto(); return; }
 
+            // Configuração para o Anti-Loss e Estado da Máquina
             isSpinning = true; 
             roletasGirandoCritico = true;
             saldoAntesDoGiro = bancaAtual;
@@ -452,6 +477,7 @@
             document.getElementById('normalWinBadge').classList.remove('show');
             document.querySelectorAll('.symbol-box').forEach(box => box.classList.remove('win-anim'));
 
+            // Subtrai o saldo com precisão
             let novoSaldo = bancaAtual - apostaAtual;
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
             get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2))));
@@ -461,6 +487,7 @@
 
             let ganhou = false; let valorGanho = 0; let telaFinal = [[], [], []]; let linhasVencedorasInfo = [];
 
+            // INFLUENCIADOR (ADMIN) VS NORMAL
             if(modoJogador === 'influenciador') {
                 if(window.adminPerdas === undefined) window.adminPerdas = 0;
 
@@ -477,9 +504,8 @@
 
                     for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = lixo[Math.floor(Math.random() * lixo.length)]; }
                     
-                    linhaWin.forEach(pos => {
-                        telaFinal[pos[0]][pos[1]] = (simboloBase !== CORINGA && Math.random() < 0.4) ? CORINGA : simboloBase;
-                    });
+                    // Coloca Coringa no meio das vitórias aleatoriamente
+                    linhaWin.forEach(pos => { telaFinal[pos[0]][pos[1]] = (simboloBase !== CORINGA && Math.random() < 0.4) ? CORINGA : simboloBase; });
                     linhasVencedorasInfo = [linhaWin];
                 }
             } else {
@@ -493,38 +519,41 @@
                     let lixo = simbolos.filter(s => s !== simboloBase && s !== CORINGA);
 
                     for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = lixo[Math.floor(Math.random() * lixo.length)]; }
-                    
-                    linhaWin.forEach(pos => {
-                        telaFinal[pos[0]][pos[1]] = (simboloBase !== CORINGA && Math.random() < 0.3) ? CORINGA : simboloBase;
-                    });
+                    linhaWin.forEach(pos => { telaFinal[pos[0]][pos[1]] = (simboloBase !== CORINGA && Math.random() < 0.3) ? CORINGA : simboloBase; });
                     linhasVencedorasInfo = [linhaWin];
                 }
             }
 
-            if(!ganhou) {
-                for(let c=0; c<3; c++) { for(let l=0; l<3; l++) telaFinal[c][l] = simbolos[Math.floor(Math.random() * simbolos.length)]; }
-                
-                // O LAÇO ANTI-FALSO POSITIVO BLINDADO
-                let temFalsoPositivo = true;
-                let tentativasSeguranca = 0;
-                while(temFalsoPositivo && tentativasSeguranca < 30) {
-                    temFalsoPositivo = false;
-                    paylines.forEach(linha => {
-                        let s1 = telaFinal[linha[0][0]][linha[0][1]];
-                        let s2 = telaFinal[linha[1][0]][linha[1][1]];
-                        let s3 = telaFinal[linha[2][0]][linha[2][1]];
+            // QUEBRADOR DE FALSO POSITIVO INTELIGENTE (Resolve o bug dos Dois Dragões)
+            let temFalsoPositivo = true;
+            let tentativasSeguranca = 0;
+            
+            while(temFalsoPositivo && tentativasSeguranca < 30) {
+                temFalsoPositivo = false;
+                paylines.forEach(linha => {
+                    // Ignora a linha de vitória legítima
+                    if (ganhou && linhasVencedorasInfo.length > 0 && linha === linhasVencedorasInfo[0]) return;
+                    
+                    let s1 = telaFinal[linha[0][0]][linha[0][1]];
+                    let s2 = telaFinal[linha[1][0]][linha[1][1]];
+                    let s3 = telaFinal[linha[2][0]][linha[2][1]];
+                    
+                    if(verificaVitoriaLinha(s1, s2, s3)) {
+                        temFalsoPositivo = true;
                         
-                        if(verificaVitoriaLinha(s1, s2, s3)) {
-                            temFalsoPositivo = true;
-                            // AGORA A PROIBIÇÃO É EXATA (INCLUINDO O S3 QUE CAUSAVA O BUG)
-                            let simbolosProibidos = [s1, s2, s3, CORINGA];
-                            let trocaSegura = simbolos.filter(s => !simbolosProibidos.includes(s));
-                            if(trocaSegura.length === 0) trocaSegura = ['🏮', '🪙', '🪢']; 
-                            telaFinal[linha[2][0]][linha[2][1]] = trocaSegura[Math.floor(Math.random() * trocaSegura.length)];
+                        // Quebra a linha trocando uma peça pelo meio, nunca usando o coringa
+                        let proibidos = [s1, s3, CORINGA];
+                        let trocaSegura = simbolos.filter(s => !proibidos.includes(s));
+                        
+                        // Garante que não vai estragar a linha de ganho principal
+                        let posLivre = linha.find(pos => !(ganhou && linhasVencedorasInfo[0].some(w => w[0] === pos[0] && w[1] === pos[1])));
+                        
+                        if(posLivre) {
+                            telaFinal[posLivre[0]][posLivre[1]] = trocaSegura[Math.floor(Math.random() * trocaSegura.length)];
                         }
-                    });
-                    tentativasSeguranca++;
-                }
+                    }
+                });
+                tentativasSeguranca++;
             }
 
             let delayBase = isTurbo ? 100 : 500; 
@@ -538,7 +567,7 @@
                     boxes[0].innerText = telaFinal[i][0]; boxes[1].innerText = telaFinal[i][1]; boxes[2].innerText = telaFinal[i][2];
 
                     if(i === 2) {
-                        roletasGirandoCritico = false; 
+                        roletasGirandoCritico = false; // Animação acabou. É seguro fechar agora.
                         finalizarGiro(ganhou, valorGanho, novoSaldo, linhasVencedorasInfo);
                     }
                 }, delayBase * (i + 1));
