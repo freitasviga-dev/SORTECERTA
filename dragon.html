@@ -42,7 +42,10 @@
         }
         .btn-back { color: #f1c40f; font-size: 22px; cursor: pointer; padding: 5px; }
         .logo-mascot-tiny { font-size: 22px; filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.5)); }
-        .btn-audio { color: #f1c40f; font-size: 18px; cursor: pointer; padding: 5px; width: 30px; text-align: right; }
+        
+        /* NOVO: AGRUPAMENTO DOS BOTÕES DO TOPO */
+        .top-actions { display: flex; gap: 18px; align-items: center; }
+        .btn-top { color: #f1c40f; font-size: 20px; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; }
 
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 10px; }
         
@@ -173,7 +176,11 @@
         <div class="header-bar">
             <div class="btn-back" onclick="window.location.href='index.html'"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-mascot-tiny">🐉</div>
-            <div class="btn-audio" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
+            
+            <div class="top-actions">
+                <div class="btn-top" onclick="toggleFullscreen()" id="fsBtn"><i class="fa-solid fa-expand"></i></div>
+                <div class="btn-top" onclick="toggleAudio()" id="audioBtn"><i class="fa-solid fa-volume-xmark"></i></div>
+            </div>
         </div>
 
         <div class="game-area">
@@ -274,8 +281,9 @@
 
         document.getElementById('startScreen').addEventListener('click', function() {
             let elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); }
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+            const fsBtn = document.getElementById('fsBtn');
+            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>'; }
             
             this.style.opacity = '0';
             setTimeout(() => { 
@@ -287,7 +295,6 @@
             if(bgMusic) { bgMusic.play().catch(e=>console.log(e)); audioLigado = true; document.getElementById('audioBtn').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('audioBtn').style.color = '#00e676'; }
         });
 
-        // APOSTA VAI ATÉ 500
         const apostasPermitidas = [0.40, 0.80, 1.20, 2.00, 4.00, 8.00, 10.00, 20.00, 40.00, 50.00, 100.00, 200.00, 250.00, 400.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
         const simbolos = ['🐉', '🧧', '🏮', '🪙', '🧨', '🪢'];
@@ -296,13 +303,26 @@
             const dados = snapshot.val() || {}; 
             bancaAtual = parseFloat(dados.saldo || 0); 
             modoJogador = dados.modo || 'normal';
-            
-            // BANCA MOSTRA O VALOR REAL DO USUÁRIO
             document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
 
         const sfxSpin = document.getElementById('sfxSpin'); const sfxStop = document.getElementById('sfxStop'); const sfxWin = document.getElementById('sfxWin');
         document.getElementById('bgMusic').volume = 0.2; sfxSpin.volume = 0.5; sfxStop.volume = 0.8; sfxWin.volume = 0.8;
+
+        // LÓGICA DE TELA CHEIA MANUAL
+        window.toggleFullscreen = function() {
+            let elem = document.documentElement;
+            const fsBtn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (elem.requestFullscreen) { elem.requestFullscreen().catch(e=>console.log(e)); }
+                else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+                fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+                fsBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+            }
+        };
 
         window.toggleAudio = function() {
             audioLigado = !audioLigado; const btn = document.getElementById('audioBtn'); const bgMusic = document.getElementById('bgMusic');
@@ -368,17 +388,15 @@
 
             let ganhou = false; let valorGanho = 0; let telaFinal = [[], [], []]; let linhasVencedorasInfo = [];
 
-            // LÓGICA DE TEATRO DE LIVE (ADMIN)
             if(modoJogador === 'influenciador') {
                 if(window.adminPerdas === undefined) window.adminPerdas = 0;
 
-                // Força de 4 a 6 perdas antes de pagar a grande
                 if(window.adminPerdas < 4 + Math.floor(Math.random() * 3)) {
                     ganhou = false;
                     window.adminPerdas++;
                 } else {
                     ganhou = true;
-                    window.adminPerdas = 0; // Zera para o próximo ciclo de perdas
+                    window.adminPerdas = 0; 
                     
                     let multiplicadorInteiro = Math.floor(Math.random() * (40 - 15 + 1)) + 15;
                     valorGanho = Math.round(apostaAtual * multiplicadorInteiro);
