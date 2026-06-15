@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>SorteCerta - O Melhor Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -25,6 +30,14 @@
             background-image: radial-gradient(circle at 50% 0%, #2a1a00 0%, transparent 60%);
             color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; 
         }
+
+        /* --- APP SHELL (O IFRAME QUE RODA OS JOGOS ESCONDIDO) --- */
+        #appShell {
+            display: none; position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100vh; height: 100dvh; 
+            z-index: 9999999; background: #000;
+        }
+        #gameIframe { width: 100%; height: 100%; border: none; }
 
         /* --- MANUTENÇÃO BLOQUEADORA --- */
         #telaManutencao {
@@ -92,7 +105,7 @@
         .hero-banner::after { content: '🐯'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.15; transform: rotate(-15deg); filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.8)); }
         .hero-banner h1 { font-size: 28px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.5); }
         .hero-banner p { font-size: 14px; color: #eee; margin-bottom: 20px; z-index: 2; max-width: 65%; font-weight: 500; }
-        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; cursor: pointer;}
+        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; cursor: pointer;}
         .btn-play-now:active { transform: translateY(5px); box-shadow: 0 0 0 #8a6508; }
 
         /* --- CATEGORIAS VIVAS --- */
@@ -107,9 +120,9 @@
         
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-bottom: 40px; }
         
-        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; text-decoration: none; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
+        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
         .game-card:active { transform: scale(0.92); border-color: var(--gold); }
-        .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
+        .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; pointer-events: none; }
         
         .gc-tiger { background: radial-gradient(circle, #8b0000, #330000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-dragon { background: radial-gradient(circle, #d35400, #5a2400); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
@@ -118,11 +131,11 @@
         .gc-roulette { background: radial-gradient(circle, #11998e, #063d38); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .gc-ox { background: radial-gradient(circle, #8e44ad, #2c0b3d); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
 
-        .game-info { padding: 10px; text-align: center; background: rgba(0,0,0,0.6); }
+        .game-info { padding: 10px; text-align: center; background: rgba(0,0,0,0.6); pointer-events: none; }
         .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; }
         .game-provider { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
         
-        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; z-index: 10; }
+        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; z-index: 10; pointer-events: none; }
 
         /* --- PROVA SOCIAL (POPUP DE GANHOS) --- */
         .live-win-popup {
@@ -142,7 +155,7 @@
             backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
             padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
         .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
         .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
@@ -158,6 +171,10 @@
 </head>
 <body>
 
+    <div id="appShell">
+        <iframe id="gameIframe"></iframe>
+    </div>
+
     <div id="telaManutencao">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <h2>SISTEMA EM MANUTENÇÃO</h2>
@@ -169,12 +186,12 @@
     </audio>
 
     <nav class="navbar">
-        <a href="index.html" class="brand-logo">
+        <div class="brand-logo">
             <span style="color: #fff;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
-        </a>
+        </div>
         
         <div id="userPanelContainer">
-            <a href="login.html" class="btn-login-header"><i class="fa-solid fa-user"></i> ENTRAR</a>
+            <div class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</div>
         </div>
     </nav>
 
@@ -189,9 +206,9 @@
         </div>
 
         <div class="categories">
-            <a href="#" class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</a>
-            <a href="#" class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</a>
-            <a href="#" class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</a>
+            <div class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</div>
+            <div class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</div>
+            <div class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</div>
         </div>
 
         <h2 class="section-title"><i class="fa-solid fa-star"></i> Cassino Originals</h2>
@@ -260,14 +277,14 @@
     </div>
 
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
+        <div class="nav-item active">
             <i class="fa-solid fa-gamepad"></i>
             <span>Cassino</span>
-        </a>
-        <a class="nav-item game-link" data-game="perfil.html">
+        </div>
+        <div class="nav-item game-link" data-game="perfil.html">
             <i class="fa-solid fa-user-astronaut"></i>
             <span>Minha Conta</span>
-        </a>
+        </div>
     </nav>
 
     <script type="module">
@@ -283,11 +300,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // A MÁGICA DA VITRINE: Verifica se o usuário tem login salvo no celular
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
+        // --- LÓGICA DO APP SHELL (SISTEMA DE IFRAME) ---
+        window.fecharJogo = function() {
+            document.getElementById('appShell').style.display = 'none';
+            document.getElementById('gameIframe').src = '';
+            document.body.style.overflow = 'auto'; // Devolve o scroll do Lobby
+        };
+
+        // Ouve o Iframe: Se o jogo lá dentro tentar abrir "index.html", a gente fecha ele!
+        document.getElementById('gameIframe').addEventListener('load', function() {
+            try {
+                const frameUrl = this.contentWindow.location.href;
+                if (frameUrl.includes('index.html') && frameUrl !== 'about:blank') {
+                    window.fecharJogo();
+                }
+            } catch(e) {
+                // Previne erro caso a URL seja bloqueada por CORS
+            }
+        });
+
         if (idDispositivo) {
-            // JOGADOR ESTÁ LOGADO! Mostra o saldo no topo e libera os links
             document.getElementById('userPanelContainer').innerHTML = `
                 <div class="user-panel">
                     <div class="balance-box">
@@ -295,36 +329,47 @@
                         <span class="balance" id="displaySaldo">R$ 0,00</span>
                     </div>
                     <div class="action-buttons">
-                        <a href="saque.html" class="btn-withdraw">Sacar</a>
-                        <a href="saldo.html" class="btn-deposit">Depositar</a>
+                        <div class="btn-withdraw" onclick="window.location.href='saque.html'">Sacar</div>
+                        <div class="btn-deposit" onclick="window.location.href='saldo.html'">Depositar</div>
                     </div>
                 </div>
             `;
 
-            // Puxa o saldo em tempo real do banco de dados
             onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
                 const saldo = snapshot.val() || 0;
                 const saldoDisplay = document.getElementById('displaySaldo');
                 if(saldoDisplay) saldoDisplay.innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             });
 
-            // Libera os cliques nas imagens dos jogos para ir pro jogo real
+            // ABRE O JOGO NO IFRAME (EM VEZ DE REDIRECIONAR A PÁGINA)
             document.querySelectorAll('.game-link').forEach(link => {
-                link.addEventListener('click', function() {
-                    window.location.href = this.getAttribute('data-game');
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const gameUrl = this.getAttribute('data-game');
+                    
+                    // Se for o perfil, pode redirecionar normal (ou colocar no Iframe também, você decide)
+                    if(gameUrl === 'perfil.html') {
+                        window.location.href = gameUrl;
+                        return;
+                    }
+
+                    document.getElementById('gameIframe').src = gameUrl;
+                    document.getElementById('appShell').style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Trava o Lobby no fundo
                 });
             });
 
         } else {
-            // É UM VISITANTE! Se ele clicar em qualquer jogo, manda pro Login!
+            // SE FOR VISITANTE, MANDA PRO LOGIN
             document.querySelectorAll('.game-link').forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
                     window.location.href = 'login.html';
                 });
             });
         }
 
-        // --- SISTEMA GERAL DE MANUTENÇÃO ---
+        // --- SISTEMA DE MANUTENÇÃO ---
         onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
             const isManutencao = snapshot.val() || false;
             const tela = document.getElementById('telaManutencao');
@@ -337,7 +382,7 @@
             }
         });
 
-        // --- LÓGICA DE ÁUDIO AMBIENTE FLUTUANTE ---
+        // --- LÓGICA DE ÁUDIO AMBIENTE ---
         const bgMusic = document.getElementById('bgMusic');
         const btnAudio = document.getElementById('btnAudio');
         let audioStarted = false;
