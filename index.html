@@ -68,32 +68,22 @@
         .balance { font-weight: 900; color: var(--green); font-size: 13px; white-space: nowrap; line-height: 1; }
         
         .action-buttons { display: flex; gap: 5px; }
-        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; }
+        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; cursor: pointer; }
         .btn-deposit { 
             background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; 
             padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; 
             text-transform: uppercase; white-space: nowrap; border: 1px solid #fff;
-            animation: neonGlow 1.5s infinite alternate; 
+            animation: neonGlow 1.5s infinite alternate; cursor: pointer;
         }
 
         .btn-login-header {
             background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
             color: #000; font-weight: 900; padding: 8px 16px; border-radius: 20px;
             font-size: 11px; text-decoration: none; text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4); cursor: pointer;
         }
 
         .container { max-width: 800px; margin: 90px auto 0; padding: 15px; }
-
-        /* --- BOTÃO FLUTUANTE DE ÁUDIO --- */
-        .floating-audio {
-            position: fixed; bottom: 85px; right: 15px; width: 45px; height: 45px;
-            background: rgba(18, 18, 20, 0.9); border: 1px solid var(--border-color);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            color: var(--text-muted); font-size: 18px; z-index: 999; backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: 0.3s; cursor: pointer;
-        }
-        .floating-audio.active { color: var(--green); border-color: var(--green); box-shadow: 0 0 15px rgba(0, 230, 118, 0.4); }
 
         /* --- BANNER NEON --- */
         .hero-banner {
@@ -163,10 +153,7 @@
         /* --- ANIMAÇÕES --- */
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
         @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes neonGlow {
-            0% { box-shadow: 0 0 5px var(--green), inset 0 0 2px var(--green); }
-            100% { box-shadow: 0 0 15px var(--green), inset 0 0 8px var(--green); }
-        }
+        @keyframes neonGlow { 0% { box-shadow: 0 0 5px var(--green), inset 0 0 2px var(--green); } 100% { box-shadow: 0 0 15px var(--green), inset 0 0 8px var(--green); } }
     </style>
 </head>
 <body>
@@ -181,10 +168,6 @@
         <p>Estamos realizando uma atualização programada em nossos servidores. Seu saldo e dados estão 100% seguros.</p>
     </div>
 
-    <audio id="bgMusic" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-
     <nav class="navbar">
         <div class="brand-logo">
             <span style="color: #fff;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
@@ -195,14 +178,12 @@
         </div>
     </nav>
 
-    <div class="floating-audio" id="btnAudio" onclick="toggleAudio()"><i class="fa-solid fa-volume-xmark"></i></div>
-
     <div class="container">
         
         <div class="hero-banner">
-            <h1>Fortune Tiger</h1>
-            <p>O tigre está multiplicando bancas! Aproveite o RTP alto de hoje e faça sua sorte.</p>
-            <div class="game-link btn-play-now" data-game="tiger.html">Jogar Agora</div>
+            <h1>Mines Crash</h1>
+            <p>Descubra os diamantes e faça seu saque antes da bomba estourar!</p>
+            <div class="game-link btn-play-now" data-game="mines.html">Jogar Agora</div>
         </div>
 
         <div class="categories">
@@ -214,33 +195,8 @@
         <h2 class="section-title"><i class="fa-solid fa-star"></i> Cassino Originals</h2>
         
         <div class="games-grid">
-            <div class="game-card game-link" data-game="tiger.html">
-                <div class="hot-badge">98% RTP</div>
-                <div class="game-cover gc-tiger">🐯</div>
-                <div class="game-info">
-                    <div class="game-name">Fortune Tiger</div>
-                    <div class="game-provider">PG Soft</div>
-                </div>
-            </div>
-
-            <div class="game-card game-link" data-game="dragon.html">
-                <div class="hot-badge">NOVO</div>
-                <div class="game-cover gc-dragon">🐉</div>
-                <div class="game-info">
-                    <div class="game-name">Fortune Dragon</div>
-                    <div class="game-provider">PG Soft</div>
-                </div>
-            </div>
-
-            <div class="game-card game-link" data-game="aviator.html">
-                <div class="game-cover gc-aviator">✈️</div>
-                <div class="game-info">
-                    <div class="game-name">Aviator Pro</div>
-                    <div class="game-provider">Spribe</div>
-                </div>
-            </div>
-
             <div class="game-card game-link" data-game="mines.html">
+                <div class="hot-badge">99% RTP</div>
                 <div class="game-cover gc-mines">💣</div>
                 <div class="game-info">
                     <div class="game-name">Mines</div>
@@ -248,31 +204,38 @@
                 </div>
             </div>
 
-            <div class="game-card game-link" data-game="roleta.html">
-                <div class="hot-badge">NOVO</div>
-                <div class="game-cover gc-roulette">🎡</div>
+            <div class="game-card game-link" data-game="dragon.html">
+                <div class="game-cover gc-dragon">🐉</div>
                 <div class="game-info">
-                    <div class="game-name">Roleta Turbo</div>
-                    <div class="game-provider">Originals</div>
-                </div>
-            </div>
-            
-            <div class="game-card game-link" data-game="ox.html">
-                <div class="game-cover gc-ox">🐂</div>
-                <div class="game-info">
-                    <div class="game-name">Fortune Ox</div>
+                    <div class="game-name">Fortune Dragon</div>
                     <div class="game-provider">PG Soft</div>
                 </div>
             </div>
-        </div>
 
+            <div class="game-card game-link" data-game="tiger.html">
+                <div class="game-cover gc-tiger">🐯</div>
+                <div class="game-info"><div class="game-name">Fortune Tiger</div><div class="game-provider">PG Soft</div></div>
+            </div>
+            <div class="game-card game-link" data-game="aviator.html">
+                <div class="game-cover gc-aviator">✈️</div>
+                <div class="game-info"><div class="game-name">Aviator Pro</div><div class="game-provider">Spribe</div></div>
+            </div>
+            <div class="game-card game-link" data-game="roleta.html">
+                <div class="game-cover gc-roulette">🎡</div>
+                <div class="game-info"><div class="game-name">Roleta Turbo</div><div class="game-provider">Originals</div></div>
+            </div>
+            <div class="game-card game-link" data-game="ox.html">
+                <div class="game-cover gc-ox">🐂</div>
+                <div class="game-info"><div class="game-name">Fortune Ox</div><div class="game-provider">PG Soft</div></div>
+            </div>
+        </div>
     </div>
 
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
             <span id="winUser" style="font-weight: bold; color: #fff;">***vitor</span> acabou de ganhar<br>
-            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Tiger</span>
+            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
         </div>
     </div>
 
@@ -299,26 +262,22 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
-        // --- LÓGICA DO APP SHELL (SISTEMA DE IFRAME) ---
+        // ESCUTADOR DE EMERGÊNCIA (Desliga o iframe quando o jogo manda)
         window.fecharJogo = function() {
-            document.getElementById('appShell').style.display = 'none';
-            document.getElementById('gameIframe').src = '';
-            document.body.style.overflow = 'auto'; // Devolve o scroll do Lobby
+            const shell = document.getElementById('appShell');
+            const iframe = document.getElementById('gameIframe');
+            
+            // Injeta um blank puro para matar o áudio e a aba do jogo no iPhone
+            iframe.src = 'about:blank';
+            shell.style.display = 'none';
+            document.body.style.overflow = 'auto'; 
         };
 
-        // Ouve o Iframe: Se o jogo lá dentro tentar abrir "index.html", a gente fecha ele!
-        document.getElementById('gameIframe').addEventListener('load', function() {
-            try {
-                const frameUrl = this.contentWindow.location.href;
-                if (frameUrl.includes('index.html') && frameUrl !== 'about:blank') {
-                    window.fecharJogo();
-                }
-            } catch(e) {
-                // Previne erro caso a URL seja bloqueada por CORS
-            }
+        // Escuta o comando de voltar enviado pelos jogos
+        window.addEventListener("message", function(event) {
+            if(event.data === "fecharIframe") { window.fecharJogo(); }
         });
 
         if (idDispositivo) {
@@ -341,77 +300,39 @@
                 if(saldoDisplay) saldoDisplay.innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             });
 
-            // ABRE O JOGO NO IFRAME (EM VEZ DE REDIRECIONAR A PÁGINA)
+            // ABRE O JOGO NO IFRAME (Sem recarregar a página)
             document.querySelectorAll('.game-link').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const gameUrl = this.getAttribute('data-game');
                     
-                    // Se for o perfil, pode redirecionar normal (ou colocar no Iframe também, você decide)
-                    if(gameUrl === 'perfil.html') {
-                        window.location.href = gameUrl;
-                        return;
-                    }
+                    if(gameUrl === 'perfil.html') { window.location.href = gameUrl; return; }
 
                     document.getElementById('gameIframe').src = gameUrl;
                     document.getElementById('appShell').style.display = 'block';
-                    document.body.style.overflow = 'hidden'; // Trava o Lobby no fundo
+                    document.body.style.overflow = 'hidden'; 
                 });
             });
-
         } else {
             // SE FOR VISITANTE, MANDA PRO LOGIN
             document.querySelectorAll('.game-link').forEach(link => {
                 link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'login.html';
+                    e.preventDefault(); window.location.href = 'login.html';
                 });
             });
         }
 
-        // --- SISTEMA DE MANUTENÇÃO ---
+        // SISTEMA DE MANUTENÇÃO
         onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
             const isManutencao = snapshot.val() || false;
             const tela = document.getElementById('telaManutencao');
-            if (isManutencao) {
-                tela.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; 
-            } else {
-                tela.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
+            if (isManutencao) { tela.style.display = 'flex'; document.body.style.overflow = 'hidden'; } 
+            else { tela.style.display = 'none'; document.body.style.overflow = 'auto'; }
         });
 
-        // --- LÓGICA DE ÁUDIO AMBIENTE ---
-        const bgMusic = document.getElementById('bgMusic');
-        const btnAudio = document.getElementById('btnAudio');
-        let audioStarted = false;
-        bgMusic.volume = 0.2;
-
-        document.body.addEventListener('click', () => {
-            if (!audioStarted) {
-                bgMusic.play().catch(e => console.log("Áudio aguardando liberação."));
-                audioStarted = true;
-                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-                btnAudio.classList.add('active');
-            }
-        }, { once: true });
-
-        window.toggleAudio = function() {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-                btnAudio.classList.add('active');
-            } else {
-                bgMusic.pause();
-                btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-                btnAudio.classList.remove('active');
-            }
-        }
-
-        // --- PROVA SOCIAL FALSA ---
+        // PROVA SOCIAL FALSA
         const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger", "***chef"];
-        const jogosFake = ["Tiger", "Aviator", "Roleta", "Ox", "Mines"];
+        const jogosFake = ["Tiger", "Dragon", "Roleta", "Ox", "Mines"];
         
         function mostrarGanhoFalso() {
             const popup = document.getElementById('liveWin');
