@@ -165,7 +165,6 @@
     </div>
 
     <script type="module">
-        /* ATENÇÃO AQUI: ADICIONEI O "push" NO IMPORT */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -187,8 +186,8 @@
         });
 
         window.sacarTudo = function() {
-            if(bancaAtual < 20) {
-                alert("O valor mínimo para saque é de R$ 20,00.");
+            if(bancaAtual < 50) {
+                alert("O valor mínimo para saque é de R$ 50,00.");
                 return;
             }
             document.getElementById('valorSaque').value = bancaAtual.toFixed(2);
@@ -199,8 +198,8 @@
             let tipoChave = document.getElementById('tipoChave').value;
             let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
 
-            if (isNaN(valorSaqueInput) || valorSaqueInput < 20.00) {
-                alert("Operação negada: O valor mínimo de saque exigido é de R$ 20,00.");
+            if (isNaN(valorSaqueInput) || valorSaqueInput < 50.00) {
+                alert("Operação negada: O valor mínimo de saque exigido é de R$ 50,00.");
                 return;
             }
             if (valorSaqueInput > bancaAtual) {
@@ -225,7 +224,7 @@
                         set(refTotalSaques, totalAtual + valorSaqueInput);
                     });
 
-                    // 3. GERA O COMPROVANTE NO EXTRATO DO JOGADOR (A MÁGICA AQUI)
+                    // 3. GERA O COMPROVANTE NO EXTRATO DO JOGADOR
                     push(ref(db, `usuarios/${idDispositivo}/transacoes`), {
                         tipo: "SAQUE",
                         valor: valorSaqueInput.toFixed(2),
