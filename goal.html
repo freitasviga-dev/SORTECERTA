@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- FORÇAR CARREGAMENTO DA VERSÃO MAIS ATUAL (ANTI-CACHE ABSOLUTO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <title>Goal | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -244,6 +248,13 @@
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
+        // PREVENIR CACHE DE NAVEGADOR (BFCache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload(true);
+            }
+        });
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -259,7 +270,7 @@
 
         // Variáveis de Estado Globais
         let bancaAtual = 0; 
-        let modoJogador = 'normal'; // <-- RECUPERA O STATUS DO PAINEL ADMIN
+        let modoJogador = 'normal'; 
         let audioLigado = false;
         let isGaming = false;
         
@@ -395,11 +406,11 @@
 
         function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-        // SINCROCINZAR FIREBASE EM TEMPO REAL (Saldo e Modo de Jogador)
+        // SINCROCINZAR FIREBASE EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; 
             bancaAtual = parseFloat(dados.saldo || 0); 
-            modoJogador = dados.modo || 'normal'; // PUXANDO DO ADMIN
+            modoJogador = dados.modo || 'normal'; 
             updateSaldoDisplay(bancaAtual);
         });
 
@@ -458,11 +469,9 @@
         function fazerJogadaAuto() {
             if (!isGaming || !isAutoModeActive) return;
 
-            // Busca as casinhas disponíveis na coluna atual
             const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
             
             if (activeTiles.length > 0) {
-                // Escolhe aleatoriamente
                 const rndRow = Math.floor(Math.random() * currentRowCount);
                 const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
                 
@@ -470,10 +479,8 @@
                     handleTileClick(rndRow, currentActiveCol, tile);
                     
                     if (isGaming) {
-                        // Passou ileso, agenda próximo clique em 800ms
                         autoTimeoutId = setTimeout(fazerJogadaAuto, 800);
                     } else {
-                        // Game Over (Ganhou ou Perdeu), diminui a rodada e espera 2.5s pra começar a próxima
                         girosAutoRestantes--;
                         autoTimeoutId = setTimeout(processarAutoJogo, 2500);
                     }
@@ -579,28 +586,26 @@
         function handleTileClick(r, c, tileElement) {
             if (!isGaming || c !== currentActiveCol) return;
 
-            // -------- SISTEMA INFLUENCIADOR (ADMIN/LIVE) --------
-            // Se ele for influenciador e pisar na bomba, a bomba é desviada de propósito
+            // -------- SISTEMA INFLUENCIADOR --------
             if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
                 let linhasLivres = [];
                 for(let i = 0; i < currentRowCount; i++) {
                     if(i !== r) linhasLivres.push(i);
                 }
-                // Joga a bomba para outra linha livre aleatória
                 bombsPositions[c] = linhasLivres[Math.floor(Math.random() * linhasLivres.length)];
             }
-            // ----------------------------------------------------
+            // ----------------------------------------
 
             tileElement.classList.add('opened');
 
             if (bombsPositions[c] === r) {
-                // EXPLOSÃO (ERRO)
+                // EXPLOSÃO
                 isGaming = false;
                 tocarSom('sfxBomb'); 
                 tileElement.classList.add('bomb'); 
                 endGame(false);
             } else {
-                // SUCESSO (PASSO SEGURO)
+                // SUCESSO 
                 tocarSom('sfxGem'); 
                 tileElement.classList.add('safe');
                 currentActiveCol++;
@@ -608,7 +613,7 @@
                 
                 if (currentActiveCol >= currentColCount) {
                     isGaming = false;
-                    cashOut(true); // Goal (Fim do Campo)
+                    cashOut(true); 
                 } else {
                     const btn = document.getElementById('btnAction');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
@@ -619,7 +624,7 @@
         }
 
         async function cashOut(isGoal = false) {
-            isGaming = false; // Parar o jogo imediatamente localmente
+            isGaming = false; 
             
             const lucro = apostaAtual * currentMultiplier;
             const novoSaldo = bancaAtual + lucro;
@@ -633,7 +638,6 @@
                 set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucro).toFixed(2)));
             });
 
-            // SOM DE VITÓRIA SE CONSEGUIR FAZER O CASHOUT
             tocarSom('sfxWin');
 
             const toast = document.getElementById('winToast');
