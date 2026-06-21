@@ -2,555 +2,698 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cassino Goal Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Goal | SorteCerta Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        :root {
-            --bg-top: #5e9731;
-            --bg-bottom: #396d19;
-            --panel-bg: #274d11;
-            --tile-bg: #b0c995;
-            --tile-hover: #cbe6ac;
-            --accent-gold: #f4b63f;
-            --text-light: #ffffff;
-            --btn-green: #487e22;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
+        html { height: -webkit-fill-available; overscroll-behavior: none; }
+        
+        body { 
+            background: linear-gradient(180deg, #184b9e 0%, #0d2b5e 100%);
+            color: #ffffff; min-height: 100vh; min-height: 100dvh;
+            display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: none;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            display: flex;
-            justify-content: center;
-            user-select: none;
+        .btn-3d { transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease; cursor: pointer; }
+        .btn-3d:active { transform: translateY(4px) !important; box-shadow: none !important; border-bottom-width: 0px !important; margin-top: 4px; }
+
+        /* HEADER */
+        .header-bar {
+            padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
+        .logo-text { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
+
+        /* GAME AREA */
+        .game-area {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; width: 100%; max-width: 450px; margin: 0 auto;
         }
 
-        #mobile-container {
-            width: 100%;
-            max-width: 400px;
-            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: var(--text-light);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        .board-header {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            align-items: center;
-        }
-
+        
         .board-select {
-            background: var(--panel-bg);
-            padding: 5px 10px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
+            background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 3px solid rgba(0,0,0,0.8);
+            padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none; appearance: none;
+        }
+        
+        .next-multiplier {
+            background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000;
+            padding: 6px 15px; border-radius: 20px; font-size: 13px; font-weight: 900;
+            box-shadow: 0 2px 10px rgba(241, 196, 15, 0.3); transition: 0.3s;
         }
 
-        .board-select select {
-            background: transparent;
-            color: white;
-            border: none;
-            outline: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .multiplier-badge {
-            background: var(--accent-gold);
-            color: #000;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* Grid */
+        /* GRID GOAL */
         .grid-container {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            width: 100%; background: rgba(0,0,0,0.1); padding: 12px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); overflow-x: auto; 
+            scrollbar-width: none;
         }
-
-        .grid {
-            display: grid;
-            gap: 6px;
-            width: 100%;
-            max-width: 350px;
-        }
+        .grid-container::-webkit-scrollbar { display: none; }
+        
+        .grid { display: grid; gap: 8px; }
 
         .tile {
-            aspect-ratio: 1;
-            background-color: var(--tile-bg);
-            border-radius: 4px;
-            box-shadow: 0 3px 0 #89a36a;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            /* Inativo por padrão */
-            opacity: 0.5; 
-            pointer-events: none;
+            background: #1c3a76; border-radius: 8px; position: relative;
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 4px 5px rgba(0,0,0,0.4);
+            border-bottom: 4px solid #0d214a; display: flex; justify-content: center; align-items: center; 
+            transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease, opacity 0.2s ease;
+            opacity: 0.4; pointer-events: none; aspect-ratio: 1/1;
         }
-
-        /* Coluna ativa onde o jogador pode clicar */
+        
         .tile.active-col {
-            opacity: 1;
-            pointer-events: auto;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #f4b63f; /* Destaque na coluna atual */
-            animation: pulse 1.5s infinite;
+            opacity: 1; pointer-events: auto; cursor: pointer;
+            border-color: #b8860b; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 4px 10px rgba(241, 196, 15, 0.4);
+            animation: pulseTile 1.5s infinite;
+        }
+        @keyframes pulseTile { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        .tile.active-col:active { transform: translateY(4px) scale(1); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); border-bottom-width: 0px; }
+
+        .tile.opened {
+            background: #152b5e; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); 
+            transform: translateY(4px); border-bottom-width: 0px; cursor: default; opacity: 1; animation: none; pointer-events: none;
+        }
+        
+        .tile.safe { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tile.safe::before { content: '⚽'; font-size: 24px; filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6)); }
+        
+        .tile.bomb { background: #e74c3c; box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); animation: shake 0.4s ease-in-out; opacity: 1;}
+        .tile.bomb::before { content: '💣'; font-size: 26px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+        
+        .tile.bomb-reveal { opacity: 0.3; background: #8a2b2b; animation: none; transform: translateY(4px); border-bottom-width: 0px; }
+        .tile.bomb-reveal::before { content: '💣'; font-size: 20px; opacity: 0.8; }
+
+        /* CONTROLES E BOTÕES */
+        .controls-wrapper {
+            width: 100%; background: #0c1f45; border-top: 2px solid #143570;
+            padding: 15px; display: flex; flex-direction: column; gap: 12px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
+        .action-row { display: flex; gap: 10px; }
+        .btn-secondary {
+            flex: 1; background: rgba(0,0,0,0.3); color: #aaa; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 800;
+            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-bottom: none;
         }
+        .btn-secondary.auto-active { color: #f1c40f; background: rgba(241, 196, 15, 0.1); border-color: #b8860b; }
 
-        .tile.active-col:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 transparent;
+        .bet-input-row {
+            display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px;
+            border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between;
         }
+        .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; }
+        .bet-display:active { background: rgba(255,255,255,0.1); }
+        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; }
 
-        .tile.revealed-safe {
-            background-color: #1e3b0d;
-            box-shadow: none;
-            cursor: default;
-            transform: none;
-            opacity: 1;
-            animation: none;
+        .bet-button {
+            width: 100%; background: linear-gradient(180deg, #00e676, #00b359); border: none; border-radius: 12px; padding: 16px; color: #000;
+            font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
+        .bet-button.cashout { background: linear-gradient(180deg, #f39c12, #d35400); box-shadow: 0 6px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.3); border-bottom: 2px solid #6b2d00; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .bet-button.disabled { background: #555; box-shadow: 0 6px 0 #222; border-bottom: 2px solid #111; color: #888; pointer-events: none; }
 
-        .tile.revealed-mine {
-            background-color: #e74c3c;
-            box-shadow: none;
-            cursor: default;
-            transform: none;
-            opacity: 1;
-            animation: none;
-        }
+        .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
+        .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
+        .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
+        .balance-info i { color: #00e676; font-size: 12px; }
 
-        /* Bottom Controls */
-        .controls {
-            background: var(--panel-bg);
-            padding: 20px;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+        /* MENU AUTO JOGO E ANIMAÇÕES */
+        .auto-spin-menu {
+            position: absolute; bottom: 130px; right: 15px; background: #0a0a0a; border: 1px solid #b8860b; border-radius: 12px; padding: 10px;
+            display: flex; flex-direction: column; gap: 6px; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; width: 100px;
         }
+        .auto-spin-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .auto-btn-option { background: #222; border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 6px; font-weight: 900; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px; text-transform: uppercase; }
+        .auto-btn-option:active { background: #b8860b; color: #000; }
 
-        .row-options {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            align-items: center;
+        .win-toast {
+            position: fixed; top: 100px; left: 50%; transform: translate(-50%, -20px) scale(0.9);
+            background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.4); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; text-transform: uppercase; border: 2px solid #fff;
         }
+        .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .win-toast span { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: -2px; }
 
-        .btn-random {
-            background: var(--btn-green);
-            color: white;
-            border: 1px solid #6b9c3f;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            opacity: 0.5;
-        }
+        .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+        .system-toast.show { opacity: 1; top: 100px; }
 
-        .auto-play {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: #ccc;
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0000; z-index: 9999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease;
         }
+        #startScreen h2 { color: #00e676; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; font-size: 24px; text-shadow: 0 0 10px rgba(0,230,118,0.5); }
+        .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4); font-size: 14px; }
 
-        .main-action {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .btn-refresh {
-            background: #2a5214;
-            border: 2px solid #1a360a;
-            color: #4da6ff;
-            width: 50px;
-            border-radius: 10px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .btn-play {
-            flex-grow: 1;
-            background: var(--btn-green);
-            color: white;
-            border: 2px solid #1a360a;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
-        }
-
-        .btn-play.cashout {
-            background: var(--accent-gold);
-            color: #000;
-        }
-
-        .bet-control {
-            display: flex;
-            background: #183309;
-            border-radius: 25px;
-            padding: 5px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .bet-info {
-            display: flex;
-            flex-direction: column;
-            padding-left: 15px;
-        }
-
-        .bet-info label {
-            font-size: 10px;
-            color: #888;
-        }
-
-        .bet-info input {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            width: 60px;
-            outline: none;
-        }
-
-        .bet-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .bet-btn {
-            background: transparent;
-            color: #8ba870;
-            border: 1px solid #8ba870;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-        }
     </style>
 </head>
 <body>
 
-<div id="mobile-container">
-    
-    <div class="top-bar">
-        <div class="board-select">
-            <span>Tamanho:</span>
-            <select id="board-size" onchange="resetGameUI()">
+    <div id="startScreen">
+        <h2>Goal Simulator</h2>
+        <div class="btn-start btn-3d">Jogar Agora</div>
+    </div>
+
+    <div class="header-bar">
+        <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="logo-text">GOAL VIP</div>
+        <div class="top-actions">
+            <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="board-header">
+            <select class="board-select btn-3d" id="board-size">
                 <option value="small" selected>Pequeno (3x4)</option>
                 <option value="medium">Médio (4x7)</option>
                 <option value="big">Grande (5x10)</option>
             </select>
-        </div>
-        <div class="multiplier-badge" id="next-multiplier">Próximo: 1.45x</div>
-    </div>
-
-    <div class="grid-container">
-        <div class="grid" id="grid">
-            </div>
-    </div>
-
-    <div class="controls">
-        <div class="row-options">
-            <button class="btn-random" onclick="selectRandomTile()" disabled id="random-btn">ALEATÓRIO</button>
-            <div class="auto-play">
-                <span>🔄 Auto jogo</span>
-            </div>
+            <div class="next-multiplier">Próximo: <span id="nextMultDisplay">1.00x</span></div>
         </div>
 
-        <div class="main-action">
-            <button class="btn-refresh" onclick="resetGameUI()">↻</button>
-            <button class="btn-play" id="play-btn" onclick="togglePlay()">▶ APOSTA</button>
-        </div>
-
-        <div class="bet-control">
-            <div class="bet-info">
-                <label>Aposta BRL</label>
-                <input type="number" id="bet-amount" value="1.00" step="0.10" min="0.10" onchange="resetGameUI()">
-            </div>
-            <div class="bet-buttons">
-                <button class="bet-btn" onclick="adjustBet(-0.5)">-</button>
-                <button class="bet-btn" onclick="adjustBet(0.5)">+</button>
+        <div class="grid-container">
+            <div class="grid" id="grid">
+                <!-- Tiles gerados dinamicamente via JS -->
             </div>
         </div>
     </div>
 
-</div>
+    <div class="controls-wrapper">
+        <div class="action-row">
+            <div class="btn-secondary btn-3d" id="btnRandom" style="opacity: 0.5; pointer-events: none;"><i class="fa-solid fa-shuffle"></i> Aleatório</div>
+            <div class="btn-secondary btn-3d" id="btnAuto"><i class="fa-solid fa-rotate"></i> Auto Jogo</div>
+        </div>
 
-<script>
-    // Configurações dos tabuleiros do Goal
-    const BOARDS = {
-        'small': { rows: 3, cols: 4 },
-        'medium': { rows: 4, cols: 7 },
-        'big': { rows: 5, cols: 10 }
-    };
+        <div class="bet-input-row">
+            <div class="bet-label">Aposta</div>
+            <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+            <div class="bet-display" id="displayAposta" onclick="abrirInputAposta()">R$ 1,00</div>
+            <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
+        </div>
 
-    // TABELA OFICIAL DE MULTIPLICADORES (Matemática SorteCerta/Spribe)
-    const GOAL_MULTIPLIERS = {
-        'small': [1.45, 2.18, 3.27, 4.91],
-        'medium': [1.29, 1.72, 2.29, 3.06, 4.08, 5.45, 7.26],
-        'big': [1.21, 1.51, 1.89, 2.36, 2.96, 3.70, 4.62, 5.78, 7.22, 9.03]
-    };
+        <button class="bet-button btn-3d" id="btnAction">
+            <i class="fa-solid fa-play"></i> APOSTAR
+        </button>
 
-    let isPlaying = false;
-    let currentRowCount = 3;
-    let currentColCount = 4;
-    let currentActiveCol = 0; // O jogador avança coluna por coluna (esquerda para direita)
-    let bombsPositions = [];  // Guarda a LINHA da bomba para cada COLUNA
-    let currentMultiplier = 1.00;
-    let betAmount = 1.00;
+        <div class="footer-info">
+            <div class="game-name">GOAL <i class="fa-solid fa-futbol" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="balance-info">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="displaySaldo">R$ 0,00</span>
+            </div>
+        </div>
 
-    const gridElement = document.getElementById('grid');
-    const playBtn = document.getElementById('play-btn');
-    const multiplierBadge = document.getElementById('next-multiplier');
-    const boardSelect = document.getElementById('board-size');
-    const betInput = document.getElementById('bet-amount');
-    const randomBtn = document.getElementById('random-btn');
+        <div class="auto-spin-menu" id="menuAuto">
+            <div style="color: #f1c40f; font-size: 11px; font-weight: bold; text-align: center; margin-bottom: 5px;">RODADAS</div>
+            <div class="auto-btn-option btn-3d" data-spins="10">10</div>
+            <div class="auto-btn-option btn-3d" data-spins="30">30</div>
+            <div class="auto-btn-option btn-3d" data-spins="50">50</div>
+            <div class="auto-btn-option btn-3d" data-spins="100">100</div>
+        </div>
+    </div>
 
-    function createGrid() {
-        const sizeConfig = BOARDS[boardSelect.value];
-        currentRowCount = sizeConfig.rows;
-        currentColCount = sizeConfig.cols;
+    <div class="win-toast" id="winToast">
+        <span id="winTitle">LUCRO TOTAL</span>
+        <div id="winAmount">R$ 0,00</div>
+    </div>
+    
+    <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
-        // Configura o CSS Grid para o número de colunas exato
-        gridElement.style.gridTemplateColumns = `repeat(${currentColCount}, 1fr)`;
-        gridElement.innerHTML = '';
-
-        for (let r = 0; r < currentRowCount; r++) {
-            for (let c = 0; c < currentColCount; c++) {
-                const tile = document.createElement('div');
-                tile.className = 'tile';
-                tile.dataset.row = r;
-                tile.dataset.col = c;
-                tile.onclick = () => handleTileClick(r, c, tile);
-                gridElement.appendChild(tile);
-            }
-        }
-    }
-
-    function adjustBet(amount) {
-        if (isPlaying) return;
-        let currentBet = parseFloat(betInput.value);
-        currentBet = Math.max(0.10, currentBet + amount);
-        betInput.value = currentBet.toFixed(2);
-    }
-
-    // NOVA FUNÇÃO DE MATEMÁTICA (Usando a tabela oficial)
-    function calculateMultiplier(stepsCleared) {
-        if (stepsCleared === 0) return 1.00;
-        const mode = boardSelect.value;
-        const mults = GOAL_MULTIPLIERS[mode];
-        
-        if (stepsCleared <= mults.length) {
-            return mults[stepsCleared - 1];
-        }
-        return mults[mults.length - 1];
-    }
-
-    // ATUALIZAÇÃO DA FUNÇÃO DO VISOR DE MULTIPLICADOR
-    function updateMultiplierDisplay() {
-        const mode = boardSelect.value;
-        
-        if (!isPlaying) {
-            multiplierBadge.innerText = `Próximo: ${GOAL_MULTIPLIERS[mode][0].toFixed(2)}x`;
-            return;
-        }
-        
-        if (currentActiveCol < currentColCount) {
-            const nextMult = GOAL_MULTIPLIERS[mode][currentActiveCol];
-            multiplierBadge.innerText = `Próximo: ${nextMult.toFixed(2)}x`;
-        } else {
-            multiplierBadge.innerText = `GOAL!`;
-        }
-    }
-
-    function updateActiveColumnUI() {
-        const tiles = document.querySelectorAll('.tile');
-        tiles.forEach(tile => {
-            const c = parseInt(tile.dataset.col);
-            if (isPlaying && c === currentActiveCol) {
-                tile.classList.add('active-col');
-            } else {
-                tile.classList.remove('active-col');
-            }
-        });
-    }
-
-    function togglePlay() {
-        if (!isPlaying) {
-            startGame();
-        } else {
-            cashOut();
-        }
-    }
-
-    function startGame() {
-        betAmount = parseFloat(betInput.value);
-        if (isNaN(betAmount) || betAmount <= 0) {
-            alert("Insira um valor de aposta válido.");
-            return;
-        }
-
-        boardSelect.disabled = true;
-        betInput.disabled = true;
-        randomBtn.disabled = false;
-        randomBtn.style.opacity = '1';
-
-        isPlaying = true;
-        currentActiveCol = 0;
-        currentMultiplier = 1.00;
-        bombsPositions = [];
-
-        // Plantar uma bomba por coluna (escolhe uma linha aleatória para cada coluna)
-        for (let c = 0; c < currentColCount; c++) {
-            bombsPositions.push(Math.floor(Math.random() * currentRowCount));
-        }
-
-        // Resetar visual do grid
-        const tiles = document.querySelectorAll('.tile');
-        tiles.forEach(tile => {
-            tile.className = 'tile';
-            tile.innerHTML = '';
+    <script type="module">
+        // PREVENIR CACHE DE NAVEGADOR (BFCache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { window.location.reload(true); }
         });
 
-        updateActiveColumnUI();
-        updateMultiplierDisplay();
-        
-        playBtn.innerText = "ESCOLHA UM BLOCO";
-        playBtn.classList.remove('cashout');
-    }
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    function selectRandomTile() {
-        if (!isPlaying) return;
-        
-        // Busca os tiles da coluna atual que ainda não foram clicados
-        const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(tile => 
-            parseInt(tile.dataset.col) === currentActiveCol
-        );
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
-        if (activeTiles.length > 0) {
-            const randomRowIndex = Math.floor(Math.random() * currentRowCount);
-            const tileToClick = activeTiles.find(t => parseInt(t.dataset.row) === randomRowIndex);
-            if (tileToClick) {
-                handleTileClick(randomRowIndex, currentActiveCol, tileToClick);
+        if (!idDispositivo) { window.location.href = 'login.html'; }
+
+        // Variáveis de Estado
+        let bancaAtual = 0; 
+        let modoJogador = 'normal'; 
+        let audioLigado = false;
+        let isGaming = false;
+        
+        let isAutoModeActive = false;
+        let girosAutoRestantes = 0;
+        let autoTimeoutId = null;
+
+        const BOARDS = {
+            'small': { rows: 3, cols: 4 },
+            'medium': { rows: 4, cols: 7 },
+            'big': { rows: 5, cols: 10 }
+        };
+        let currentRowCount = 3; let currentColCount = 4;
+        let currentActiveCol = 0; 
+        let bombsPositions = []; 
+        let currentMultiplier = 1.00;
+
+        const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
+        let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
+
+        // -------------------------------------------------------------------------------- //
+        // 🎵 NOVO MOTOR DE ÁUDIO NATIVO (SINTETIZADOR) - NUNCA FALHA E NÃO PRECISA DE LINK
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        const tocarSom = (tipo) => {
+            if(!audioLigado) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tipo === 'sfxClick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxGem') {
+                // Moeda / Diamante (Arpejo agudo de acerto)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(1300, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (tipo === 'sfxBomb') {
+                // Explosão / Derrota (Som grave)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (tipo === 'sfxWin') {
+                // Vitória Completa (Sequência alegre)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+            }
+        };
+        // -------------------------------------------------------------------------------- //
+
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // DESBLOQUEIO DE TELA E ÁUDIOS
+        document.getElementById('startScreen').addEventListener('click', function() {
+            this.style.opacity = '0';
+            setTimeout(() => { this.style.display = 'none'; }, 300);
+            
+            audioLigado = true;
+            document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+            document.getElementById('btnAudio').style.color = '#fff';
+
+            // Desbloqueia o processador de áudio no iOS/Android com um click fantasma
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
+        });
+
+        // LISTENERS DE INTERFACE
+        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
+        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
+        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
+        document.getElementById('board-size').addEventListener('change', () => { tocarSom('sfxClick'); window.resetGameUI(); });
+        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
+        document.getElementById('btnRandom').addEventListener('click', selectRandomTile);
+        
+        // AUTO JOGO LISTENERS
+        document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
+        document.querySelectorAll('.auto-btn-option').forEach(btn => {
+            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
+        });
+
+        window.abrirInputAposta = function() {
+            if(isGaming || isAutoModeActive) return;
+            let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
+            if(novoValor !== null) {
+                let parsed = parseFloat(novoValor.replace(',', '.'));
+                if(!isNaN(parsed) && parsed >= 0.10) {
+                    apostaAtual = Math.min(parsed, 500.00);
+                    document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    tocarSom('sfxClick');
+                } else { mostrarToast("Valor inválido."); }
+            }
+        };
+
+        function toggleAudio() {
+            audioLigado = !audioLigado; 
+            const btn = document.getElementById('btnAudio');
+            if(audioLigado) { 
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
+            } else { 
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
             }
         }
-    }
 
-    function handleTileClick(r, c, tileElement) {
-        if (!isPlaying || c !== currentActiveCol) return;
+        function voltarParaLobby() {
+            tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
+            if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
+            else { window.location.href = 'index.html'; }
+        }
 
-        if (bombsPositions[c] === r) {
-            // Clicou numa bomba
-            tileElement.classList.add('revealed-mine');
-            tileElement.innerHTML = '💣';
-            endGame(false);
-        } else {
-            // Passo Seguro
-            tileElement.classList.add('revealed-safe');
-            tileElement.innerHTML = '⚽';
+        function lidarComSaidaAbrupta() {
+            if (isGaming) {
+                isGaming = false;
+                if (currentActiveCol > 0) {
+                    let ganho = apostaAtual * currentMultiplier;
+                    set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual + ganho).toFixed(2)));
+                    get(ref(db, 'sistema/caixa_global')).then(snap => {
+                        let caixaAtual = parseFloat(snap.val() || 0);
+                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - ganho).toFixed(2)));
+                    });
+                } else {
+                    set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual + apostaAtual).toFixed(2))); 
+                    get(ref(db, 'sistema/caixa_global')).then(snap => {
+                        let caixaAtual = parseFloat(snap.val() || 0);
+                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - apostaAtual).toFixed(2)));
+                    });
+                }
+            }
+        }
+
+        window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); pararAutoJogo(); });
+        document.addEventListener('visibilitychange', function() { if (document.hidden) { lidarComSaidaAbrupta(); pararAutoJogo(); } });
+
+        function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val() || {}; 
+            bancaAtual = parseFloat(dados.saldo || 0); 
+            modoJogador = dados.modo || 'normal'; 
+            updateSaldoDisplay(bancaAtual);
+        });
+
+        function mudarAposta(direcao) {
+            if(isGaming || isAutoModeActive) return;
+            let novoIndex = indexAposta + direcao;
+            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
+                indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
+                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                tocarSom('sfxClick');
+            }
+        }
+
+        // ------------------ SISTEMA AUTO JOGO CORRIGIDO ------------------ //
+        function toggleMenuAuto() {
+            if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
+            tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
+        }
+
+        function iniciarAutoJogo(qtd) {
+            document.getElementById('menuAuto').classList.remove('show');
+            girosAutoRestantes = qtd; 
+            isAutoModeActive = true;
+            document.getElementById('btnAuto').classList.add('auto-active');
+            processarAutoJogo();
+        }
+
+        function pararAutoJogo() {
+            isAutoModeActive = false; girosAutoRestantes = 0;
+            document.getElementById('btnAuto').classList.remove('auto-active');
+            document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo';
+            clearTimeout(autoTimeoutId);
             
-            currentActiveCol++; // Avança uma coluna
-            currentMultiplier = calculateMultiplier(currentActiveCol);
+            // CORREÇÃO: Destrava o botão "Apostar" caso o jogo não esteja rolando ativamente
+            if (!isGaming) {
+                const btn = document.getElementById('btnAction');
+                btn.classList.remove('disabled', 'cashout');
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            }
+        }
+
+        function processarAutoJogo() {
+            if (!isAutoModeActive) return;
+
+            if (girosAutoRestantes <= 0) {
+                pararAutoJogo();
+                return;
+            }
+
+            document.getElementById('btnAuto').innerHTML = `<i class="fa-solid fa-rotate"></i> AUTO (${girosAutoRestantes})`;
+
+            if (!isGaming) {
+                if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); pararAutoJogo(); return; }
+                const apostaIniciada = iniciarApostaBackend();
+                if (apostaIniciada) {
+                    autoTimeoutId = setTimeout(fazerJogadaAuto, 1000);
+                } else {
+                    pararAutoJogo();
+                }
+            }
+        }
+
+        function fazerJogadaAuto() {
+            if (!isGaming || !isAutoModeActive) return;
+
+            const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
             
-            if (currentActiveCol >= currentColCount) {
-                // Chegou ao fim do campo (Goal!)
-                cashOut(true);
-            } else {
-                // Pode continuar jogando ou sacar
-                const currentWin = betAmount * currentMultiplier;
-                playBtn.innerText = "SACAR R$ " + currentWin.toFixed(2);
-                playBtn.classList.add('cashout');
+            if (activeTiles.length > 0) {
+                const rndRow = Math.floor(Math.random() * currentRowCount);
+                const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
                 
-                updateActiveColumnUI();
-                updateMultiplierDisplay();
+                if (tile) {
+                    handleTileClick(rndRow, currentActiveCol, tile);
+                    
+                    if (isGaming) {
+                        autoTimeoutId = setTimeout(fazerJogadaAuto, 800);
+                    } else {
+                        girosAutoRestantes--;
+                        autoTimeoutId = setTimeout(processarAutoJogo, 2500);
+                    }
+                }
             }
         }
-    }
+        // -------------------------------------------------------------------- //
 
-    function cashOut(isGoal = false) {
-        const winAmount = betAmount * currentMultiplier;
-        if (isGoal) {
-            alert(`GOOOAL! Você atravessou o campo e ganhou R$ ${winAmount.toFixed(2)}!`);
-        } else {
-            alert(`Você recuou e sacou R$ ${winAmount.toFixed(2)}.`);
+        // MATEMÁTICA E TELA
+        function calculateMultiplier(stepsCleared) {
+            if (stepsCleared === 0) return 1.00;
+            const probSafe = (currentRowCount - 1) / currentRowCount;
+            const cumulativeProb = Math.pow(probSafe, stepsCleared);
+            return (1 / cumulativeProb) * 0.97;
         }
-        endGame(true, true);
-    }
 
-    function endGame(won, cashedOut = false) {
-        isPlaying = false;
-        boardSelect.disabled = false;
-        betInput.disabled = false;
-        randomBtn.disabled = true;
-        randomBtn.style.opacity = '0.5';
+        function atualizarMultiplicadorPreview() {
+            if(isGaming) return;
+            document.getElementById('nextMultDisplay').innerText = `${calculateMultiplier(1).toFixed(2)}x`;
+        }
 
-        // Revelar as bombas escondidas no tabuleiro
-        const tiles = document.querySelectorAll('.tile');
-        tiles.forEach(tile => {
-            tile.classList.remove('active-col'); // Tira as animações
-            const r = parseInt(tile.dataset.row);
-            const c = parseInt(tile.dataset.col);
+        function updateActiveColumnUI() {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                const c = parseInt(tile.dataset.col);
+                if (isGaming && c === currentActiveCol) { tile.classList.add('active-col'); } 
+                else { tile.classList.remove('active-col'); }
+            });
+        }
+
+        window.resetGameUI = function() {
+            if(isGaming) return;
+            const sizeConfig = BOARDS[document.getElementById('board-size').value];
+            currentRowCount = sizeConfig.rows; currentColCount = sizeConfig.cols;
             
-            // Se nessa posição estava a bomba, revela ela
-            if (bombsPositions[c] === r && !tile.classList.contains('revealed-mine')) {
-                tile.innerHTML = '💣';
-                tile.style.opacity = '0.3'; // Mostrar que era bomba mas não explodiu
+            const grid = document.getElementById('grid');
+            grid.style.gridTemplateColumns = `repeat(${currentColCount}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${currentRowCount}, 1fr)`;
+            grid.innerHTML = '';
+
+            for (let r = 0; r < currentRowCount; r++) {
+                for (let c = 0; c < currentColCount; c++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile'; tile.dataset.row = r; tile.dataset.col = c;
+                    tile.onclick = () => handleTileClick(r, c, tile);
+                    grid.appendChild(tile);
+                }
             }
-        });
-
-        playBtn.classList.remove('cashout');
-        playBtn.innerText = "▶ APOSTA";
-        
-        if (!won && !cashedOut) {
-            multiplierBadge.innerText = "Explodiu!";
+            currentMultiplier = 1.00;
+            atualizarMultiplicadorPreview();
+            const btn = document.getElementById('btnAction');
+            btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
         }
-    }
 
-    function resetGameUI() {
-        if(isPlaying) return;
-        currentMultiplier = 1.00;
-        createGrid();
-        updateMultiplierDisplay();
-        playBtn.classList.remove('cashout');
-        playBtn.innerText = "▶ APOSTA";
-    }
+        function cliqueBotaoApostar() {
+            if(isAutoModeActive) return;
+            tocarSom('sfxClick');
+            if (isGaming) {
+                if (currentActiveCol === 0) return;
+                cashOut();
+            } else {
+                iniciarApostaBackend();
+            }
+        }
 
-    // Inicialização
-    createGrid();
-    updateMultiplierDisplay();
-</script>
+        function iniciarApostaBackend() {
+            if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
 
+            isGaming = true; currentActiveCol = 0; currentMultiplier = 1.00;
+            document.getElementById('board-size').disabled = true;
+            document.getElementById('btnMinus').style.opacity = '0.5'; document.getElementById('btnPlus').style.opacity = '0.5';
+            const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
+
+            const btn = document.getElementById('btnAction');
+            btn.classList.add('cashout'); btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
+
+            updateSaldoDisplay(bancaAtual - apostaAtual);
+            
+            // FIREBASE BACKGROUND
+            set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual - apostaAtual).toFixed(2)));
+            get(ref(db, 'sistema/caixa_global')).then(snap => set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2))));
+
+            bombsPositions = [];
+            for (let c = 0; c < currentColCount; c++) { bombsPositions.push(Math.floor(Math.random() * currentRowCount)); }
+
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
+
+            updateActiveColumnUI(); atualizarMultiplicadorPreview();
+            return true;
+        }
+
+        function selectRandomTile() {
+            if (!isGaming || isAutoModeActive) return; tocarSom('sfxClick');
+            const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
+            if (activeTiles.length > 0) {
+                const rndRow = Math.floor(Math.random() * currentRowCount);
+                const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
+                if (tile) handleTileClick(rndRow, currentActiveCol, tile);
+            }
+        }
+
+        function handleTileClick(r, c, tileElement) {
+            if (!isGaming || c !== currentActiveCol) return;
+
+            // SISTEMA INFLUENCIADOR (DESVIA A BOMBA)
+            if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
+                let linhasLivres = [];
+                for(let i = 0; i < currentRowCount; i++) {
+                    if(i !== r) linhasLivres.push(i);
+                }
+                bombsPositions[c] = linhasLivres[Math.floor(Math.random() * linhasLivres.length)];
+            }
+
+            tileElement.classList.add('opened');
+
+            if (bombsPositions[c] === r) {
+                // EXPLOSÃO
+                isGaming = false;
+                tocarSom('sfxBomb'); 
+                tileElement.classList.add('bomb'); 
+                endGame(false);
+            } else {
+                // SUCESSO 
+                tocarSom('sfxGem'); 
+                tileElement.classList.add('safe');
+                currentActiveCol++;
+                currentMultiplier = calculateMultiplier(currentActiveCol);
+                
+                if (currentActiveCol >= currentColCount) {
+                    isGaming = false;
+                    cashOut(true); 
+                } else {
+                    const btn = document.getElementById('btnAction');
+                    btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
+                    updateActiveColumnUI(); 
+                    document.getElementById('nextMultDisplay').innerText = `${calculateMultiplier(currentActiveCol + 1).toFixed(2)}x`;
+                }
+            }
+        }
+
+        async function cashOut(isGoal = false) {
+            isGaming = false; 
+            
+            const lucro = apostaAtual * currentMultiplier;
+            const novoSaldo = bancaAtual + lucro;
+            
+            updateSaldoDisplay(novoSaldo);
+            
+            // FIREBASE BACKGROUND
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
+            get(ref(db, 'sistema/caixa_global')).then(snap => {
+                let caixaAtual = parseFloat(snap.val() || 0);
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucro).toFixed(2)));
+            });
+
+            tocarSom('sfxWin');
+
+            const toast = document.getElementById('winToast');
+            document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL";
+            document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500);
+
+            endGame(true, true);
+        }
+
+        function endGame(won, cashedOut = false) {
+            document.getElementById('board-size').disabled = false;
+            document.getElementById('btnMinus').style.opacity = '1'; document.getElementById('btnPlus').style.opacity = '1';
+            const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '0.5'; btnRnd.style.pointerEvents = 'none';
+
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                tile.classList.remove('active-col');
+                const r = parseInt(tile.dataset.row); const c = parseInt(tile.dataset.col);
+                if (bombsPositions[c] === r && !tile.classList.contains('bomb')) {
+                    tile.classList.add('opened', 'bomb-reveal');
+                }
+            });
+
+            const btn = document.getElementById('btnAction');
+            if(!isAutoModeActive) {
+                btn.classList.remove('cashout', 'disabled'); 
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            } else {
+                btn.classList.add('disabled');
+            }
+        }
+
+        window.resetGameUI();
+    </script>
 </body>
 </html>
