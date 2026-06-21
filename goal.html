@@ -173,12 +173,6 @@
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
-    <!-- ÁUDIOS OFICIAIS PIXABAY -->
-    <audio id="sfxClick" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3" preload="auto"></audio>
-    <audio id="sfxGem" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3" preload="auto"></audio>
-    <audio id="sfxBomb" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2f9b884d.mp3?filename=explosion-39897.mp3" preload="auto"></audio>
-    <audio id="sfxWin" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6ccf3232f.mp3?filename=success-1-6297.mp3" preload="auto"></audio>
-
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
         <div class="logo-text">GOAL VIP</div>
@@ -294,22 +288,56 @@
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
-        // ENGINE DE ÁUDIO COM CLONE NODE (PARA NÃO ENGASGAR CLICANDO RÁPIDO)
-        const tocarSom = (id) => {
+        // -------------------------------------------------------------------------------- //
+        // 🎵 MOTOR DE ÁUDIO NATIVO (SINTETIZADOR DE CASSINO) - SEM DELAY
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        const tocarSom = (tipo) => {
             if(!audioLigado) return;
-            const audioOriginal = document.getElementById(id);
-            if(audioOriginal) {
-                const clone = audioOriginal.cloneNode();
-                clone.volume = audioOriginal.volume;
-                clone.play().catch(e => {});
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tipo === 'sfxClick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxGem') {
+                // Moeda / Acerto
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(1300, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (tipo === 'sfxBomb') {
+                // Explosão
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (tipo === 'sfxWin') {
+                // Cashout
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
             }
         };
-
-        const pausarTodoAudio = () => { 
-            ['sfxClick', 'sfxGem', 'sfxBomb', 'sfxWin'].forEach(id => {
-                let s = document.getElementById(id); if(s) { s.pause(); s.currentTime = 0; }
-            });
-        };
+        // -------------------------------------------------------------------------------- //
 
         function mostrarToast(msg) {
             const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
@@ -325,19 +353,11 @@
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
 
-            ['sfxClick', 'sfxGem', 'sfxBomb', 'sfxWin'].forEach(id => {
-                const audio = document.getElementById(id);
-                if(audio) {
-                    audio.volume = 0;
-                    audio.play().then(() => {
-                        audio.pause(); audio.currentTime = 0;
-                        if(id === 'sfxClick') audio.volume = 0.5;
-                        if(id === 'sfxGem') audio.volume = 0.7;
-                        if(id === 'sfxBomb') audio.volume = 0.9;
-                        if(id === 'sfxWin') audio.volume = 0.7;
-                    }).catch(e => {});
-                }
-            });
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
         // LISTENERS DE INTERFACE
@@ -374,12 +394,12 @@
             if(audioLigado) { 
                 btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
             } else { 
-                pausarTodoAudio(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
             }
         }
 
         function voltarParaLobby() {
-            tocarSom('sfxClick'); pausarTodoAudio(); pararAutoJogo(); lidarComSaidaAbrupta();
+            tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
