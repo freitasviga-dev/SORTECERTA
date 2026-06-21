@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO DA VERSÃO MAIS ATUAL (ANTI-CACHE ABSOLUTO) -->
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -164,8 +164,6 @@
         #startScreen h2 { color: #00e676; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; font-size: 24px; text-shadow: 0 0 10px rgba(0,230,118,0.5); }
         .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4); font-size: 14px; }
 
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
     </style>
 </head>
 <body>
@@ -174,12 +172,6 @@
         <h2>Goal Simulator</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
-
-    <!-- ÁUDIOS OFICIAIS PIXABAY -->
-    <audio id="sfxClick" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=button-pressed-38129.mp3" preload="auto"></audio>
-    <audio id="sfxGem" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_d14f4469f4.mp3?filename=coins-handling-38827.mp3" preload="auto"></audio>
-    <audio id="sfxBomb" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2f9b884d.mp3?filename=explosion-39897.mp3" preload="auto"></audio>
-    <audio id="sfxWin" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6ccf3232f.mp3?filename=success-1-6297.mp3" preload="auto"></audio>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
@@ -250,9 +242,7 @@
     <script type="module">
         // PREVENIR CACHE DE NAVEGADOR (BFCache)
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload(true);
-            }
+            if (event.persisted) { window.location.reload(true); }
         });
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -268,7 +258,7 @@
 
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
-        // Variáveis de Estado Globais
+        // Variáveis de Estado
         let bancaAtual = 0; 
         let modoJogador = 'normal'; 
         let audioLigado = false;
@@ -291,29 +281,63 @@
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
-        // ENGINE DE ÁUDIO INSTANTÂNEA
-        const tocarSom = (id) => {
+        // -------------------------------------------------------------------------------- //
+        // 🎵 NOVO MOTOR DE ÁUDIO NATIVO (SINTETIZADOR) - NUNCA FALHA E NÃO PRECISA DE LINK
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        const tocarSom = (tipo) => {
             if(!audioLigado) return;
-            const audioOriginal = document.getElementById(id);
-            if(audioOriginal) {
-                const clone = audioOriginal.cloneNode();
-                clone.volume = audioOriginal.volume;
-                clone.play().catch(e => {});
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tipo === 'sfxClick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxGem') {
+                // Moeda / Diamante (Arpejo agudo de acerto)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(1300, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (tipo === 'sfxBomb') {
+                // Explosão / Derrota (Som grave)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (tipo === 'sfxWin') {
+                // Vitória Completa (Sequência alegre)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
             }
         };
-
-        const pausarTodoAudio = () => { 
-            ['sfxClick', 'sfxGem', 'sfxBomb', 'sfxWin'].forEach(id => {
-                let s = document.getElementById(id); if(s) { s.pause(); s.currentTime = 0; }
-            });
-        };
+        // -------------------------------------------------------------------------------- //
 
         function mostrarToast(msg) {
             const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // DESBLOQUEIO DE TELA E ÁUDIOS (IPHONE & ANDROID)
+        // DESBLOQUEIO DE TELA E ÁUDIOS
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { this.style.display = 'none'; }, 300);
@@ -322,19 +346,12 @@
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
 
-            ['sfxClick', 'sfxGem', 'sfxBomb', 'sfxWin'].forEach(id => {
-                const audio = document.getElementById(id);
-                if(audio) {
-                    audio.volume = 0;
-                    audio.play().then(() => {
-                        audio.pause(); audio.currentTime = 0;
-                        if(id === 'sfxClick') audio.volume = 0.5;
-                        if(id === 'sfxGem') audio.volume = 0.7;
-                        if(id === 'sfxBomb') audio.volume = 0.9;
-                        if(id === 'sfxWin') audio.volume = 0.7;
-                    }).catch(e => {});
-                }
-            });
+            // Desbloqueia o processador de áudio no iOS/Android com um click fantasma
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
         // LISTENERS DE INTERFACE
@@ -371,12 +388,12 @@
             if(audioLigado) { 
                 btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
             } else { 
-                pausarTodoAudio(); btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
             }
         }
 
         function voltarParaLobby() {
-            tocarSom('sfxClick'); pausarTodoAudio(); pararAutoJogo(); lidarComSaidaAbrupta();
+            tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
@@ -406,7 +423,6 @@
 
         function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-        // SINCROCINZAR FIREBASE EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; 
             bancaAtual = parseFloat(dados.saldo || 0); 
@@ -424,7 +440,7 @@
             }
         }
 
-        // ------------------ SISTEMA AUTO JOGO APERFEIÇOADO ------------------ //
+        // ------------------ SISTEMA AUTO JOGO CORRIGIDO ------------------ //
         function toggleMenuAuto() {
             if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
             tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
@@ -443,6 +459,13 @@
             document.getElementById('btnAuto').classList.remove('auto-active');
             document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo';
             clearTimeout(autoTimeoutId);
+            
+            // CORREÇÃO: Destrava o botão "Apostar" caso o jogo não esteja rolando ativamente
+            if (!isGaming) {
+                const btn = document.getElementById('btnAction');
+                btn.classList.remove('disabled', 'cashout');
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            }
         }
 
         function processarAutoJogo() {
@@ -586,7 +609,7 @@
         function handleTileClick(r, c, tileElement) {
             if (!isGaming || c !== currentActiveCol) return;
 
-            // -------- SISTEMA INFLUENCIADOR --------
+            // SISTEMA INFLUENCIADOR (DESVIA A BOMBA)
             if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
                 let linhasLivres = [];
                 for(let i = 0; i < currentRowCount; i++) {
@@ -594,7 +617,6 @@
                 }
                 bombsPositions[c] = linhasLivres[Math.floor(Math.random() * linhasLivres.length)];
             }
-            // ----------------------------------------
 
             tileElement.classList.add('opened');
 
@@ -664,7 +686,8 @@
 
             const btn = document.getElementById('btnAction');
             if(!isAutoModeActive) {
-                btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+                btn.classList.remove('cashout', 'disabled'); 
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
             } else {
                 btn.classList.add('disabled');
             }
