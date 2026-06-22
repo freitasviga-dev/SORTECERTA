@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -192,7 +193,8 @@
 
         <div class="grid-container">
             <div class="grid" id="grid">
-                </div>
+                <!-- Tiles gerados dinamicamente via JS -->
+            </div>
         </div>
     </div>
 
@@ -280,58 +282,29 @@
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
         // -------------------------------------------------------------------------------- //
-        // 🎵 MOTOR DE ÁUDIO NATIVO PROFISSIONAL (SINTETIZADOR) - GERA NA HORA SEM ATRASO
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
+        // 🎵 MOTOR DE ÁUDIO PROFISSIONAL (Pré-carregamento e reset instantâneo)
+        // Substitua os links pelos seus arquivos MP3/WAV se desejar alterar os sons.
+        const audioUrls = {
+            sfxClick: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3', 
+            sfxGem: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3',   
+            sfxBomb: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3',  
+            sfxWin: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'    
+        };
 
-        function iniciarAudio() {
-            if (!audioCtx) { audioCtx = new AudioContext(); }
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+        const audiosPlayer = {};
+
+        // Pré-carrega no momento em que o código roda
+        for (let key in audioUrls) {
+            audiosPlayer[key] = new Audio(audioUrls[key]);
+            audiosPlayer[key].preload = 'auto';
         }
 
         const tocarSom = (tipo) => {
             if(!audioLigado) return;
-            if (!audioCtx) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            if (tipo === 'sfxClick') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-            } else if (tipo === 'sfxGem') {
-                // Acerto (Som cristalino de Moeda)
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(1300, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-            } else if (tipo === 'sfxBomb') {
-                // Explosão Pesada
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
-                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            } else if (tipo === 'sfxWin') {
-                // Vitória Completa de Saque
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
-                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
-                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
-                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+            const som = audiosPlayer[tipo];
+            if (som) {
+                som.currentTime = 0; // Técnica para zerar e tocar instantaneamente
+                som.play().catch(e => console.log('Audio autoplay block:', e));
             }
         };
         // -------------------------------------------------------------------------------- //
@@ -350,31 +323,33 @@
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
 
-            iniciarAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
+            // Desbloqueia todos os objetos Audio (Hack essencial para iOS Safari/Mobile não bugar)
+            for (let key in audiosPlayer) {
+                audiosPlayer[key].play().catch(()=>{});
+                audiosPlayer[key].pause();
+                audiosPlayer[key].currentTime = 0;
+            }
+            
+            tocarSom('sfxClick');
         });
 
         // LISTENERS DE INTERFACE
         document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
         document.getElementById('btnAudio').addEventListener('click', toggleAudio);
-        document.getElementById('btnMinus').addEventListener('click', () => { iniciarAudio(); tocarSom('sfxClick'); mudarAposta(-1); });
-        document.getElementById('btnPlus').addEventListener('click', () => { iniciarAudio(); tocarSom('sfxClick'); mudarAposta(1); });
-        document.getElementById('board-size').addEventListener('change', () => { iniciarAudio(); tocarSom('sfxClick'); window.resetGameUI(); });
+        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
+        document.getElementById('board-size').addEventListener('change', () => { tocarSom('sfxClick'); window.resetGameUI(); });
         document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
         document.getElementById('btnRandom').addEventListener('click', selectRandomTile);
         
         // AUTO JOGO LISTENERS
         document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
         document.querySelectorAll('.auto-btn-option').forEach(btn => {
-            btn.addEventListener('click', function() { iniciarAudio(); tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
+            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
         });
 
         window.abrirInputAposta = function() {
             if(isGaming || isAutoModeActive) return;
-            iniciarAudio();
             let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
             if(novoValor !== null) {
                 let parsed = parseFloat(novoValor.replace(',', '.'));
@@ -387,7 +362,6 @@
         };
 
         function toggleAudio() {
-            iniciarAudio();
             audioLigado = !audioLigado; 
             const btn = document.getElementById('btnAudio');
             if(audioLigado) { 
@@ -398,7 +372,7 @@
         }
 
         function voltarParaLobby() {
-            iniciarAudio(); tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
+            tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
@@ -441,12 +415,12 @@
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
                 indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
                 document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                tocarSom('sfxClick');
             }
         }
 
-        // ------------------ SISTEMA AUTO JOGO ------------------ //
+        // ------------------ SISTEMA AUTO JOGO CORRIGIDO ------------------ //
         function toggleMenuAuto() {
-            iniciarAudio();
             if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
             tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
         }
@@ -465,10 +439,17 @@
             document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo';
             clearTimeout(autoTimeoutId);
             
+            const btn = document.getElementById('btnAction');
+            btn.classList.remove('disabled'); // CORREÇÃO: Remove sempre a trava se cancelarem o auto
+            
             if (!isGaming) {
-                const btn = document.getElementById('btnAction');
-                btn.classList.remove('disabled', 'cashout');
+                btn.classList.remove('cashout');
                 btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            } else {
+                // Se foi cancelado durante o giro, transforma o botão no Saque clicável para o jogador assumir
+                if(currentActiveCol > 0) {
+                    btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
+                }
             }
         }
 
@@ -564,7 +545,6 @@
 
         function cliqueBotaoApostar() {
             if(isAutoModeActive) return;
-            iniciarAudio();
             tocarSom('sfxClick');
             if (isGaming) {
                 if (currentActiveCol === 0) return;
@@ -583,7 +563,9 @@
             const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
 
             const btn = document.getElementById('btnAction');
-            btn.classList.add('cashout'); btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
+            btn.classList.remove('disabled'); // CORREÇÃO: Garante que inicia sem a trava visual de partidas anteriores
+            btn.classList.add('cashout'); 
+            btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
 
             updateSaldoDisplay(bancaAtual - apostaAtual);
             
@@ -602,7 +584,7 @@
         }
 
         function selectRandomTile() {
-            if (!isGaming || isAutoModeActive) return; iniciarAudio(); tocarSom('sfxClick');
+            if (!isGaming || isAutoModeActive) return; tocarSom('sfxClick');
             const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
             if (activeTiles.length > 0) {
                 const rndRow = Math.floor(Math.random() * currentRowCount);
@@ -613,7 +595,6 @@
 
         function handleTileClick(r, c, tileElement) {
             if (!isGaming || c !== currentActiveCol) return;
-            iniciarAudio();
 
             // SISTEMA INFLUENCIADOR (DESVIA A BOMBA)
             if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
@@ -653,7 +634,6 @@
 
         async function cashOut(isGoal = false) {
             isGaming = false; 
-            iniciarAudio();
             
             const lucro = apostaAtual * currentMultiplier;
             const novoSaldo = bancaAtual + lucro;
