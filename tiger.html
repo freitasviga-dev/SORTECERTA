@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE FORTE) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -159,13 +158,13 @@
 <body>
 
     <div id="startScreen">
-        <h2>Roleta Simulator</h2>
+        <h2>Hotline Simulator</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text">ROLETA VIP</div>
+        <div class="logo-text">HOTLINE VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -181,14 +180,12 @@
             <div class="pointer-top"></div>
             <div class="pointer-bottom"></div>
             <div class="reel" id="reel">
-                <!-- Gerado por JS -->
-            </div>
+                </div>
         </div>
     </div>
 
     <div class="controls-wrapper">
         
-        <!-- Seleção de Cores com Botão Amarelo 32x no Meio -->
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" onclick="selectColor('red')">
                 VERMELHO
@@ -213,7 +210,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">ROLETA <i class="fa-solid fa-circle-notch" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="game-name">HOTLINE <i class="fa-solid fa-bolt" style="margin-left: 5px; opacity: 0.5;"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -399,14 +396,14 @@
             updateSaldoDisplay(bancaAtual);
         });
 
-        // Inicializa a Roleta Parada
+        // Inicializa a Roleta Parada intercalada perfeitamente com 1 amarelo
         function initIdleReel() {
             reel.style.transition = 'none';
             reel.innerHTML = '';
             
             for(let i=0; i<20; i++) {
                 let type = (i % 2 === 0) ? 'red' : 'black';
-                if (i === 5) type = 'fire'; // Insere um amarelo na exibição ociosa
+                if (i === 6) type = 'fire'; // Único amarelo ocioso
                 const slot = document.createElement('div');
                 slot.className = `slot ${type}`;
                 if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
@@ -460,18 +457,26 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = '';
             const TOTAL_SLOTS = 80; 
-            const TARGET_INDEX = 65; // Ponto ideal de parada longa
+            
+            // Define o índice exato de parada para manter a intercalação perfeita
+            let targetIndex = 64; // Par (Sempre Vermelho)
+            if (resultColor === 'black') {
+                targetIndex = 65; // Ímpar (Sempre Preto)
+            } else if (resultColor === 'fire') {
+                targetIndex = 60; // Ponto fixo onde o ÚNICO Amarelo vai ser inserido
+            }
 
-            // Cria o carrossel com padrão intercalado e fixa o alvo na posição certa
+            // Constrói a esteira intercalada cirurgicamente vermelha/preta
             for(let i=0; i<TOTAL_SLOTS; i++) {
-                let type;
-                if (i === TARGET_INDEX) {
+                let type = (i % 2 === 0) ? 'red' : 'black';
+                
+                if (i === targetIndex) {
                     type = resultColor;
-                } else {
-                    // Preenchimento sequencial distribuído no giro
-                    if (i % 15 === 0) type = 'fire';
-                    else type = (i % 2 === 0) ? 'red' : 'black';
+                } else if (resultColor !== 'fire' && i === 30) {
+                    // Se o amarelo não ganhou, bota exatamente 1 na esteira na posição 30 apenas para passar visualmente
+                    type = 'fire';
                 }
+                
                 const slot = document.createElement('div');
                 slot.className = `slot ${type}`;
                 if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
@@ -484,23 +489,36 @@
 
             // Largura do Bloco (80px) + Espaçamento (8px) = 88px total por slot
             const randomOffset = Math.floor(Math.random() * 40) - 20;
-            const moveDistance = -(TARGET_INDEX * 88 + 40) + randomOffset;
+            const moveDistance = -(targetIndex * 88 + 40) + randomOffset;
 
-            // 🔊 CRIAÇÃO DO EFEITO SONORO DO GIRO DINÂMICO DURANTE A TRANSIÇÃO
-            const stepSoundInterval = setInterval(() => {
-                if (!isSpinning) { clearInterval(stepSoundInterval); return; }
-                tocarSom('sfxClick');
-            }, 90); // Ritmo contínuo dos estalidos simulando velocidade da roleta
-
-            // Dispara a rolagem mecânica
+            // RASTREADOR DE ÁUDIO DINÂMICO NATIVO POR FRAME (ACOMPANHA A DESACELERAÇÃO DA TRANSIÇÃO)
+            let lastTileIndex = -1;
+            function trackTicks() {
+                if (!isSpinning) return;
+                const style = window.getComputedStyle(reel);
+                const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
+                const currentX = matrix.m41; 
+                
+                // Calcula qual slot está cruzando o eixo central de visualização
+                const distancePassed = Math.abs(currentX - (-40));
+                const currentTileIndex = Math.floor(distancePassed / 88);
+                
+                if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) {
+                    tocarSom('sfxClick');
+                    lastTileIndex = currentTileIndex;
+                }
+                requestAnimationFrame(trackTicks);
+            }
+            
+            // Dispara a rolagem mecânica e o som acoplado
             setTimeout(() => {
+                requestAnimationFrame(trackTicks);
                 reel.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
                 reel.style.transform = `translateX(${moveDistance}px)`;
             }, 50);
 
             // Resolução financeira
             setTimeout(async () => {
-                clearInterval(stepSoundInterval); // Finaliza o som de clique contínuo
                 isSpinning = false;
                 document.getElementById('btnAction').classList.remove('disabled');
                 
