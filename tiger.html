@@ -210,7 +210,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">ROLETA <i class="fa-solid fa-circle-notch" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="game-name">HOTLINE <i class="fa-solid fa-bolt" style="margin-left: 5px; opacity: 0.5;"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -325,13 +325,15 @@
             osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
-        window.voltarParaLobby = function() {
+        // FUNÇÃO DE VOLTAR PLUGADA CORRETAMENTE
+        function voltarParaLobby() {
             iniciarAudio(); tocarSom('sfxClick'); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
 
-        window.toggleAudio = function() {
+        // FUNÇÃO DE ÁUDIO PLUGADA CORRETAMENTE
+        function toggleAudio() {
             iniciarAudio();
             audioLigado = !audioLigado; 
             const btn = document.getElementById('btnAudio');
@@ -568,9 +570,9 @@
 
         initIdleReel();
         
-        // CORREÇÃO: LIGAÇÃO DOS LISTENERS DIRETAMENTE NOS BOTÕES DO DOM
-        document.getElementById('btnBack').addEventListener('click', window.voltarParaLobby);
-        document.getElementById('btnAudio').addEventListener('click', window.toggleAudio);
+        // ATIVAÇÃO DIRETA DOS EVENT LISTENERS DO NAVEGADOR
+        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
+        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
     </script>
 </body>
 </html>
