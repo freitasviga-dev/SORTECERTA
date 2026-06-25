@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE FORTE) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -158,13 +159,13 @@
 <body>
 
     <div id="startScreen">
-        <h2>Hotline Simulator</h2>
+        <h2>Roleta Simulator</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text">HOTLINE VIP</div>
+        <div class="logo-text">ROLETA VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -180,12 +181,14 @@
             <div class="pointer-top"></div>
             <div class="pointer-bottom"></div>
             <div class="reel" id="reel">
-                </div>
+                <!-- Gerado por JS -->
+            </div>
         </div>
     </div>
 
     <div class="controls-wrapper">
         
+        <!-- Seleção de Cores com Botão Amarelo 32x no Meio -->
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" onclick="selectColor('red')">
                 VERMELHO
@@ -210,7 +213,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">HOTLINE <i class="fa-solid fa-bolt" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="game-name">ROLETA <i class="fa-solid fa-circle-notch" style="margin-left: 5px; opacity: 0.5;"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -278,12 +281,13 @@
             gainNode.connect(audioCtx.destination);
 
             if (tipo === 'sfxClick') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.05);
+                // SOM DO GIRO AJUSTADO: Curto, seco e elegante (como o pino de roleta física)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
             } else if (tipo === 'sfxWin') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
@@ -466,15 +470,36 @@
                 targetIndex = 60; // Ponto fixo onde o ÚNICO Amarelo vai ser inserido
             }
 
-            // Constrói a esteira intercalada cirurgicamente vermelha/preta
+            // --- LÓGICA DE SENSAÇÃO "QUASE GANHEI" (NEAR MISS) ---
+            let nearMissIndex = -1;
+            let randomOffset = Math.floor(Math.random() * 40) - 20; // Padrão de folga no bloco alvo [-20, 20]
+
+            if (!isWin) {
+                // Se apostou no Amarelo (fire) OU se perdeu na cor normal, cria a tensão (chance de quase ganhar)
+                if (selectedColor === 'fire' || Math.random() < 0.3) {
+                    const side = Math.random() > 0.5 ? 1 : -1; // 1 = passa do bloco, -1 = para antes do bloco
+                    nearMissIndex = targetIndex + side;
+                    
+                    // Ajusta a folga de parada para ser na "linha divisória" extrema encostando no bloco que ele apostou
+                    if (side === 1) {
+                        randomOffset = 38 + Math.floor(Math.random() * 5); // Toca o limite da direita
+                    } else {
+                        randomOffset = -38 - Math.floor(Math.random() * 5); // Toca o limite da esquerda
+                    }
+                }
+            }
+            // -----------------------------------------------------
+
+            // Constrói a esteira intercalada cirurgicamente com a cor alvo e o falso Quase Ganhei
             for(let i=0; i<TOTAL_SLOTS; i++) {
-                let type = (i % 2 === 0) ? 'red' : 'black';
+                let type = (i % 2 === 0) ? 'red' : 'black'; // Padrão alternado infinito
                 
                 if (i === targetIndex) {
-                    type = resultColor;
-                } else if (resultColor !== 'fire' && i === 30) {
-                    // Se o amarelo não ganhou, bota exatamente 1 na esteira na posição 30 apenas para passar visualmente
-                    type = 'fire';
+                    type = resultColor; // Bloco que vai ganhar a rolagem (fica no centro da tela)
+                } else if (i === nearMissIndex) {
+                    type = selectedColor; // Bloco que ele apostou colado no vencedor para dar a sensação de perda raspando
+                } else if (resultColor !== 'fire' && i === 30 && nearMissIndex !== 30) {
+                    type = 'fire'; // O amarelo passa visualmente no meio do caminho para causar adrenalina
                 }
                 
                 const slot = document.createElement('div');
@@ -488,29 +513,30 @@
             reel.offsetHeight; 
 
             // Largura do Bloco (80px) + Espaçamento (8px) = 88px total por slot
-            const randomOffset = Math.floor(Math.random() * 40) - 20;
             const moveDistance = -(targetIndex * 88 + 40) + randomOffset;
 
-            // RASTREADOR DE ÁUDIO DINÂMICO NATIVO POR FRAME (ACOMPANHA A DESACELERAÇÃO DA TRANSIÇÃO)
+            // RASTREADOR DE ÁUDIO SINCRONIZADO POR FRAME (ACOMPANHA A DESACELERAÇÃO)
             let lastTileIndex = -1;
             function trackTicks() {
                 if (!isSpinning) return;
+                
+                // Extrai a posição X atual calculada pelo navegador
                 const style = window.getComputedStyle(reel);
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
                 
-                // Calcula qual slot está cruzando o eixo central de visualização
+                // 88 = Tamanho do Slot(80) + Gap(8) | 40 = Alinhamento central
                 const distancePassed = Math.abs(currentX - (-40));
                 const currentTileIndex = Math.floor(distancePassed / 88);
                 
                 if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) {
-                    tocarSom('sfxClick');
+                    tocarSom('sfxClick'); // Toca o estalido exatamente quando muda de bloco
                     lastTileIndex = currentTileIndex;
                 }
                 requestAnimationFrame(trackTicks);
             }
             
-            // Dispara a rolagem mecânica e o som acoplado
+            // Dispara a rolagem mecânica e o loop de som
             setTimeout(() => {
                 requestAnimationFrame(trackTicks);
                 reel.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
