@@ -91,6 +91,10 @@
 
         .slot.red { background: #e74c3c; border-bottom-color: #c0392b; }
         .slot.black { background: #2c3e50; border-bottom-color: #1a252f; }
+        
+        /* BLOCO AMARELO 32X NA ROLETA */
+        .slot.fire { background: #f1c40f; border-bottom-color: #d68910; }
+        .slot.fire::after { content: '32X'; font-size: 26px; font-weight: 900; color: #000; position: absolute; }
 
         /* CONTROLES E BOTÕES PADRÃO */
         .controls-wrapper {
@@ -99,16 +103,17 @@
             padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative;
         }
 
-        .action-row { display: flex; gap: 10px; }
+        .action-row { display: flex; gap: 6px; }
         
         .btn-choice {
-            flex: 1; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 900;
-            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px;
+            flex: 1; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 900;
+            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 4px;
             box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 2px solid transparent; opacity: 0.5; transition: 0.2s;
         }
         .btn-choice.red { background: #e74c3c; color: #fff; box-shadow: 0 4px 0 #c0392b; }
         .btn-choice.black { background: #2c3e50; color: #fff; box-shadow: 0 4px 0 #1a252f; }
-        .btn-choice.active { opacity: 1; border-color: #f1c40f; transform: scale(1.02); }
+        .btn-choice.fire { background: #f1c40f; color: #000; box-shadow: 0 4px 0 #d68910; }
+        .btn-choice.active { opacity: 1; border-color: #fff; transform: scale(1.02); }
 
         .bet-input-row {
             display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px;
@@ -154,13 +159,13 @@
 <body>
 
     <div id="startScreen">
-        <h2>Hotline Simulator</h2>
+        <h2>Roleta Simulator</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text">HOTLINE VIP</div>
+        <div class="logo-text">ROLETA VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -168,8 +173,8 @@
 
     <div class="game-area">
         <div class="board-header">
-            <div class="board-badge">Padrão (50/50)</div>
-            <div class="next-multiplier">Prêmio: <span>2.00x</span></div>
+            <div class="board-badge">Padrão Premium</div>
+            <div class="next-multiplier">Prêmio Alvo: <span id="mult-view">2.00x</span></div>
         </div>
 
         <div class="reel-container">
@@ -183,13 +188,16 @@
 
     <div class="controls-wrapper">
         
-        <!-- Seleção de Cores em vez de Aleatório/Auto -->
+        <!-- Seleção de Cores com Botão Amarelo 32x no Meio -->
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" onclick="selectColor('red')">
-                <i class="fa-solid fa-circle"></i> VERMELHO
+                VERMELHO
+            </div>
+            <div class="btn-choice fire btn-3d" id="btn-fire" onclick="selectColor('fire')">
+                AMARELO
             </div>
             <div class="btn-choice black btn-3d" id="btn-black" onclick="selectColor('black')">
-                <i class="fa-solid fa-circle"></i> PRETO
+                PRETO
             </div>
         </div>
 
@@ -205,7 +213,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">HOTLINE <i class="fa-solid fa-bolt" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="game-name">ROLETA <i class="fa-solid fa-circle-notch" style="margin-left: 5px; opacity: 0.5;"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -245,7 +253,7 @@
         let bancaAtual = 0; 
         let audioLigado = false;
         let isSpinning = false;
-        let selectedColor = 'red'; // Padrão selecionado
+        let selectedColor = 'red'; 
 
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
@@ -274,13 +282,12 @@
 
             if (tipo === 'sfxClick') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             } else if (tipo === 'sfxWin') {
-                // Cashout (Musiquinha de vitória)
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
                 osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
@@ -290,7 +297,6 @@
                 gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.8);
             } else if (tipo === 'sfxLose') {
-                // Explosão/Erro (Grave)
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
@@ -322,7 +328,6 @@
             osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
-        // LISTENERS DE INTERFACE (Expostos para o Global para facilitar o uso no HTML)
         window.voltarParaLobby = function() {
             iniciarAudio(); tocarSom('sfxClick'); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
@@ -370,12 +375,13 @@
             selectedColor = color;
             document.getElementById('btn-red').classList.remove('active');
             document.getElementById('btn-black').classList.remove('active');
+            document.getElementById('btn-fire').classList.remove('active');
             document.getElementById(`btn-${color}`).classList.add('active');
+
+            document.getElementById('mult-view').innerText = color === 'fire' ? '32.00x' : '2.00x';
         }
 
         function lidarComSaidaAbrupta() {
-            // Se fechar aba rodando a roleta (dinheiro já foi cobrado)
-            // Aqui a mecânica é instantânea, a aposta já foi pro caixa.
             isSpinning = false;
         }
 
@@ -393,24 +399,19 @@
             updateSaldoDisplay(bancaAtual);
         });
 
-        // -------------------------------------------------------------------------------- //
-        // LÓGICA DA ROLETA (VERMELHO E PRETO)
-        
         // Inicializa a Roleta Parada
         function initIdleReel() {
             reel.style.transition = 'none';
             reel.innerHTML = '';
             
             for(let i=0; i<20; i++) {
-                const type = (i % 2 === 0) ? 'red' : 'black';
+                let type = (i % 2 === 0) ? 'red' : 'black';
+                if (i === 5) type = 'fire'; // Insere um amarelo na exibição ociosa
                 const slot = document.createElement('div');
                 slot.className = `slot ${type}`;
-                slot.innerHTML = '<div class="inner-circle"></div>';
+                if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            
-            // O slot possui 80px. Como o reel tem padding-left 50%, 
-            // precisamos puxar 40px para a esquerda para o centro do bloco 0 ficar cravado no meio da tela.
             reel.style.transform = `translateX(-40px)`; 
         }
 
@@ -425,8 +426,6 @@
 
             isSpinning = true;
             document.getElementById('btnAction').classList.add('disabled');
-            document.getElementById('btnMinus').style.opacity = '0.5';
-            document.getElementById('btnPlus').style.opacity = '0.5';
 
             // 1. DESCONTA A APOSTA DO JOGADOR NO FIREBASE E ATUALIZA A TELA IMEDIATAMENTE
             let saldoReduzido = bancaAtual - apostaAtual;
@@ -439,63 +438,79 @@
                 set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual + apostaAtual).toFixed(2)));
             });
 
-            // 3. RNG - PROBABILIDADE (48% Win Chance para simular margem da casa no longo prazo)
-            const winChance = 0.48;
-            const isWin = Math.random() < winChance;
-            const resultColor = isWin ? selectedColor : (selectedColor === 'red' ? 'black' : 'red');
+            // 3. RNG MATEMÁTICO REAL DA ROLETA (3% Amarelo, 48.5% Vermelho, 48.5% Preto) -> Mantém margem da casa.
+            let fireProb = 0.03; 
+            let colorProb = (1 - fireProb) / 2; 
+            
+            let rand = Math.random();
+            let resultColor;
+            
+            if (rand < fireProb) {
+                resultColor = 'fire';
+            } else if (rand < fireProb + colorProb) {
+                resultColor = 'red';
+            } else {
+                resultColor = 'black';
+            }
 
+            const isWin = (selectedColor === resultColor);
             spinReel(resultColor, isWin);
         }
 
         function spinReel(resultColor, isWin) {
             reel.innerHTML = '';
-            const TOTAL_SLOTS = 60; 
-            
-            // Se o resultado for VERMELHO, o alvo (TARGET_INDEX) deve ser par.
-            // Se o resultado for PRETO, o alvo (TARGET_INDEX) deve ser ímpar.
-            const baseTarget = 50; 
-            const TARGET_INDEX = resultColor === 'red' ? (baseTarget) : (baseTarget + 1);
+            const TOTAL_SLOTS = 80; 
+            const TARGET_INDEX = 65; // Ponto ideal de parada longa
 
-            // Constrói a esteira falsa
+            // Cria o carrossel com padrão intercalado e fixa o alvo na posição certa
             for(let i=0; i<TOTAL_SLOTS; i++) {
-                const type = (i % 2 === 0) ? 'red' : 'black';
+                let type;
+                if (i === TARGET_INDEX) {
+                    type = resultColor;
+                } else {
+                    // Preenchimento sequencial distribuído no giro
+                    if (i % 15 === 0) type = 'fire';
+                    else type = (i % 2 === 0) ? 'red' : 'black';
+                }
                 const slot = document.createElement('div');
                 slot.className = `slot ${type}`;
-                slot.innerHTML = '<div class="inner-circle"></div>';
+                if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
 
-            // Reseta para a posição 0 instantaneamente
             reel.style.transition = 'none';
             reel.style.transform = `translateX(-40px)`;
-            reel.offsetHeight; // Força renderização do navegador
+            reel.offsetHeight; 
 
-            // Tamanho do Slot (80) + Gap (8) = 88px. Metade do Slot para centralizar (40px)
-            // Adiciona uma pequena folga aleatória dentro do slot para parecer orgânico (-20px a +20px)
+            // Largura do Bloco (80px) + Espaçamento (8px) = 88px total por slot
             const randomOffset = Math.floor(Math.random() * 40) - 20;
             const moveDistance = -(TARGET_INDEX * 88 + 40) + randomOffset;
 
-            // Dispara a animação (3.5 segundos)
+            // 🔊 CRIAÇÃO DO EFEITO SONORO DO GIRO DINÂMICO DURANTE A TRANSIÇÃO
+            const stepSoundInterval = setInterval(() => {
+                if (!isSpinning) { clearInterval(stepSoundInterval); return; }
+                tocarSom('sfxClick');
+            }, 90); // Ritmo contínuo dos estalidos simulando velocidade da roleta
+
+            // Dispara a rolagem mecânica
             setTimeout(() => {
-                reel.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
+                reel.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
                 reel.style.transform = `translateX(${moveDistance}px)`;
             }, 50);
 
-            // Aguarda o fim da animação para resolver a banca
+            // Resolução financeira
             setTimeout(async () => {
+                clearInterval(stepSoundInterval); // Finaliza o som de clique contínuo
                 isSpinning = false;
                 document.getElementById('btnAction').classList.remove('disabled');
-                document.getElementById('btnMinus').style.opacity = '1';
-                document.getElementById('btnPlus').style.opacity = '1';
                 
                 if (isWin) {
-                    const winAmount = apostaAtual * 2.00;
+                    const multiplier = selectedColor === 'fire' ? 32.00 : 2.00;
+                    const winAmount = apostaAtual * multiplier;
                     
-                    // 4. ATUALIZA SALDO (VITÓRIA) NO FIREBASE
                     let novoSaldo = bancaAtual + winAmount;
                     await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
                     
-                    // 5. DEDUZ PRÊMIO DO CAIXA GLOBAL
                     get(ref(db, 'sistema/caixa_global')).then(snap => {
                         let caixaAtual = parseFloat(snap.val() || 0);
                         set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - winAmount).toFixed(2)));
@@ -504,7 +519,7 @@
                     tocarSom('sfxWin');
 
                     const toast = document.getElementById('winToast');
-                    document.getElementById('winTitle').innerText = "VENCEU!";
+                    document.getElementById('winTitle').innerText = selectedColor === 'fire' ? "32X SUPER WIN!" : "VENCEU!";
                     document.getElementById('winAmount').innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                     toast.classList.add('show'); 
                     setTimeout(() => toast.classList.remove('show'), 2500);
@@ -515,11 +530,7 @@
             }, 3600);
         }
 
-        // Inicializa a tela com o carretel parado
         initIdleReel();
-        document.getElementById('btnBack').addEventListener('click', window.voltarParaLobby);
-        document.getElementById('btnAudio').addEventListener('click', window.toggleAudio);
     </script>
-
 </body>
 </html>
