@@ -2,587 +2,508 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
     
-    <title>Cassino Dice | SorteCerta Pro</title>
+    <title>SorteCerta - Roleta Imperial</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-top: #5b269b;
-            --bg-bottom: #31136b;
-            --panel-bg: #210d49;
-            --panel-light: #2c145e;
-            --accent-gold: #f4b63f;
-            --text-light: #ffffff;
-            --text-muted: #9b82c7;
-            
-            --track-red: #c51842;
-            --track-blue: #0ea5e9;
-            --track-green: #10b981;
-            
-            --btn-green: #10b981;
-            --btn-blue: #0ea5e9;
-            --btn-action: #4a2199;
+            --bg-main: #050505;
+            --bg-card: #121214;
+            --gold: #f1c40f;
+            --gold-dark: #b8860b;
+            --red: #e74c3c;
+            --red-dark: #c0392b;
+            --black: #1a1a1a;
+            --black-light: #2c3e50;
+            --green: #2ecc71;
+            --green-dark: #27ae60;
+            --text-main: #f4f4f5;
+            --text-muted: #8b8b93;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #0d0d0d;
-            display: flex;
-            justify-content: center;
-            user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; touch-action: manipulation; }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 20px; overflow-x: hidden; }
 
-        #mobile-container {
-            width: 100%;
-            max-width: 400px;
-            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: var(--text-light);
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            position: relative;
-        }
+        /* HEADER */
+        .header { width: 100%; background: rgba(18, 18, 20, 0.95); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 100; }
+        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 18px; cursor: pointer; }
+        .logo-roulette { font-weight: 900; color: var(--gold); letter-spacing: 1px; font-size: 18px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+        .balance-box { background: rgba(0, 230, 118, 0.1); color: var(--green); padding: 6px 12px; border-radius: 20px; font-weight: 900; font-size: 13px; border: 1px solid var(--green); display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            align-items: center;
-            padding-top: calc(15px + env(safe-area-inset-top));
-        }
+        .game-container { width: 100%; max-width: 450px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
 
-        .fun-mode {
-            background: #ffa800;
-            color: #fff;
-            padding: 4px 15px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
+        /* HISTÓRICO DE CORES */
+        .history-bar { display: flex; gap: 6px; overflow-x: auto; padding: 10px; background: var(--bg-card); border-radius: 12px; border: 1px solid #27272a; align-items: center; }
+        .history-bar::-webkit-scrollbar { display: none; }
+        .history-label { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-right: 5px; }
+        .history-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .history-dot.red { background: var(--red); }
+        .history-dot.black { background: var(--black); border-color: #555; }
+        .history-dot.green { background: var(--green); }
 
-        .balance-badge {
-            background: #210d49;
-            color: #fff;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 14px;
-            border: 1px solid #4a2199;
-        }
-
-        /* Result Area */
-        .result-area {
-            background: var(--panel-bg);
-            margin: 15px;
-            border-radius: 15px;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-        }
-
-        .number-display {
-            font-size: 65px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: color 0.3s;
-        }
-
-        .number-display.win { color: var(--track-green); }
-        .number-display.lose { color: var(--track-red); }
-
-        /* Sliders / Tracks */
-        .slider-container {
-            width: 90%;
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .track-group {
-            position: relative;
-            height: 40px;
-            display: flex;
-            flex-direction: column;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 2px solid #1a083a;
-        }
-
-        .track-top, .track-bottom {
-            height: 50%;
-            width: 100%;
-            position: relative;
-        }
-
-        .track-pattern {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.2) 3px, rgba(0,0,0,0.2) 5px);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .scale-marks {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 5px;
-            padding: 0 5px;
-        }
-
-        /* Input Range (Slider invisível por cima) */
-        input[type="range"] {
-            -webkit-appearance: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 40px;
-            background: transparent; outline: none; z-index: 5; margin: 0;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 30px; height: 30px;
-            background: #ffc107; border: 6px solid #ff9800; border-radius: 50%;
-            cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.8); position: relative;
-        }
+        /* ROLETA VISUAL E ANIMAÇÃO */
+        .roulette-arena { background: #0a0a0c; border: 2px solid #27272a; border-radius: 16px; padding: 25px 0; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); overflow: hidden; }
+        .wheel-container { position: relative; width: 240px; height: 240px; }
         
-        input[type="range"]::-webkit-slider-thumb:after {
-            content: ''; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px; height: 6px; background: #000; border-radius: 50%;
-        }
-
-        /* Stats Panel */
-        .stats-panel {
-            background: var(--panel-light); margin: 0 15px; padding: 15px;
-            border-radius: 15px; display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .payout-row { display: flex; justify-content: space-between; align-items: center; }
-        .payout-box { display: flex; flex-direction: column; gap: 5px; }
-        .payout-box label { font-size: 12px; color: var(--text-muted); }
-
-        .payout-input-wrapper {
-            background: #190a36; border-radius: 20px; padding: 5px 15px;
-            display: flex; align-items: center;
-        }
-        .payout-input-wrapper input {
-            background: transparent; border: none; color: white;
-            font-size: 18px; font-weight: bold; width: 60px; outline: none;
-        }
-        .payout-input-wrapper span { color: var(--text-muted); font-weight: bold; }
-
-        .info-row { display: flex; justify-content: space-between; font-size: 14px; }
-        .info-col { display: flex; flex-direction: column; }
-        .info-col span:first-child { color: var(--text-muted); font-size: 11px; }
-        .info-col span:last-child { font-weight: bold; }
-        .text-right { text-align: right; }
-
-        /* Controls Area */
-        .controls-area {
-            padding: 20px 15px; display: flex; flex-direction: column; gap: 15px;
-            flex-grow: 1; justify-content: flex-end;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
-        }
-
-        .roll-buttons { display: flex; gap: 10px; justify-content: space-between; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #222; box-shadow: 0 10px 25px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1); position: relative; }
         
-        .btn-roll {
-            flex-grow: 1; border: none; border-radius: 12px; color: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 60px; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.1s;
-        }
-        .btn-roll:active:not(:disabled) { transform: translateY(4px); box-shadow: none; }
-        .btn-roll:disabled { opacity: 0.5; cursor: not-allowed; }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: radial-gradient(circle, #f1c40f, #b8860b); border-radius: 50%; border: 4px solid #111; z-index: 5; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+        .marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; z-index: 10; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.8)); }
 
-        .btn-roll-under { background: var(--btn-green); box-shadow: 0 4px 0 #0b875d; }
-        .btn-roll-over { background: var(--btn-blue); box-shadow: 0 4px 0 #0979aa; }
+        /* MENSAGEM NA TELA */
+        .on-screen-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); background: rgba(0,0,0,0.9); padding: 15px 25px; border-radius: 12px; border: 2px solid var(--gold); color: #fff; font-weight: 900; text-align: center; z-index: 20; opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 85%; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .on-screen-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .msg-title { font-size: 14px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+        .msg-value { font-size: 28px; color: var(--gold); }
 
-        .btn-roll span:nth-child(1) { font-size: 20px; font-weight: bold; }
-        .btn-roll span:nth-child(2) { font-size: 12px; font-weight: bold; }
+        /* MESA DE APOSTAS */
+        .bet-table { display: flex; gap: 8px; width: 100%; }
+        .bet-zone { flex: 1; height: 85px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; cursor: pointer; position: relative; transition: 0.2s; border: 2px solid transparent; }
+        .bet-zone:active { transform: scale(0.95); }
+        
+        .bet-zone.red { background: linear-gradient(145deg, var(--red), var(--red-dark)); color: #fff; box-shadow: 0 4px 0 #7b241c; }
+        .bet-zone.green { background: linear-gradient(145deg, var(--green), var(--green-dark)); color: #000; flex: 0.7; box-shadow: 0 4px 0 #145a32; }
+        .bet-zone.black { background: linear-gradient(145deg, var(--black-light), var(--black)); color: #fff; box-shadow: 0 4px 0 #111; }
+        
+        .multiplier { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+        .chip-stack { position: absolute; top: -8px; right: -8px; background: #fff; color: #000; font-size: 11px; font-weight: 900; padding: 4px 8px; border-radius: 12px; border: 2px solid var(--gold); box-shadow: 0 2px 5px rgba(0,0,0,0.5); display: none; z-index: 5; }
 
-        .bet-input-container {
-            background: var(--panel-light); border-radius: 30px; padding: 8px 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-        }
+        /* CONTROLE DE FICHAS */
+        .controls { background: var(--bg-card); border: 1px solid #27272a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .chips-container { display: flex; justify-content: space-between; background: #000; padding: 12px; border-radius: 12px; border: 1px solid #333; }
+        .chip-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px dashed #666; background: #222; color: #fff; font-weight: 900; font-size: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .chip-btn.active { border: 2px solid var(--gold); background: radial-gradient(circle, #f1c40f, #b8860b); color: #000; transform: scale(1.1); box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
 
-        .bet-info { display: flex; flex-direction: column; }
-        .bet-info label { font-size: 11px; color: var(--text-muted); }
-        .bet-info input {
-            background: transparent; border: none; color: white;
-            font-size: 18px; font-weight: bold; width: 80px; outline: none;
-        }
-
-        .bet-adjust { display: flex; gap: 8px; }
-        .btn-adj {
-            background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted);
-            width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 20px; cursor: pointer;
-        }
+        .action-row { display: flex; gap: 10px; }
+        .btn-clear { background: #333; border: none; color: #fff; padding: 15px; border-radius: 12px; font-weight: bold; width: 60px; cursor: pointer; font-size: 16px; transition: 0.1s; }
+        .btn-clear:active { background: var(--red); transform: scale(0.95); }
+        
+        .btn-spin { flex: 1; background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; color: #000; font-size: 20px; font-weight: 900; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 0 #8a6508; text-transform: uppercase; transition: 0.1s; }
+        .btn-spin:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 #8a6508; }
+        .btn-spin:disabled { background: #444; color: #888; box-shadow: 0 6px 0 #222; cursor: not-allowed; }
     </style>
 </head>
-<body onclick="iniciarAudio()">
+<body>
 
-<div id="mobile-container">
-    
-    <div class="top-bar">
-        <div class="fun-mode" onclick="window.location.href='index.html'" style="cursor: pointer;">&lt; SAIR</div>
-        <div class="balance-badge" id="user-balance">Saldo: R$ 0.00</div>
-    </div>
+    <header class="header">
+        <div class="btn-back" onclick="voltarParaLobby()"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="logo-roulette"><i class="fa-solid fa-dharmachakra"></i> Roleta</div>
+        <div class="balance-box" onclick="window.location.href='saldo.html'">
+            <i class="fa-solid fa-wallet"></i> <span id="displaySaldoTop">R$ 0,00</span>
+        </div>
+    </header>
 
-    <div class="result-area">
-        <div class="number-display" id="result-display">50.00</div>
+    <div class="game-container">
         
-        <div class="slider-container">
-            <div class="track-group">
-                <div class="track-pattern"></div>
-                <div class="track-top" id="track-top"></div>
-                <div class="track-bottom" id="track-bottom"></div>
+        <div class="history-bar" id="historyBar">
+            <span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>
+            </div>
+
+        <div class="roulette-arena">
+            <div class="wheel-container">
+                <div class="marker"></div>
+                <div class="wheel" id="wheel"></div>
+                <div class="wheel-center"></div>
             </div>
             
-            <input type="range" id="chance-slider" min="0.10" max="96.90" step="0.10" value="48.50">
-            
-            <div class="scale-marks">
-                <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+            <div class="on-screen-msg" id="msgPanel">
+                <div class="msg-title" id="msgTitle">RESULTADO</div>
+                <div class="msg-value" id="msgValue">R$ 0,00</div>
+            </div>
+        </div>
+
+        <div class="bet-table">
+            <div class="bet-zone red" onclick="placeBet('red')">
+                VERMELHO <span class="multiplier">2x</span>
+                <div class="chip-stack" id="stack-red">R$ 0</div>
+            </div>
+            <div class="bet-zone green" onclick="placeBet('green')">
+                ZERO <span class="multiplier">14x</span>
+                <div class="chip-stack" id="stack-green">R$ 0</div>
+            </div>
+            <div class="bet-zone black" onclick="placeBet('black')">
+                PRETO <span class="multiplier">2x</span>
+                <div class="chip-stack" id="stack-black">R$ 0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="chips-container">
+                <div class="chip-btn active" onclick="selectChip(1, this)">R$ 1</div>
+                <div class="chip-btn" onclick="selectChip(5, this)">R$ 5</div>
+                <div class="chip-btn" onclick="selectChip(10, this)">R$ 10</div>
+                <div class="chip-btn" onclick="selectChip(50, this)">R$ 50</div>
+                <div class="chip-btn" onclick="selectChip(100, this)">R$ 100</div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-clear" onclick="clearBets()"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-spin" id="btnSpin" onclick="spinRoulette()">GIRAR</button>
             </div>
         </div>
     </div>
 
-    <div class="stats-panel">
-        <div class="payout-row">
-            <div class="payout-box">
-                <label>Payout</label>
-                <div class="payout-input-wrapper">
-                    <input type="number" id="payout-input" value="2.00" step="0.01" min="1.01" max="970.00">
-                    <span>x</span>
-                </div>
-            </div>
-        </div>
-        <div class="info-row">
-            <div class="info-col">
-                <span>Potential win:</span>
-                <span id="potential-win">0.00 BRL</span>
-            </div>
-            <div class="info-col text-right">
-                <span>Chance:</span>
-                <span id="chance-display">48.50 %</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls-area">
-        <div class="roll-buttons">
-            <button class="btn-roll btn-roll-under" id="btn-under" onclick="rollDice('under')" disabled>
-                <span>▼ UNDER</span>
-                <span id="target-under">48.50</span>
-            </button>
-            <button class="btn-roll btn-roll-over" id="btn-over" onclick="rollDice('over')" disabled>
-                <span>▲ OVER</span>
-                <span id="target-over">51.50</span>
-            </button>
-        </div>
-
-        <div class="bet-input-container">
-            <div class="bet-info">
-                <label>Aposta BRL</label>
-                <input type="number" id="bet-amount" value="1.00" step="1.00" min="0.10" onchange="updateStatsFromSlider()">
-            </div>
-            <div class="bet-adjust">
-                <button class="btn-adj" onclick="adjustBet(-1.00)">-</button>
-                <button class="btn-adj" onclick="doubleBet()">X2</button>
-                <button class="btn-adj" onclick="adjustBet(1.00)">+</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script type="module">
-    // ANTI-CACHE FORTE DE NAVEGADOR
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload(true);
-        }
-    });
-
-    // 1. IMPORTAÇÕES FIREBASE E INTEGRAÇÃO SORTECERTA
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-        databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-        projectId: "sortecerta-75b77"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const idDispositivo = localStorage.getItem('usuario_tracker_id');
-
-    if (!idDispositivo) { window.location.href = 'login.html'; }
-
-    // -------------------------------------------------------------------------------- //
-    // 🎵 MOTOR DE ÁUDIO NATIVO PROFISSIONAL (SINTETIZADOR)
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
-
-    window.iniciarAudio = function() {
-        if (!audioCtx) { audioCtx = new AudioContext(); }
-        if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-    }
-
-    const tocarSom = (tipo) => {
-        if (!audioCtx) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        if (tipo === 'sfxClick') {
-            // Tick curto para os botões e slider
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
-            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.03);
-        } else if (tipo === 'sfxRoll') {
-            // Som rápido enquanto os números rodam
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-        } else if (tipo === 'sfxWin') {
-            // Som de Vitória
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
-            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
-            osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.8);
-        } else if (tipo === 'sfxLose') {
-            // Som de Derrota
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-        }
-    };
-    // -------------------------------------------------------------------------------- //
-
-    let saldoUsuario = 0.00;
-    const dbRefSaldo = ref(db, 'usuarios/' + idDispositivo + '/saldo');
-
-    // Escuta saldo em tempo real do Firebase
-    onValue(dbRefSaldo, (snapshot) => {
-        saldoUsuario = parseFloat(snapshot.val() || 0);
-        document.getElementById('user-balance').innerText = `Saldo: R$ ${saldoUsuario.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-        
-        if (!isRolling) {
-            document.getElementById('btn-under').disabled = false;
-            document.getElementById('btn-over').disabled = false;
-        }
-    });
-
-    // ==========================================
-    // LÓGICA MATEMÁTICA E VISUAL DO JOGO DICE
-    // ==========================================
-    const RTP = 97.00; // Margem da casa cravada (Padrão SorteCerta/Spribe)
-    let isRolling = false;
-
-    const slider = document.getElementById('chance-slider');
-    const trackTop = document.getElementById('track-top');
-    const trackBottom = document.getElementById('track-bottom');
-    const payoutInput = document.getElementById('payout-input');
-    const chanceDisplay = document.getElementById('chance-display');
-    const potentialWin = document.getElementById('potential-win');
-    const targetUnder = document.getElementById('target-under');
-    const targetOver = document.getElementById('target-over');
-    const betInput = document.getElementById('bet-amount');
-    const resultDisplay = document.getElementById('result-display');
-    const btnUnder = document.getElementById('btn-under');
-    const btnOver = document.getElementById('btn-over');
-
-    window.updateStatsFromSlider = function() {
-        iniciarAudio();
-        if(!isRolling) tocarSom('sfxClick');
-        
-        let chance = parseFloat(slider.value);
-        let payout = RTP / chance;
-        payoutInput.value = payout.toFixed(2);
-        syncUI(chance, payout);
-    }
-
-    window.updateStatsFromPayout = function() {
-        iniciarAudio();
-        let payout = parseFloat(payoutInput.value);
-        if(payout < 1.01) payout = 1.01;
-        if(payout > 970.00) payout = 970.00; 
-
-        let chance = RTP / payout;
-        slider.value = chance.toFixed(2);
-        syncUI(chance, payout);
-    }
-
-    function syncUI(chance, payout) {
-        let bet = parseFloat(betInput.value);
-        if (isNaN(bet) || bet <= 0) bet = 1.00;
-        
-        let winAmount = bet * payout;
-        
-        chanceDisplay.innerText = chance.toFixed(2) + ' %';
-        potentialWin.innerText = winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2}) + ' BRL';
-        
-        let tUnder = chance;
-        let tOver = 100 - chance;
-        targetUnder.innerText = tUnder.toFixed(2);
-        targetOver.innerText = tOver.toFixed(2);
-
-        // Dinamismo das cores da pista ao deslizar a barra
-        trackTop.style.background = `linear-gradient(to right, var(--track-red) ${tOver}%, var(--track-blue) ${tOver}%)`;
-        trackBottom.style.background = `linear-gradient(to right, var(--track-green) ${tUnder}%, var(--track-red) ${tUnder}%)`;
-    }
-
-    window.adjustBet = function(amount) {
-        if (isRolling) return;
-        iniciarAudio(); tocarSom('sfxClick');
-        let currentBet = parseFloat(betInput.value);
-        currentBet = Math.max(0.10, currentBet + amount);
-        betInput.value = currentBet.toFixed(2);
-        updateStatsFromSlider();
-    }
-
-    window.doubleBet = function() {
-        if (isRolling) return;
-        iniciarAudio(); tocarSom('sfxClick');
-        let currentBet = parseFloat(betInput.value);
-        betInput.value = (currentBet * 2).toFixed(2);
-        updateStatsFromSlider();
-    }
-
-    window.rollDice = async function(type) {
-        if (isRolling) return;
-        iniciarAudio(); tocarSom('sfxClick');
-        
-        let bet = parseFloat(betInput.value);
-        if (bet > saldoUsuario) {
-            alert("Saldo insuficiente.");
-            return;
-        }
-
-        isRolling = true;
-        btnUnder.disabled = true;
-        btnOver.disabled = true;
-        slider.disabled = true;
-        payoutInput.disabled = true;
-        betInput.disabled = true;
-        resultDisplay.classList.remove('win', 'lose');
-
-        // 1. DESCONTAR APOSTA DO FIREBASE
-        let saldoReduzido = saldoUsuario - bet;
-        document.getElementById('user-balance').innerText = `Saldo: R$ ${saldoReduzido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-        await set(dbRefSaldo, parseFloat(saldoReduzido.toFixed(2)));
-
-        // 2. ADICIONA NO CAIXA GLOBAL
-        get(ref(db, 'sistema/caixa_global')).then(snap => {
-            let caixaAtual = parseFloat(snap.val() || 0);
-            set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual + bet).toFixed(2)));
+    <script type="module">
+        // PREVENIR CACHE DE NAVEGADOR
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload(true);
+            }
         });
 
-        const chance = parseFloat(slider.value);
-        const payout = parseFloat(payoutInput.value);
-        
-        // RESULTADO FINAL RNG (0.00 a 99.99)
-        const finalResult = (Math.random() * 100).toFixed(2);
+        // ==========================================
+        // 1. FIREBASE E DADOS
+        // ==========================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Animação de Sorteio com Som Sincronizado
-        let ticks = 0;
-        const rollInterval = setInterval(() => {
-            resultDisplay.innerText = (Math.random() * 100).toFixed(2);
-            tocarSom('sfxRoll');
-            ticks++;
-            
-            if (ticks > 25) { // Duração do sorteio
-                clearInterval(rollInterval);
-                finishRoll(finalResult, type, chance, payout, bet);
-            }
-        }, 40);
-    }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
 
-    async function finishRoll(result, type, chance, payout, bet) {
-        resultDisplay.innerText = result;
-        let numResult = parseFloat(result);
+        let idDispositivo = localStorage.getItem('usuario_tracker_id');
+        if (!idDispositivo) { window.location.href = 'login.html'; }
         
-        let isWin = false;
-        if (type === 'under' && numResult < chance) {
-            isWin = true;
-        } else if (type === 'over' && numResult > (100 - chance)) {
-            isWin = true;
+        let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let margemLucro = 0.30;
+        let modoJogo = "normal";
+        let estadoSequencia = 0;
+        let valorPremioForcado = 0;
+
+        let selectedChip = 1;
+        let bets = { red: 0, green: 0, black: 0 };
+        let isSpinning = false;
+        let currentRotation = 0;
+        let resultHistory = ['red', 'black', 'red', 'green', 'black'];
+
+        // ==========================================
+        // 2. MOTOR DE ÁUDIO NATIVO (SINTETIZADOR PROFISSIONAL)
+        // ==========================================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        window.iniciarAudio = function() {
+            if (!audioCtx) { audioCtx = new AudioContext(); }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
         }
 
-        if (isWin) {
-            resultDisplay.classList.add('win');
-            tocarSom('sfxWin');
-            
-            let winAmount = bet * payout;
-            
-            // 3. PAGAR O LUCRO NO FIREBASE
-            let novoSaldo = saldoUsuario + winAmount;
-            await set(dbRefSaldo, parseFloat(novoSaldo.toFixed(2)));
+        const tocarSom = (tipo) => {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-            // 4. DESCONTA O PRÊMIO DO CAIXA GLOBAL
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tipo === 'sfxClick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxTick') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
+            } else if (tipo === 'sfxWin') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1); 
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2); 
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (tipo === 'sfxLose') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
+        };
+
+        // DESBLOQUEIO DE ÁUDIO NO PRIMEIRO TOQUE
+        document.body.addEventListener('click', () => { window.iniciarAudio(); }, { once: true });
+
+        // ==========================================
+        // 3. DESENHO PRECISO DA ROLETA (15 FATIAS)
+        // ==========================================
+        const numSegments = 15;
+        const degPerSegment = 360 / numSegments; // 24 graus por fatia
+
+        function drawWheel() {
+            let gradientStr = 'conic-gradient(';
+            for(let i=0; i<numSegments; i++) {
+                let color = i === 0 ? 'var(--green)' : (i % 2 !== 0 ? 'var(--red)' : 'var(--black)');
+                gradientStr += `${color} ${i * degPerSegment}deg ${(i + 1) * degPerSegment}deg${i < numSegments - 1 ? ', ' : ''}`;
+            }
+            gradientStr += ')';
+            document.getElementById('wheel').style.background = gradientStr;
+        }
+        drawWheel();
+        updateHistoryBar();
+
+        // ==========================================
+        // 4. SINCRONIZAÇÃO E BLINDAGEM DE SALDO
+        // ==========================================
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val();
+            if (dados) {
+                if (!isSpinning) bancaAtual = parseFloat(dados.saldo || 0);
+                if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
+                
+                let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                if (iscaLida > 0 && estadoSequencia === 0) {
+                    valorPremioForcado = iscaLida; estadoSequencia = 1;
+                    set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                }
+            }
+            updateBalanceUI();
+        });
+
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
+
+        function updateBalanceUI() { 
+            // Mostra o saldo virtual (Banca atual - fichas na mesa)
+            let saldoVisivel = bancaAtual - (bets.red + bets.green + bets.black);
+            document.getElementById('displaySaldoTop').innerText = "R$ " + saldoVisivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); 
+        }
+
+        // DEVOLVE FICHAS SE O USUÁRIO FECHAR A PÁGINA SEM GIRAR
+        function lidarComSaidaAbrupta() {
+            if (!isSpinning) {
+                let totalNaMesa = bets.red + bets.green + bets.black;
+                if (totalNaMesa > 0) {
+                    // Como não deduzimos do firebase ainda, apenas limpamos a mesa.
+                    // O saldo real no Firebase continuou intacto.
+                    bets = { red: 0, green: 0, black: 0 };
+                }
+            }
+        }
+        window.addEventListener('pagehide', lidarComSaidaAbrupta);
+        document.addEventListener('visibilitychange', function() { if (document.hidden) lidarComSaidaAbrupta(); });
+
+        window.voltarParaLobby = function() {
+            iniciarAudio(); tocarSom('sfxClick'); lidarComSaidaAbrupta();
+            window.location.href = 'index.html';
+        }
+
+        window.selectChip = function(value, element) {
+            if(isSpinning) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            selectedChip = value;
+            document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        window.placeBet = function(color) {
+            if(isSpinning) return;
+            iniciarAudio();
+            
+            let saldoVirtual = bancaAtual - (bets.red + bets.green + bets.black);
+            if (saldoVirtual < selectedChip) { 
+                showMessage("AVISO", "Saldo Insuficiente!", "var(--red)"); 
+                setTimeout(() => { document.getElementById('msgPanel').classList.remove('show'); }, 1500);
+                return; 
+            }
+            
+            bets[color] += selectedChip;
+            updateBalanceUI(); updateBetTable(); tocarSom('sfxClick');
+        }
+
+        window.clearBets = function() {
+            if(isSpinning) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            bets = { red: 0, green: 0, black: 0 };
+            updateBalanceUI(); updateBetTable();
+        }
+
+        function updateBetTable() {
+            ['red', 'green', 'black'].forEach(color => {
+                const stack = document.getElementById(`stack-${color}`);
+                if(bets[color] > 0) { stack.style.display = 'block'; stack.innerText = "R$ " + bets[color]; } 
+                else { stack.style.display = 'none'; }
+            });
+        }
+
+        function updateHistoryBar() {
+            const bar = document.getElementById('historyBar');
+            bar.innerHTML = '<span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>';
+            resultHistory.forEach(color => { bar.innerHTML += `<div class="history-dot ${color}"></div>`; });
+        }
+
+        // ==========================================
+        // 5. MOTOR DA ROLETA E MATEMÁTICA RTP
+        // ==========================================
+        window.spinRoulette = function() {
+            let totalBet = bets.red + bets.green + bets.black;
+            if (totalBet === 0) { 
+                showMessage("AVISO", "Faça uma aposta!", "var(--gold)"); 
+                setTimeout(() => { document.getElementById('msgPanel').classList.remove('show'); }, 1500);
+                return; 
+            }
+            if (isSpinning) return;
+
+            iniciarAudio(); tocarSom('sfxClick');
+            isSpinning = true;
+            document.getElementById('btnSpin').disabled = true;
+            document.getElementById('msgPanel').classList.remove('show');
+
+            // 1. Deduz o saldo real no Firebase
+            bancaAtual -= totalBet;
+            set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(bancaAtual.toFixed(2)));
+            
+            // 2. Adiciona ao caixa Global
             get(ref(db, 'sistema/caixa_global')).then(snap => {
                 let caixaAtual = parseFloat(snap.val() || 0);
-                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - winAmount).toFixed(2)));
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual + totalBet).toFixed(2)));
             });
 
-        } else {
-            resultDisplay.classList.add('lose');
-            tocarSom('sfxLose');
+            // 3. Define a Cor (Baseada no sistema de risco)
+            let targetColor = determineRiggedOutcome(totalBet);
+            
+            // Lógica para achar a fatia correta na roda
+            let targetIndex = 0;
+            if(targetColor === 'red') { const reds = [1, 3, 5, 7, 9, 11, 13]; targetIndex = reds[Math.floor(Math.random() * reds.length)]; } 
+            else if(targetColor === 'black') { const blacks = [2, 4, 6, 8, 10, 12, 14]; targetIndex = blacks[Math.floor(Math.random() * blacks.length)]; }
+            // se for green, o index é 0 (padrão)
+
+            // Calcula o ângulo exato
+            const baseStopAngle = 360 - (targetIndex * degPerSegment) - (degPerSegment / 2);
+            const extraSpins = 360 * 5; 
+            
+            currentRotation += extraSpins + baseStopAngle - (currentRotation % 360);
+            
+            const wheelElement = document.getElementById('wheel');
+
+            // 🔊 RASTREADOR DE ÁUDIO SINCRONIZADO POR FRAME (ACOMPANHA A DESACELERAÇÃO)
+            let lastSegment = -1;
+            function trackRotation() {
+                if (!isSpinning) return;
+                
+                const style = window.getComputedStyle(wheelElement);
+                const matrix = new DOMMatrix(style.transform);
+                
+                // Converte a matriz de rotação em graus (0 a 360)
+                let angle = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+                if (angle < 0) angle += 360;
+                
+                // Calcula em qual fatia o ponteiro está batendo (cada 24 graus)
+                let currentSegment = Math.floor(angle / degPerSegment);
+                
+                if (currentSegment !== lastSegment) {
+                    tocarSom('sfxTick'); // Toca o estalido
+                    lastSegment = currentSegment;
+                }
+                
+                requestAnimationFrame(trackRotation);
+            }
+
+            // Inicia o giro mecânico e o rastreador
+            setTimeout(() => {
+                requestAnimationFrame(trackRotation);
+                wheelElement.style.transform = `rotate(${currentRotation}deg)`;
+            }, 50);
+
+            // Processa o resultado depois que a roda para
+            setTimeout(() => { 
+                isSpinning = false; // Interrompe o tracker de áudio
+                processPayout(targetColor); 
+            }, 4200);
         }
 
-        isRolling = false;
-        btnUnder.disabled = false;
-        btnOver.disabled = false;
-        slider.disabled = false;
-        payoutInput.disabled = false;
-        betInput.disabled = false;
-    }
+        // LÓGICA DO CLIENTE PRESERVADA INTEGRALMENTE
+        function determineRiggedOutcome(totalBet) {
+            let pR = bets.red * 2; let pB = bets.black * 2; let pG = bets.green * 14;
 
-    // Ligar listeners ao HTML
-    slider.addEventListener('input', updateStatsFromSlider);
-    payoutInput.addEventListener('change', updateStatsFromPayout);
+            if (estadoSequencia === 1) { estadoSequencia = 2; return getWorstOutcome(pR, pB, pG); }
+            if (estadoSequencia === 2 && valorPremioForcado > 0) {
+                estadoSequencia = 3; set(ref(db, 'usuarios/' + idDispositivo + '/modo'), 'agressivo');
+                if (pG > 0) return 'green'; if (pR > pB) return 'red'; return 'black';
+            }
+            if (modoJogo === 'agressivo' || estadoSequencia === 3) {
+                if(Math.random() < 0.8) return getWorstOutcome(pR, pB, pG);
+            }
 
-    // Iniciar interface
-    updateStatsFromSlider();
+            let availableFunds = caixaDaCasa * (1 - margemLucro);
+            let roll = Math.random();
+            let color = 'red';
+            if (roll > 0.475 && roll <= 0.95) color = 'black'; else if (roll > 0.95) color = 'green';
 
-    // Tratamento de saída abrupta para blindagem
-    window.addEventListener('pagehide', () => { if(isRolling) isRolling = false; });
-    document.addEventListener('visibilitychange', function() { if (document.hidden && isRolling) isRolling = false; });
+            let payout = color === 'red' ? pR : (color === 'black' ? pB : pG);
+            if (payout > availableFunds || (modoJogo === 'desfarcado' && payout > (totalBet * 3))) { return getWorstOutcome(pR, pB, pG); }
+            return color;
+        }
 
-</script>
+        function getWorstOutcome(pR, pB, pG) {
+            if (pR === 0 && pB === 0) return Math.random() > 0.5 ? 'red' : 'black';
+            if (pR === 0) return 'red'; if (pB === 0) return 'black'; if (pG === 0) return 'green';
+            if (pR <= pB && pR <= pG) return 'red'; if (pB <= pR && pB <= pG) return 'black'; return 'green';
+        }
 
+        async function processPayout(color) {
+            resultHistory.unshift(color);
+            if(resultHistory.length > 8) resultHistory.pop();
+            updateHistoryBar();
+
+            let winAmount = 0;
+            if (color === 'red') winAmount = bets.red * 2;
+            if (color === 'black') winAmount = bets.black * 2;
+            if (color === 'green') winAmount = bets.green * 14;
+
+            if (winAmount > 0) {
+                // SOMA O LUCRO NO FIREBASE
+                bancaAtual += winAmount;
+                await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(bancaAtual.toFixed(2)));
+                
+                // DEDUZ DO CAIXA GLOBAL
+                get(ref(db, 'sistema/caixa_global')).then(snap => {
+                    let caixaAtual = parseFloat(snap.val() || 0);
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - winAmount).toFixed(2)));
+                });
+
+                tocarSom('sfxWin');
+                showMessage("VOCÊ GANHOU!", "+ R$ " + winAmount.toFixed(2), "var(--green)");
+            } else {
+                tocarSom('sfxLose');
+                showMessage("NÃO FOI DESTA VEZ", "Tente Novamente", "var(--red)");
+            }
+
+            updateBalanceUI();
+            bets = { red: 0, green: 0, black: 0 };
+            updateBetTable();
+
+            setTimeout(() => {
+                document.getElementById('msgPanel').classList.remove('show');
+                document.getElementById('btnSpin').disabled = false;
+            }, 2500);
+        }
+
+        function showMessage(title, value, color) {
+            const panel = document.getElementById('msgPanel');
+            document.getElementById('msgTitle').innerText = title;
+            document.getElementById('msgValue').innerText = value;
+            panel.style.borderColor = color;
+            document.getElementById('msgValue').style.color = color;
+            panel.classList.add('show');
+        }
+
+    </script>
 </body>
 </html>
