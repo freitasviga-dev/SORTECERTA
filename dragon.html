@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE FORTE) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -119,13 +120,30 @@
         .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
         .balance-info i { color: #00e676; font-size: 12px; }
 
-        /* TOASTS */
+        /* POP-UP LUCRO TOTAL (Baseado na imagem anexa) */
+        .win-toast {
+            position: fixed; top: 120px; left: 50%; transform: translate(-50%, -20px) scale(0.9);
+            background: #00e676; /* Verde vivo */
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 50px; /* Bordas bem arredondadas, estilo pílula */
+            border: 4px solid #ffffff; /* Borda branca grossa */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000; display: flex; flex-direction: column; align-items: center;
+        }
+        .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .win-toast span { font-size: 14px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 2px; }
+        .win-toast #winAmount { font-size: 26px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
+
         .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 100px; }
     </style>
 </head>
 <body>
 
+    <!-- TELA INICIAL PARA DESBLOQUEIO DE ÁUDIO E JOGO -->
     <div id="startScreen">
         <h2>DICE VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
@@ -205,6 +223,12 @@
         </div>
     </div>
 
+    <!-- POP-UP DE VITÓRIA (LUCRO TOTAL) -->
+    <div class="win-toast" id="winToast">
+        <span id="winTitle">LUCRO TOTAL</span>
+        <div id="winAmount">R$ 0,00</div>
+    </div>
+
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
@@ -265,9 +289,13 @@
         const displaySaldo = document.getElementById('displaySaldo');
         const toastMsg = document.getElementById('toastMsg');
         const startScreen = document.getElementById('startScreen');
+        
+        // Elementos do Pop-up de Vitória
+        const winToast = document.getElementById('winToast');
+        const winAmountDisplay = document.getElementById('winAmount');
 
         // ==========================================
-        // 2. MOTOR DE ÁUDIO NATIVO PROFISSIONAL E TELA INICIAL
+        // 2. MOTOR DE ÁUDIO NATIVO PROFISSIONAL
         // ==========================================
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
@@ -515,6 +543,11 @@
                 
                 let winAmount = apostaAtual * payout;
                 
+                // EXIBE O TOAST DE LUCRO TOTAL COM ESTILO DA IMAGEM
+                winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                winToast.classList.add('show');
+                setTimeout(() => winToast.classList.remove('show'), 2500);
+
                 // 3. ATUALIZA SALDO (LUCRO) NO FIREBASE REAL DO USUÁRIO
                 get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                      let dbSaldo = parseFloat(snap.val() || 0);
