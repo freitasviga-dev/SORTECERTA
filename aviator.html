@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -87,7 +88,7 @@
         .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
-        /* ÁREA DE JOGO DO CANVAS */
+        /* ÁREA DE JOGO */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; gap: 15px; position: relative; }
 
         /* HISTÓRICO DE CORES */
@@ -109,16 +110,19 @@
         .on-screen-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); background: rgba(0,0,0,0.95); padding: 15px 25px; border-radius: 12px; border: 2px solid var(--gold); color: #fff; font-weight: 900; text-align: center; z-index: 20; opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 80%; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .on-screen-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        /* CONTROLES E SELEÇÃO PADRÃO SORTECERTA */
+        /* CONTROLES E SELEÇÃO */
         .controls-wrapper { width: 100%; background: #0c1f45; border-top: 2px solid #143570; padding: 15px; display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative; }
         
         .action-row { display: flex; gap: 8px; }
-        .btn-choice { flex: 1; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 2px solid transparent; opacity: 0.4; transition: 0.2s; cursor: pointer; }
+        .btn-choice { flex: 1; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 2px solid transparent; opacity: 0.4; transition: 0.2s; cursor: pointer; position: relative; }
         .btn-choice span { font-size: 9px; opacity: 0.8; font-weight: bold; }
         .btn-choice.red { background: linear-gradient(145deg, var(--red), var(--red-dark)); color: #fff; box-shadow: 0 4px 0 #7b241c; }
         .btn-choice.green { background: linear-gradient(145deg, #2ecc71, #27ae60); color: #000; box-shadow: 0 4px 0 #145a32; flex: 0.8; }
         .btn-choice.black { background: linear-gradient(145deg, var(--black-light), var(--black)); color: #fff; box-shadow: 0 4px 0 #111; }
         .btn-choice.active { opacity: 1; border-color: #fff; transform: scale(1.02); }
+
+        /* MINI FICHAS DE APOSTA (CHIP STACKS) */
+        .chip-stack { position: absolute; top: -8px; right: -8px; background: #fff; color: #000; font-size: 10px; font-weight: 900; padding: 3px 6px; border-radius: 12px; border: 2px solid var(--gold); box-shadow: 0 2px 5px rgba(0,0,0,0.5); display: none; z-index: 5; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; }
         .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
@@ -126,8 +130,15 @@
         .bet-display:active { background: rgba(255,255,255,0.1); }
         .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; cursor: pointer; }
 
-        .bet-button { width: 100%; background: linear-gradient(180deg, var(--green), var(--green-dark)); border: none; border-radius: 12px; padding: 16px; color: #000; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; }
-        .bet-button.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; border-bottom: 2px solid #111 !important; color: #888 !important; pointer-events: none; }
+        /* BOTÕES DE AÇÃO: APOSTAR E GIRAR */
+        .roll-actions { display: flex; gap: 8px; }
+        .btn-clear { background: #333; border: none; color: #fff; padding: 0 20px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 0 #111; cursor: pointer; }
+        
+        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 16px 5px; color: #fff; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+        .btn-apostar { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 6px 0 #154360, 0 8px 15px rgba(52, 152, 219, 0.3); border-bottom: 2px solid #1a5276; }
+        .btn-girar { background: linear-gradient(180deg, #00e676, #00b359); box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26; color: #000; }
+        
+        .bet-button.disabled, .btn-clear.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; border-bottom: 2px solid #111 !important; color: #888 !important; pointer-events: none; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
@@ -156,11 +167,13 @@
 </head>
 <body>
 
+    <!-- TELA INICIAL (DESBLOQUEIO DE ÁUDIO) -->
     <div id="startScreen">
         <h2>ROLETA IMPERIAL</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
+    <!-- HEADER BAR -->
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
         <div class="logo-text">ROLETA IMPERIAL</div>
@@ -170,6 +183,7 @@
     </div>
 
     <div class="game-area">
+        <!-- POP-UP DE VITÓRIA COMPACTO SUPERIOR -->
         <div class="win-toast" id="winToast">
             <span>LUCRO TOTAL</span>
             <div id="winAmount">R$ 0,00</div>
@@ -193,29 +207,39 @@
         </div>
     </div>
 
+    <!-- PAINEL DE CONTROLES DO INTEGRADO -->
     <div class="controls-wrapper">
         <div class="action-row">
-            <div class="btn-choice red btn-3d active" id="btn-red">
+            <div class="btn-choice red btn-3d active" id="btn-red" data-color="red">
                 VERMELHO <span>2x</span>
+                <div class="chip-stack" id="stack-red">R$ 0</div>
             </div>
-            <div class="btn-choice green btn-3d" id="btn-green">
+            <div class="btn-choice green btn-3d" id="btn-green" data-color="green">
                 ZERO <span>14x</span>
+                <div class="chip-stack" id="stack-green">R$ 0</div>
             </div>
-            <div class="btn-choice black btn-3d" id="btn-black">
+            <div class="btn-choice black btn-3d" id="btn-black" data-color="black">
                 PRETO <span>2x</span>
+                <div class="chip-stack" id="stack-black">R$ 0</div>
             </div>
         </div>
 
         <div class="bet-input-row">
-            <div class="bet-label">Aposta</div>
+            <div class="bet-label">Valor</div>
             <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
             <div class="bet-display" id="displayAposta">R$ 1,00</div>
             <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
         </div>
 
-        <button class="bet-button btn-3d" id="btnAction">
-            <i class="fa-solid fa-play"></i> APOSTAR
-        </button>
+        <div class="roll-actions">
+            <button class="btn-clear btn-3d" id="btnClear"><i class="fa-solid fa-trash"></i></button>
+            <button class="bet-button btn-apostar btn-3d" id="btnPlaceBet">
+                <i class="fa-solid fa-plus"></i> APOSTAR
+            </button>
+            <button class="bet-button btn-girar btn-3d" id="btnSpin">
+                <i class="fa-solid fa-rotate-right"></i> GIRAR
+            </button>
+        </div>
 
         <div class="footer-info">
             <div class="game-name">ROLETA <i class="fa-solid fa-dharmachakra" style="margin-left: 5px; opacity: 0.5;"></i></div>
@@ -257,6 +281,7 @@
         let isSpinning = false;
         let currentRotation = 0;
         let selectedColor = 'red';
+        let bets = { red: 0, green: 0, black: 0 };
         let resultHistory = ['red', 'black', 'red', 'green', 'black'];
 
         // Seletor de Aposta Rápida (Limite Máximo 500)
@@ -272,7 +297,9 @@
         const displayAposta = document.getElementById('displayAposta');
         const btnMinus = document.getElementById('btnMinus');
         const btnPlus = document.getElementById('btnPlus');
-        const btnAction = document.getElementById('btnAction');
+        const btnPlaceBet = document.getElementById('btnPlaceBet');
+        const btnSpin = document.getElementById('btnSpin');
+        const btnClear = document.getElementById('btnClear');
         const displaySaldo = document.getElementById('displaySaldo');
         const winToast = document.getElementById('winToast');
         const winAmountDisplay = document.getElementById('winAmount');
@@ -390,21 +417,18 @@
             }
         });
 
-        // Seleção do Alvo
-        function selectColor(color) {
-            if(isSpinning) return;
-            iniciarAudio(); tocarSom('sfxClick');
-            selectedColor = color;
-            document.getElementById('btn-red').classList.remove('active');
-            document.getElementById('btn-black').classList.remove('active');
-            document.getElementById('btn-green').classList.remove('active');
-            document.getElementById(`btn-${color}`).classList.add('active');
-        }
-        document.getElementById('btn-red').addEventListener('click', () => selectColor('red'));
-        document.getElementById('btn-green').addEventListener('click', () => selectColor('green'));
-        document.getElementById('btn-black').addEventListener('click', () => selectColor('black'));
+        // Seleção de Cor Target
+        document.querySelectorAll('.btn-choice').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(isSpinning) return;
+                iniciarAudio(); tocarSom('sfxClick');
+                selectedColor = this.dataset.color;
+                document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
 
-        // Entrada e Controle de Valores
+        // Entrada e Controle de Valores de Aposta
         displayAposta.addEventListener('click', () => {
             if(isSpinning) return;
             iniciarAudio();
@@ -432,13 +456,14 @@
         btnPlus.addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 5. SYNC DE DADOS REAL E SEGURANÇA
+        // 5. SYNC DE DADOS REAL E GESTÃO DE MESA
         // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             if (!isSpinning) {
                 bancaAtual = parseFloat(dados.saldo || 0);
-                displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                updateBalanceUI();
+                
                 if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
                 
                 let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
@@ -451,34 +476,90 @@
 
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
+        // Calcula o saldo virtual (Banca - Fichas já colocadas na mesa prontas pra girar)
+        function updateBalanceUI() {
+            let totalBets = bets.red + bets.green + bets.black;
+            let saldoVisivel = bancaAtual - totalBets;
+            displaySaldo.innerText = "R$ " + saldoVisivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        function updateBetTable() {
+            ['red', 'green', 'black'].forEach(color => {
+                const stack = document.getElementById(`stack-${color}`);
+                if(bets[color] > 0) { stack.style.display = 'block'; stack.innerText = "R$ " + bets[color]; } 
+                else { stack.style.display = 'none'; }
+            });
+        }
+
+        // Devolve fichas se o jogador fechar a aba
+        function lidarComSaidaAbrupta() {
+            if (!isSpinning) {
+                let totalNaMesa = bets.red + bets.green + bets.black;
+                if (totalNaMesa > 0) { bets = { red: 0, green: 0, black: 0 }; } 
+            }
+        }
+        window.addEventListener('pagehide', lidarComSaidaAbrupta);
+        document.addEventListener('visibilitychange', function() { if (document.hidden) lidarComSaidaAbrupta(); });
+
+        // BOTÃO APOSTAR: Põe o valor na cor selecionada
+        btnPlaceBet.addEventListener('click', () => {
+            if (isSpinning) return;
+            iniciarAudio();
+            
+            let totalBets = bets.red + bets.green + bets.black;
+            let saldoVirtual = bancaAtual - totalBets;
+            
+            if (apostaAtual > saldoVirtual) {
+                mostrarToast("Saldo insuficiente para esta aposta.");
+                return;
+            }
+
+            bets[selectedColor] += apostaAtual;
+            tocarSom('sfxClick');
+            updateBalanceUI();
+            updateBetTable();
+        });
+
+        // BOTÃO LIMPAR: Tira todas as apostas da mesa
+        btnClear.addEventListener('click', () => {
+            if (isSpinning) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            bets = { red: 0, green: 0, black: 0 };
+            updateBalanceUI();
+            updateBetTable();
+        });
+
         // ==========================================
         // 6. EXECUÇÃO DO GIRO E MATEMÁTICA DA PLATAFORMA
         // ==========================================
-        btnAction.addEventListener('click', async () => {
+        btnSpin.addEventListener('click', async () => {
             if (isSpinning) return;
             iniciarAudio(); tocarSom('sfxClick');
 
-            if (apostaAtual > bancaAtual) {
-                mostrarToast("Saldo insuficiente.");
+            let totalBet = bets.red + bets.green + bets.black;
+            if (totalBet === 0) {
+                mostrarToast("Coloque uma aposta na mesa antes de girar!");
                 return;
             }
 
             isSpinning = true;
-            btnAction.classList.add('disabled');
+            btnPlaceBet.classList.add('disabled');
+            btnSpin.classList.add('disabled');
+            btnClear.classList.add('disabled');
             btnMinus.style.opacity = '0.5';
             btnPlus.style.opacity = '0.5';
             msgPanel.classList.remove('show');
 
-            // 1. Desconta no Firebase
-            let saldoReduzido = bancaAtual - apostaAtual;
-            displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            // 1. Desconta o total da mesa permanentemente no Firebase
+            let saldoReduzido = bancaAtual - totalBet;
+            bancaAtual = saldoReduzido; // Atualiza a RAM
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
 
             // 2. Transfere para o Caixa Global
-            await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
+            await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + totalBet).toFixed(2)));
 
-            // 3. Roda o motor de risco unificado
-            let targetColor = determineRiggedOutcome(apostaAtual);
+            // 3. Roda o motor de risco unificado analisando todas as fichas na mesa
+            let targetColor = determineRiggedOutcome(totalBet);
 
             let targetIndex = 0;
             if(targetColor === 'red') { const reds = [1, 3, 5, 7, 9, 11, 13]; targetIndex = reds[Math.floor(Math.random() * reds.length)]; } 
@@ -486,11 +567,11 @@
 
             const baseStopAngle = 360 - (targetIndex * degPerSegment) - (degPerSegment / 2);
             const extraSpins = 360 * 5; 
-            const randomOffset = (Math.random() * 16) - 8; // Folga sutil dentro da fatia
+            const randomOffset = (Math.random() * 16) - 8; 
 
             currentRotation += extraSpins + baseStopAngle - (currentRotation % 360) + randomOffset;
 
-            // 🔊 RASTREADOR DE ÁUDIO SINCRONIZADO POR ANIMAÇÃO DE QUADRO (TICK PRECISO)
+            // 🔊 RASTREADOR DE ÁUDIO SINCRONIZADO POR ANIMAÇÃO DE QUADRO
             let lastSegment = -1;
             function trackRotation() {
                 if (!isSpinning) return;
@@ -519,9 +600,9 @@
         });
 
         function determineRiggedOutcome(totalBet) {
-            let pR = selectedColor === 'red' ? totalBet * 2 : 0; 
-            let pB = selectedColor === 'black' ? totalBet * 2 : 0; 
-            let pG = selectedColor === 'green' ? totalBet * 14 : 0;
+            let pR = bets.red * 2; 
+            let pB = bets.black * 2; 
+            let pG = bets.green * 14;
 
             if (estadoSequencia === 1) { estadoSequencia = 2; return getWorstOutcome(pR, pB, pG); }
             if (estadoSequencia === 2 && valorPremioForcado > 0) {
@@ -553,14 +634,14 @@
             if(resultHistory.length > 8) resultHistory.pop();
             updateHistoryBar();
 
-            let isWin = (selectedColor === color);
+            let isWin = false;
             let winAmount = 0;
 
-            if (isWin) {
-                if (color === 'red') winAmount = apostaAtual * 2;
-                if (color === 'black') winAmount = apostaAtual * 2;
-                if (color === 'green') winAmount = apostaAtual * 14;
+            if (color === 'red' && bets.red > 0) { winAmount = bets.red * 2; isWin = true; }
+            else if (color === 'black' && bets.black > 0) { winAmount = bets.black * 2; isWin = true; }
+            else if (color === 'green' && bets.green > 0) { winAmount = bets.green * 14; isWin = true; }
 
+            if (isWin) {
                 // Devolve prêmio para o Saldo Real
                 get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                     let dbSaldo = parseFloat(snap.val() || 0);
@@ -587,8 +668,14 @@
                 setTimeout(() => msgPanel.classList.remove('show'), 2500);
             }
 
-            // Destrava Interface
-            btnAction.classList.remove('disabled');
+            // Limpa as Fichas e Libera Botões
+            bets = { red: 0, green: 0, black: 0 };
+            updateBetTable();
+            updateBalanceUI();
+
+            btnPlaceBet.classList.remove('disabled');
+            btnSpin.classList.remove('disabled');
+            btnClear.classList.remove('disabled');
             btnMinus.style.opacity = '1';
             btnPlus.style.opacity = '1';
         }
