@@ -16,7 +16,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; user-select: none; touch-action: manipulation; }
         html { height: -webkit-fill-available; overscroll-behavior: none; }
         
-        /* Fundo Padrão Goal VIP (Imagem) */
         body { 
             background: linear-gradient(180deg, #184b9e 0%, #0d2b5e 100%);
             color: #ffffff; min-height: 100vh; min-height: 100dvh;
@@ -84,16 +83,16 @@
         .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
         .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; }
+        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; cursor: pointer; }
 
         .roll-actions { display: flex; gap: 10px; }
         
-        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 12px 5px; color: #fff; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
+        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 12px 5px; color: #fff; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer; }
         .bet-button span:nth-child(2) { font-size: 11px; opacity: 0.8; }
         
         .btn-under { background: linear-gradient(180deg, #00e676, #00b359); box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26; color: #000; }
         .btn-over { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 6px 0 #154360, 0 8px 15px rgba(52, 152, 219, 0.3); border-bottom: 2px solid #1a5276; }
-        .bet-button.disabled { background: #555; box-shadow: 0 6px 0 #222; border-bottom: 2px solid #111; color: #888; pointer-events: none; }
+        .bet-button.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; border-bottom: 2px solid #111 !important; color: #888 !important; pointer-events: none; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
@@ -156,17 +155,17 @@
     <div class="controls-wrapper">
         <div class="bet-input-row">
             <div class="bet-label">Aposta</div>
-            <button class="bet-adjust btn-3d" id="btnMinus" onclick="mudarAposta(-1)"><i class="fa-solid fa-minus"></i></button>
-            <div class="bet-display" id="displayAposta" onclick="abrirInputAposta()">R$ 1,00</div>
-            <button class="bet-adjust btn-3d" id="btnPlus" onclick="mudarAposta(1)"><i class="fa-solid fa-plus"></i></button>
+            <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+            <div class="bet-display" id="displayAposta">R$ 1,00</div>
+            <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
         </div>
 
         <div class="roll-actions">
-            <button class="bet-button btn-under btn-3d" id="btn-under" onclick="rollDice('under')">
+            <button class="bet-button btn-under btn-3d" id="btn-under">
                 <span><i class="fa-solid fa-arrow-down"></i> UNDER</span>
                 <span id="target-under">Abaixo de 48.50</span>
             </button>
-            <button class="bet-button btn-over btn-3d" id="btn-over" onclick="rollDice('over')">
+            <button class="bet-button btn-over btn-3d" id="btn-over">
                 <span><i class="fa-solid fa-arrow-up"></i> OVER</span>
                 <span id="target-over">Acima de 51.50</span>
             </button>
@@ -192,7 +191,7 @@
         });
 
         // ==========================================
-        // 1. IMPORTAÇÕES E FIREBASE (SorteCerta)
+        // 1. IMPORTAÇÕES E FIREBASE STRICT
         // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -203,21 +202,43 @@
             projectId: "sortecerta-75b77"
         };
         const db = getDatabase(initializeApp(firebaseConfig));
+        
+        // REDIRECIONAMENTO STRICT (SEM ID FALSO)
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
-
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
         // Variáveis Globais de Estado
         let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
         let isRolling = false;
         let audioLigado = false;
         
-        // Padrão Goal de Apostas (Limite 500)
+        // Padrão de Apostas (Limite 500)
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; 
         let apostaAtual = apostasPermitidas[indexAposta];
 
-        const RTP = 97.00; // Margem oficial
+        const RTP = 97.00; 
+
+        // Referências do DOM
+        const slider = document.getElementById('chance-slider');
+        const trackTop = document.getElementById('track-top');
+        const trackBottom = document.getElementById('track-bottom');
+        const payoutInput = document.getElementById('payout-input');
+        const chanceDisplay = document.getElementById('chance-display');
+        const potentialWin = document.getElementById('potential-win');
+        const targetUnder = document.getElementById('target-under');
+        const targetOver = document.getElementById('target-over');
+        const resultDisplay = document.getElementById('result-display');
+        const btnUnder = document.getElementById('btn-under');
+        const btnOver = document.getElementById('btn-over');
+        const btnMinus = document.getElementById('btnMinus');
+        const btnPlus = document.getElementById('btnPlus');
+        const displayAposta = document.getElementById('displayAposta');
+        const btnBack = document.getElementById('btnBack');
+        const btnAudio = document.getElementById('btnAudio');
+        const displaySaldo = document.getElementById('displaySaldo');
+        const toastMsg = document.getElementById('toastMsg');
 
         // ==========================================
         // 2. MOTOR DE ÁUDIO NATIVO PROFISSIONAL
@@ -225,7 +246,7 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
-        window.iniciarAudio = function() {
+        function iniciarAudio() {
             if (!audioCtx) { audioCtx = new AudioContext(); }
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
         }
@@ -240,12 +261,12 @@
             gainNode.connect(audioCtx.destination);
 
             if (tipo === 'sfxClick') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
             } else if (tipo === 'sfxRoll') {
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(800, audioCtx.currentTime);
@@ -273,33 +294,34 @@
         };
 
         function mostrarToast(msg) {
-            const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toastMsg.innerText = msg; 
+            toastMsg.classList.add('show');
+            setTimeout(() => toastMsg.classList.remove('show'), 3000);
         }
 
         // ==========================================
-        // 3. INTERFACE E EVENTOS BÁSICOS
+        // 3. EVENT LISTENERS E LÓGICA DE INTERFACE
         // ==========================================
-        document.body.addEventListener('click', () => { window.iniciarAudio(); }, { once: true });
+        document.body.addEventListener('click', () => { iniciarAudio(); }, { once: true });
 
-        window.voltarParaLobby = function() {
-            iniciarAudio(); tocarSom('sfxClick'); lidarComSaidaAbrupta();
+        btnBack.addEventListener('click', () => {
+            iniciarAudio(); tocarSom('sfxClick'); 
+            if (isRolling) isRolling = false;
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
-        }
+        });
 
-        window.toggleAudio = function() {
+        btnAudio.addEventListener('click', () => {
             iniciarAudio();
             audioLigado = !audioLigado; 
-            const btn = document.getElementById('btnAudio');
             if(audioLigado) { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btnAudio.style.color = '#fff'; tocarSom('sfxClick');
             } else { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btnAudio.style.color = '#888'; 
             }
-        }
+        });
 
-        window.abrirInputAposta = function() {
+        displayAposta.addEventListener('click', () => {
             if(isRolling) return;
             iniciarAudio();
             let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
@@ -307,38 +329,185 @@
                 let parsed = parseFloat(novoValor.replace(',', '.'));
                 if(!isNaN(parsed) && parsed >= 0.10) {
                     apostaAtual = Math.min(parsed, 500.00);
-                    document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    displayAposta.innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
                     tocarSom('sfxClick');
-                    updateStatsFromSlider();
+                    updateStats();
                 } else { mostrarToast("Valor inválido."); }
             }
-        }
+        });
 
-        window.mudarAposta = function(direcao) {
+        function mudarAposta(direcao) {
             if(isRolling) return;
             iniciarAudio(); tocarSom('sfxClick');
             let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
                 indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
-                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                updateStatsFromSlider();
+                displayAposta.innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                updateStats();
             }
         }
+        btnMinus.addEventListener('click', () => mudarAposta(-1));
+        btnPlus.addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 4. FIREBASE SYNC & BLINDAGEM
+        // 4. SINC DE DADOS REAL E BLINDAGEM DO BANCO
         // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             if (!isRolling) {
                 bancaAtual = parseFloat(dados.saldo || 0);
-                document.getElementById('displaySaldo').innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             }
         });
 
-        function lidarComSaidaAbrupta() { if (isRolling) isRolling = false; }
-        window.addEventListener('pagehide', lidarComSaidaAbrupta);
-        document.addEventListener('visibilitychange', function() { if (document.hidden) lidarComSaidaAbrupta(); });
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
+            caixaDaCasa = parseFloat(snapshot.val() || 0);
+        });
+
+        window.addEventListener('pagehide', () => { if (isRolling) isRolling = false; });
+        document.addEventListener('visibilitychange', function() { if (document.hidden) isRolling = false; });
 
         // ==========================================
-        // 5. LÓGICA DO DICE (SLIDER &
+        // 5. LÓGICA DO DICE (SLIDER & MATH)
+        // ==========================================
+        function updateStats() {
+            let chance = parseFloat(slider.value);
+            let payout = RTP / chance;
+            payoutInput.value = payout.toFixed(2);
+            syncUI(chance, payout);
+        }
+
+        function updateFromPayout() {
+            iniciarAudio();
+            let payout = parseFloat(payoutInput.value);
+            if(payout < 1.01) payout = 1.01;
+            if(payout > 970.00) payout = 970.00; 
+
+            let chance = RTP / payout;
+            slider.value = chance.toFixed(2);
+            syncUI(chance, payout);
+        }
+
+        slider.addEventListener('input', () => {
+            iniciarAudio();
+            if(!isRolling) tocarSom('sfxClick');
+            updateStats();
+        });
+        
+        payoutInput.addEventListener('change', updateFromPayout);
+
+        function syncUI(chance, payout) {
+            let winAmount = apostaAtual * payout;
+            
+            chanceDisplay.innerText = chance.toFixed(2) + ' %';
+            potentialWin.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            
+            let tUnder = chance;
+            let tOver = 100 - chance;
+            targetUnder.innerText = "Abaixo de " + tUnder.toFixed(2);
+            targetOver.innerText = "Acima de " + tOver.toFixed(2);
+
+            trackTop.style.background = `linear-gradient(to right, #e74c3c ${tOver}%, #3498db ${tOver}%)`;
+            trackBottom.style.background = `linear-gradient(to right, #00e676 ${tUnder}%, #e74c3c ${tUnder}%)`;
+        }
+
+        async function rollDice(type) {
+            if (isRolling) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            
+            if (apostaAtual > bancaAtual) {
+                mostrarToast("Saldo insuficiente.");
+                return;
+            }
+
+            // TRAVA A INTERFACE CONTRA MULTI-CLIQUE
+            isRolling = true;
+            btnUnder.classList.add('disabled');
+            btnOver.classList.add('disabled');
+            btnMinus.style.opacity = '0.5';
+            btnPlus.style.opacity = '0.5';
+            slider.disabled = true;
+            payoutInput.disabled = true;
+            resultDisplay.classList.remove('win', 'lose');
+
+            // 1. DESCONTA DO SALDO DO JOGADOR NO FIREBASE REAL
+            let saldoReduzido = bancaAtual - apostaAtual;
+            displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
+
+            // 2. ENVIA O VALOR DA APOSTA PARA O CAIXA GLOBAL DO SISTEMA
+            await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
+
+            const chance = parseFloat(slider.value);
+            const payout = parseFloat(payoutInput.value);
+            
+            // SORTEIO REAL RNG (0.00 a 99.99)
+            const finalResult = (Math.random() * 100).toFixed(2);
+
+            let ticks = 0;
+            const rollInterval = setInterval(() => {
+                resultDisplay.innerText = (Math.random() * 100).toFixed(2);
+                tocarSom('sfxRoll');
+                ticks++;
+                
+                if (ticks > 25) { 
+                    clearInterval(rollInterval);
+                    finishRoll(finalResult, type, chance, payout);
+                }
+            }, 40);
+        }
+
+        async function finishRoll(result, type, chance, payout) {
+            resultDisplay.innerText = result;
+            let numResult = parseFloat(result);
+            
+            let isWin = false;
+            if (type === 'under' && numResult < chance) {
+                isWin = true;
+            } else if (type === 'over' && numResult > (100 - chance)) {
+                isWin = true;
+            }
+
+            if (isWin) {
+                resultDisplay.classList.add('win');
+                tocarSom('sfxWin');
+                
+                let winAmount = apostaAtual * payout;
+                
+                // 3. ATUALIZA SALDO (LUCRO) NO FIREBASE REAL DO USUÁRIO
+                get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
+                     let dbSaldo = parseFloat(snap.val() || 0);
+                     await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + winAmount).toFixed(2)));
+                });
+
+                // 4. RETIRA O VALOR DO PRÊMIO DO CAIXA GLOBAL DA CASA
+                get(ref(db, 'sistema/caixa_global')).then(async snap => {
+                    let dbCaixa = parseFloat(snap.val() || 0);
+                    await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - winAmount).toFixed(2)));
+                });
+
+            } else {
+                resultDisplay.classList.add('lose');
+                tocarSom('sfxLose');
+            }
+
+            // LIBERA OS CONTROLES PARA A PRÓXIMA RODADA
+            isRolling = false;
+            btnUnder.classList.remove('disabled');
+            btnOver.classList.remove('disabled');
+            btnMinus.style.opacity = '1';
+            btnPlus.style.opacity = '1';
+            slider.disabled = false;
+            payoutInput.disabled = false;
+        }
+
+        // Eventos dos botões de Rolagem
+        btnUnder.addEventListener('click', () => rollDice('under'));
+        btnOver.addEventListener('click', () => rollDice('over'));
+
+        // Inicia dados do painel ocioso
+        updateStats();
+</script>
+
+</body>
+</html>
