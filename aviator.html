@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -167,13 +166,11 @@
 </head>
 <body>
 
-    <!-- TELA INICIAL (DESBLOQUEIO DE ÁUDIO) -->
     <div id="startScreen">
         <h2>ROLETA IMPERIAL</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
-    <!-- HEADER BAR -->
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
         <div class="logo-text">ROLETA IMPERIAL</div>
@@ -183,7 +180,6 @@
     </div>
 
     <div class="game-area">
-        <!-- POP-UP DE VITÓRIA COMPACTO SUPERIOR -->
         <div class="win-toast" id="winToast">
             <span>LUCRO TOTAL</span>
             <div id="winAmount">R$ 0,00</div>
@@ -207,7 +203,6 @@
         </div>
     </div>
 
-    <!-- PAINEL DE CONTROLES DO INTEGRADO -->
     <div class="controls-wrapper">
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" data-color="red">
@@ -511,6 +506,12 @@
             
             if (apostaAtual > saldoVirtual) {
                 mostrarToast("Saldo insuficiente para esta aposta.");
+                return;
+            }
+
+            // LIMITE MÁXIMO DE APOSTA NA COR ESCOLHIDA
+            if (bets[selectedColor] + apostaAtual > 500) {
+                mostrarToast("O limite de aposta por cor é R$ 500,00!");
                 return;
             }
 
