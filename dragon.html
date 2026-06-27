@@ -62,25 +62,25 @@
         .result-box {
             width: 100%; background: rgba(0,0,0,0.15); border-radius: 16px; padding: 30px 20px;
             display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3); position: relative;
         }
 
         .number-display {
-            font-size: 70px; font-weight: 900; margin-bottom: 25px;
+            font-size: 80px; font-weight: 900; margin-bottom: 30px; margin-top: 10px;
             text-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: color 0.3s;
         }
         .number-display.win { color: #00e676; text-shadow: 0 0 20px rgba(0, 230, 118, 0.5); }
         .number-display.lose { color: #e74c3c; text-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
 
-        /* SLIDER TRACKS */
-        .slider-container { width: 100%; position: relative; margin-bottom: 10px; }
-        .track-group { position: relative; height: 40px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; border: 2px solid rgba(0,0,0,0.5); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        /* SLIDER TRACKS - Reduzido a altura para ficar igual a foto */
+        .slider-container { width: 100%; position: relative; margin-bottom: 5px; }
+        .track-group { position: relative; height: 32px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; border: 2px solid rgba(0,0,0,0.5); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .track-top, .track-bottom { height: 50%; width: 100%; position: relative; }
-        .track-pattern { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,0.15) 4px, rgba(0,0,0,0.15) 8px); pointer-events: none; z-index: 2; }
-        .scale-marks { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; padding: 0 5px; font-weight: bold; }
+        .track-pattern { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 6px); pointer-events: none; z-index: 2; }
+        .scale-marks { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; padding: 0 5px; font-weight: bold; }
 
-        input[type="range"] { -webkit-appearance: none; position: absolute; top: 0; left: 0; width: 100%; height: 40px; background: transparent; outline: none; z-index: 5; margin: 0; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 34px; height: 34px; background: #f1c40f; border: 4px solid #b8860b; border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.8); position: relative; }
+        input[type="range"] { -webkit-appearance: none; position: absolute; top: -2px; left: 0; width: 100%; height: 36px; background: transparent; outline: none; z-index: 5; margin: 0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: #f1c40f; border: 4px solid #b8860b; border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.8); position: relative; }
         
         /* PAINEL DE ESTATÍSTICAS */
         .stats-panel {
@@ -97,8 +97,8 @@
         .payout-input-wrapper input { background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; width: 60px; outline: none; text-align: right; }
         .payout-input-wrapper span { color: rgba(255,255,255,0.5); font-weight: bold; margin-left: 5px; }
 
-        /* CONTROLES ESTILO GOAL VIP */
-        .controls-wrapper { width: 100%; background: #0c1f45; border-top: 2px solid #143570; padding: 15px; display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative; }
+        /* CONTROLES ESTILO GOAL VIP (Fiel à imagem 6 e 7) */
+        .controls-wrapper { width: 100%; background: #0c1f45; border-top: 2px solid #143570; padding: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; }
         .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
@@ -106,29 +106,29 @@
         .bet-display:active { background: rgba(255,255,255,0.1); }
         .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; cursor: pointer; }
 
-        .roll-actions { display: flex; gap: 10px; }
+        .roll-actions { display: flex; gap: 12px; }
         
-        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 12px 5px; color: #fff; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer; }
-        .bet-button span:nth-child(2) { font-size: 11px; opacity: 0.8; }
+        /* Botões Redesenhados para igualar à foto */
+        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 14px 5px; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; }
+        .bet-button span:nth-child(1) { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bet-button span:nth-child(2) { font-size: 10px; opacity: 0.9; font-weight: 700; letter-spacing: 0.5px; }
         
-        .btn-under { background: linear-gradient(180deg, #00e676, #00b359); box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26; color: #000; }
-        .btn-over { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 6px 0 #154360, 0 8px 15px rgba(52, 152, 219, 0.3); border-bottom: 2px solid #1a5276; }
-        .bet-button.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; border-bottom: 2px solid #111 !important; color: #888 !important; pointer-events: none; }
+        .btn-under { background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 6px 0 #1e8449, 0 8px 15px rgba(46, 204, 113, 0.3); color: #000; }
+        .btn-over { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 6px 0 #1a5276, 0 8px 15px rgba(52, 152, 219, 0.3); }
+        .bet-button.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; color: #888 !important; pointer-events: none; }
 
-        .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
+        .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
         .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
         .balance-info i { color: #00e676; font-size: 12px; }
 
-        /* POP-UP LUCRO TOTAL COMPACTO E COM BRILHO (IDÊNTICO À IMAGEM) */
+        /* POP-UP LUCRO TOTAL (Subido para não cobrir o número) */
         .win-toast {
-            position: absolute; top: 15px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
-            background: #00d665; /* Verde similar ao da foto */
-            color: #000;
-            padding: 8px 24px; /* Diminuído para ficar fino/compacto */
-            border-radius: 40px; 
-            border: 2px solid #ffffff; /* Borda branca mais fina */
-            box-shadow: 0 0 25px rgba(0, 230, 118, 0.8); /* Glow de brilho em volta */
+            position: absolute; top: -20px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
+            background: #00d665; color: #000;
+            padding: 8px 24px; border-radius: 40px; 
+            border: 2px solid #ffffff; 
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.8);
             opacity: 0; pointer-events: none;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 1000; display: flex; flex-direction: column; align-items: center;
@@ -159,14 +159,14 @@
     </div>
 
     <div class="game-area">
-        
-        <!-- POP-UP DE VITÓRIA (AGORA COMPACTO NO TOPO DA GAME AREA) -->
-        <div class="win-toast" id="winToast">
-            <span>LUCRO TOTAL</span>
-            <div id="winAmount">R$ 0,00</div>
-        </div>
-
         <div class="result-box">
+            
+            <!-- POP-UP DE VITÓRIA (AGORA NO TOPO DA CAIXA, NÃO COBRE O NÚMERO) -->
+            <div class="win-toast" id="winToast">
+                <span>LUCRO TOTAL</span>
+                <div id="winAmount">R$ 0,00</div>
+            </div>
+
             <div class="number-display" id="result-display">50.00</div>
             
             <div class="slider-container">
@@ -292,7 +292,6 @@
         const toastMsg = document.getElementById('toastMsg');
         const startScreen = document.getElementById('startScreen');
         
-        // Elementos do Pop-up de Vitória
         const winToast = document.getElementById('winToast');
         const winAmountDisplay = document.getElementById('winAmount');
 
@@ -359,7 +358,6 @@
         // 3. EVENT LISTENERS E LÓGICA DE INTERFACE
         // ==========================================
         
-        // Tela Inicial de Desbloqueio
         startScreen.addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { this.style.display = 'none'; }, 300);
@@ -545,7 +543,7 @@
                 
                 let winAmount = apostaAtual * payout;
                 
-                // EXIBE O TOAST DE LUCRO TOTAL COM ESTILO DA IMAGEM
+                // EXIBE O TOAST DE LUCRO TOTAL
                 winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 winToast.classList.add('show');
                 setTimeout(() => winToast.classList.remove('show'), 2500);
