@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -93,7 +94,7 @@
         /* HISTÓRICO DE CORES */
         .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; }
         .history-bar::-webkit-scrollbar { display: none; }
-        .history-label { font-size: 10px; color: #aaa; font-weight: bold; text-transform: uppercase; margin-right: 5px; }
+        .history-label { font-size: 10px; color: #aaa; font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
         .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; }
         .history-dot.red { background: var(--red); }
         .history-dot.black { background: #111; border-color: #555; }
@@ -144,7 +145,7 @@
         .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
         .balance-info i { color: var(--green); font-size: 12px; }
 
-        /* POP-UP COMPACTO DE VITÓRIA (ESTILO IMAGEM COM BRILHO) */
+        /* POP-UP COMPACTO DE VITÓRIA */
         .win-toast {
             position: absolute; top: -10px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
             background: #00d665; color: #000;
@@ -166,11 +167,13 @@
 </head>
 <body>
 
+    <!-- TELA INICIAL -->
     <div id="startScreen">
         <h2>ROLETA IMPERIAL</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
+    <!-- HEADER BAR -->
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
         <div class="logo-text">ROLETA IMPERIAL</div>
@@ -203,6 +206,7 @@
         </div>
     </div>
 
+    <!-- PAINEL DE CONTROLES -->
     <div class="controls-wrapper">
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" data-color="red">
@@ -248,9 +252,6 @@
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
-        // ==========================================
-        // 1. IMPORTAÇÕES E FIREBASE STRICT
-        // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -264,7 +265,6 @@
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
-        // Variáveis de Estado SorteCerta
         let bancaAtual = 0.00;
         let caixaDaCasa = 0.00;
         let margemLucro = 0.30;
@@ -277,14 +277,29 @@
         let currentRotation = 0;
         let selectedColor = 'red';
         let bets = { red: 0, green: 0, black: 0 };
-        let resultHistory = ['red', 'black', 'red', 'green', 'black'];
+        
+        // ==========================================
+        // SISTEMA DE HISTÓRICO DINÂMICO E CHEIO (NOVIDADE)
+        // ==========================================
+        const MAX_HISTORY = 15; // Fecha totalmente a barra em telas mobile
+        let resultHistory = [];
+        
+        // Toda vez que carrega, sorteia 15 cores aleatórias iniciais
+        for (let i = 0; i < MAX_HISTORY; i++) {
+            let rand = Math.random();
+            if (rand < 0.05) {
+                resultHistory.push('green');
+            } else if (rand < 0.525) {
+                resultHistory.push('red');
+            } else {
+                resultHistory.push('black');
+            }
+        }
 
-        // Seletor de Aposta Rápida (Limite Máximo 500)
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; 
         let apostaAtual = apostasPermitidas[indexAposta];
 
-        // Referências DOM
         const startScreen = document.getElementById('startScreen');
         const btnBack = document.getElementById('btnBack');
         const btnAudio = document.getElementById('btnAudio');
@@ -301,9 +316,6 @@
         const wheelElement = document.getElementById('wheel');
         const msgPanel = document.getElementById('msgPanel');
 
-        // ==========================================
-        // 2. MOTOR DE ÁUDIO SINTETIZADOR NATIVO
-        // ==========================================
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -359,11 +371,8 @@
             setTimeout(() => toastMsg.classList.remove('show'), 3000);
         }
 
-        // ==========================================
-        // 3. DESENHO MATEMÁTICO DA ROLETA (15 FATIAS)
-        // ==========================================
         const numSegments = 15;
-        const degPerSegment = 360 / numSegments; // 24 graus por fatia
+        const degPerSegment = 360 / numSegments;
 
         function drawWheel() {
             let gradientStr = 'conic-gradient(';
@@ -376,16 +385,14 @@
         }
         drawWheel();
 
+        // Atualização da barra na UI
         function updateHistoryBar() {
             const bar = document.getElementById('historyBar');
             bar.innerHTML = '<span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>';
             resultHistory.forEach(color => { bar.innerHTML += `<div class="history-dot ${color}"></div>`; });
         }
-        updateHistoryBar();
+        updateHistoryBar(); // Popula a barra assim que abre a página
 
-        // ==========================================
-        // 4. INTERFACE E EVENT LISTENERS DIRECTS
-        // ==========================================
         startScreen.addEventListener('click', function() {
             this.style.opacity = '0';
             setTimeout(() => { this.style.display = 'none'; }, 300);
@@ -412,7 +419,6 @@
             }
         });
 
-        // Seleção de Cor Target
         document.querySelectorAll('.btn-choice').forEach(btn => {
             btn.addEventListener('click', function() {
                 if(isSpinning) return;
@@ -423,7 +429,6 @@
             });
         });
 
-        // Entrada e Controle de Valores de Aposta
         displayAposta.addEventListener('click', () => {
             if(isSpinning) return;
             iniciarAudio();
@@ -450,9 +455,6 @@
         btnMinus.addEventListener('click', () => mudarAposta(-1));
         btnPlus.addEventListener('click', () => mudarAposta(1));
 
-        // ==========================================
-        // 5. SYNC DE DADOS REAL E GESTÃO DE MESA
-        // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             if (!isSpinning) {
@@ -471,7 +473,6 @@
 
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // Calcula o saldo virtual (Banca - Fichas já colocadas na mesa prontas pra girar)
         function updateBalanceUI() {
             let totalBets = bets.red + bets.green + bets.black;
             let saldoVisivel = bancaAtual - totalBets;
@@ -486,7 +487,6 @@
             });
         }
 
-        // Devolve fichas se o jogador fechar a aba
         function lidarComSaidaAbrupta() {
             if (!isSpinning) {
                 let totalNaMesa = bets.red + bets.green + bets.black;
@@ -496,7 +496,6 @@
         window.addEventListener('pagehide', lidarComSaidaAbrupta);
         document.addEventListener('visibilitychange', function() { if (document.hidden) lidarComSaidaAbrupta(); });
 
-        // BOTÃO APOSTAR: Põe o valor na cor selecionada
         btnPlaceBet.addEventListener('click', () => {
             if (isSpinning) return;
             iniciarAudio();
@@ -509,7 +508,6 @@
                 return;
             }
 
-            // LIMITE MÁXIMO DE APOSTA NA COR ESCOLHIDA
             if (bets[selectedColor] + apostaAtual > 500) {
                 mostrarToast("O limite de aposta por cor é R$ 500,00!");
                 return;
@@ -521,7 +519,6 @@
             updateBetTable();
         });
 
-        // BOTÃO LIMPAR: Tira todas as apostas da mesa
         btnClear.addEventListener('click', () => {
             if (isSpinning) return;
             iniciarAudio(); tocarSom('sfxClick');
@@ -530,9 +527,6 @@
             updateBetTable();
         });
 
-        // ==========================================
-        // 6. EXECUÇÃO DO GIRO E MATEMÁTICA DA PLATAFORMA
-        // ==========================================
         btnSpin.addEventListener('click', async () => {
             if (isSpinning) return;
             iniciarAudio(); tocarSom('sfxClick');
@@ -551,15 +545,11 @@
             btnPlus.style.opacity = '0.5';
             msgPanel.classList.remove('show');
 
-            // 1. Desconta o total da mesa permanentemente no Firebase
             let saldoReduzido = bancaAtual - totalBet;
-            bancaAtual = saldoReduzido; // Atualiza a RAM
+            bancaAtual = saldoReduzido; 
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
-
-            // 2. Transfere para o Caixa Global
             await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + totalBet).toFixed(2)));
 
-            // 3. Roda o motor de risco unificado analisando todas as fichas na mesa
             let targetColor = determineRiggedOutcome(totalBet);
 
             let targetIndex = 0;
@@ -572,7 +562,6 @@
 
             currentRotation += extraSpins + baseStopAngle - (currentRotation % 360) + randomOffset;
 
-            // 🔊 RASTREADOR DE ÁUDIO SINCRONIZADO POR ANIMAÇÃO DE QUADRO
             let lastSegment = -1;
             function trackRotation() {
                 if (!isSpinning) return;
@@ -593,7 +582,6 @@
                 wheelElement.style.transform = `rotate(${currentRotation}deg)`;
             }, 50);
 
-            // Finalização Mecânica
             setTimeout(() => {
                 isSpinning = false;
                 processPayout(targetColor);
@@ -631,8 +619,11 @@
         }
 
         async function processPayout(color) {
+            // Adiciona o novo no começo do array (unshift)
             resultHistory.unshift(color);
-            if(resultHistory.length > 8) resultHistory.pop();
+            // Mantém no máximo 15 para não quebrar a barra visual
+            if(resultHistory.length > MAX_HISTORY) resultHistory.pop();
+            
             updateHistoryBar();
 
             let isWin = false;
@@ -643,13 +634,11 @@
             else if (color === 'green' && bets.green > 0) { winAmount = bets.green * 14; isWin = true; }
 
             if (isWin) {
-                // Devolve prêmio para o Saldo Real
                 get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                     let dbSaldo = parseFloat(snap.val() || 0);
                     await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + winAmount).toFixed(2)));
                 });
 
-                // Deduz movimento do prêmio do Caixa Global
                 get(ref(db, 'sistema/caixa_global')).then(async snap => {
                     let dbCaixa = parseFloat(snap.val() || 0);
                     await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - winAmount).toFixed(2)));
@@ -669,7 +658,6 @@
                 setTimeout(() => msgPanel.classList.remove('show'), 2500);
             }
 
-            // Limpa as Fichas e Libera Botões
             bets = { red: 0, green: 0, black: 0 };
             updateBetTable();
             updateBalanceUI();
