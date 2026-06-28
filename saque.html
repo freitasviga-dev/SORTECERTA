@@ -4,23 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Clear-Site-Data" content="cache">
-    
-    <script>
-        // BLINDAGEM ANTI-CACHE GRAU MILITAR
-        (function() {
-            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
-            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
-            window.addEventListener('pageshow', function(event) {
-                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                    let urlBase = window.location.href.split('?')[0]; window.location.replace(urlBase + '?clear=' + new Date().getTime());
-                }
-            });
-        })();
-    </script>
     
     <title>SorteCerta - Retirada Financeira</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -29,7 +17,6 @@
             --bg-main: #0a0a0c;
             --bg-card: #18181b;
             --gold: #f1c40f;
-            --gold-dark: #b8860b;
             --green: #2ecc71;
             --green-dark: #27ae60;
             --red: #e74c3c;
@@ -38,7 +25,7 @@
             --border-color: #27272a;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
 
@@ -67,14 +54,16 @@
         .btn-max { background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.4); color: var(--gold); padding: 10px 15px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
         .btn-max:active { background: var(--gold); color: #000; transform: scale(0.95); }
 
-        /* --- PAINEL DE BLOQUEIO (ROLLOVER) --- */
+        /* --- PAINEL DE BLOQUEIO (ROLLOVER CORRIGIDO) --- */
         .rollover-box { display: none; background: rgba(231, 76, 60, 0.08); border: 1px solid var(--red); padding: 18px; border-radius: 16px; margin-bottom: 5px; position: relative; overflow: hidden; }
         .ro-title { font-size: 14px; font-weight: 900; color: var(--red); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.5px; }
-        .ro-title i { font-size: 16px; }
         .ro-bar-bg { width: 100%; height: 12px; background: rgba(0,0,0,0.6); border-radius: 10px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
         .ro-bar-fill { height: 100%; background: linear-gradient(90deg, #ff1744, #ff5252); width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .ro-desc { font-size: 11px; color: #ccc; margin-top: 12px; line-height: 1.4; }
-        .ro-amount { font-weight: 900; color: #fff; background: rgba(231, 76, 60, 0.2); padding: 2px 6px; border-radius: 6px; }
+        
+        /* A Mágica do Alinhamento Anti-Quebra de Linha: */
+        .ro-desc-container { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .ro-desc-text { font-size: 12px; color: #ccc; line-height: 1.5; }
+        .ro-amount-badge { align-self: flex-start; font-weight: 900; color: #fff; background: rgba(231, 76, 60, 0.2); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(231, 76, 60, 0.4); font-size: 13px; letter-spacing: 0.5px; }
 
         /* --- ÁREA DE SAQUE (FORMULÁRIO) --- */
         .withdraw-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
@@ -87,15 +76,8 @@
         .input-group { margin-bottom: 20px; }
         .input-label { font-size: 12px; color: #ccc; margin-bottom: 8px; display: block; font-weight: 600; }
         
-        .select-custom {
-            width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px;
-            border-radius: 12px; font-size: 14px; outline: none; appearance: none; cursor: pointer; font-weight: 500;
-        }
-        
-        .input-custom {
-            width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px;
-            border-radius: 12px; font-size: 16px; outline: none; transition: 0.2s; font-weight: 500;
-        }
+        .select-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px; border-radius: 12px; font-size: 14px; outline: none; appearance: none; cursor: pointer; font-weight: 500; }
+        .input-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px; border-radius: 12px; font-size: 16px; outline: none; transition: 0.2s; font-weight: 500; }
         .input-custom::placeholder { color: #666; font-weight: 400; }
         .input-custom:focus, .select-custom:focus { border-color: var(--green); background: rgba(46, 204, 113, 0.05); }
 
@@ -103,12 +85,11 @@
         .val-prefix { position: absolute; left: 16px; color: var(--green); font-weight: 900; font-size: 20px; }
         .input-money { padding-left: 55px; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
 
-        /* --- SELOS DE SEGURANÇA --- */
+        /* --- SELOS E BOTÃO --- */
         .security-badges { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
         .s-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #777; font-weight: 600; text-transform: uppercase; }
         .s-badge i { color: #555; font-size: 14px; }
 
-        /* --- BOTÃO DE SOLICITAR --- */
         .btn-submit {
             width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
             color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 15px;
@@ -116,10 +97,7 @@
             box-shadow: 0 8px 0 #145a32, 0 15px 25px rgba(46, 204, 113, 0.3); transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-submit:active:not(:disabled) { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
-        .btn-submit:disabled { 
-            background: #2a2a2a; color: #666; box-shadow: none; cursor: not-allowed; 
-            border: 1px solid #444; filter: grayscale(100%); 
-        }
+        .btn-submit:disabled { background: #2a2a2a; color: #666; box-shadow: none; cursor: not-allowed; border: 1px solid #444; filter: grayscale(100%); }
 
         .footer-info { text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.5; padding: 0 10px; margin-top: 10px; }
         .footer-info strong { color: #fff; }
@@ -128,9 +106,11 @@
 <body>
 
     <script>
-        if (!localStorage.getItem('usuario_tracker_id')) {
-            window.location.href = 'login.html';
-        }
+        if (!localStorage.getItem('usuario_tracker_id')) { window.location.href = 'login.html'; }
+        (function() {
+            if ('caches' in window) caches.keys().then(function(n) { for (let x of n) caches.delete(x); });
+            window.addEventListener('pageshow', function(e) { if (e.persisted) window.location.reload(); });
+        })();
     </script>
 
     <header class="header">
@@ -149,13 +129,18 @@
             <button class="btn-max" onclick="sacarTudo()">Usar Máximo</button>
         </div>
 
+        <!-- PAINEL DE BLOQUEIO / ROLLOVER (CORRIGIDO PARA NÃO QUEBRAR) -->
         <div class="rollover-box" id="rolloverBox">
             <div class="ro-title">
                 <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-lock"></i> Saque Bloqueado</span>
                 <span id="roPercent">0%</span>
             </div>
             <div class="ro-bar-bg"><div class="ro-bar-fill" id="roFill"></div></div>
-            <div class="ro-desc">Para evitar fraudes e lavagem de dinheiro, você precisa apostar no cassino pelo menos o valor depositado. Faltam apostar: <span class="ro-amount" id="roFalta">R$ 0,00</span></div>
+            
+            <div class="ro-desc-container">
+                <div class="ro-desc-text">Para evitar fraudes e lavagem de dinheiro, você precisa apostar no cassino pelo menos o valor depositado. Faltam apostar:</div>
+                <div class="ro-amount-badge" id="roFalta">R$ 0,00</div>
+            </div>
         </div>
 
         <div class="withdraw-card">
@@ -178,7 +163,7 @@
             <div class="input-group">
                 <label class="input-label">Tipo de Chave PIX</label>
                 <select class="select-custom" id="tipoChave">
-                    <option value="CPF/CNPJ">CPF / CNPJ</option>
+                    <option value="CPF/CNPJ">CPF</option>
                     <option value="Telefone">Número de Celular</option>
                     <option value="E-mail">Endereço de E-mail</option>
                     <option value="Chave Aleatória">Chave Aleatória</option>
@@ -187,7 +172,7 @@
 
             <div class="input-group" style="margin-bottom: 10px;">
                 <label class="input-label">Chave PIX de Destino</label>
-                <input type="text" id="chavePix" class="input-custom" placeholder="Digite a chave da sua conta bancária">
+                <input type="text" id="chavePix" class="input-custom" placeholder="000.000.000-00">
             </div>
 
             <div class="security-badges">
@@ -201,20 +186,52 @@
         </div>
 
         <div class="footer-info">
-            Para garantir a sua segurança, transferências só são aprovadas para contas bancárias vinculadas ao <strong>mesmo titular</strong> cadastrado na plataforma SorteCerta. Em caso de divergência, o valor retorna ao saldo.
+            Transferências só são aprovadas para contas vinculadas ao <strong>mesmo titular</strong> cadastrado na SorteCerta. Em caso de divergência, o valor retorna ao saldo.
         </div>
-        
     </div>
+
+    <!-- SCRIPT DE MÁSCARA DO PIX -->
+    <script>
+        const tipoChaveSelect = document.getElementById('tipoChave');
+        const chavePixInput = document.getElementById('chavePix');
+
+        tipoChaveSelect.addEventListener('change', function() {
+            chavePixInput.value = ''; // Limpa o campo ao trocar
+            if(this.value === 'CPF/CNPJ') chavePixInput.placeholder = '000.000.000-00';
+            else if(this.value === 'Telefone') chavePixInput.placeholder = '(00) 00000-0000';
+            else if(this.value === 'E-mail') chavePixInput.placeholder = 'exemplo@email.com';
+            else chavePixInput.placeholder = 'Cole sua chave aleatória';
+        });
+
+        // Aplicação da Máscara ao Digitar
+        chavePixInput.addEventListener('input', function(e) {
+            let tipo = tipoChaveSelect.value;
+            let v = e.target.value;
+
+            if (tipo === 'CPF/CNPJ') {
+                v = v.replace(/\D/g, ""); // Remove tudo que não for número
+                v = v.substring(0, 11);   // Trava em 11 números
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                e.target.value = v;
+            } 
+            else if (tipo === 'Telefone') {
+                v = v.replace(/\D/g, ""); 
+                v = v.substring(0, 11);
+                v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+                v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                e.target.value = v;
+            }
+        });
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAÇÃO OFUSCADA DO FIREBASE
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
-        const firebaseConfig = { apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] };
-        
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] });
         const db = getDatabase(app);
 
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
@@ -222,13 +239,11 @@
         let saqueLiberado = false;
         const phoneDestination = "5583996469538";
 
-        // LEITURA DO SALDO E REGRAS DE ROLLOVER
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             bancaAtual = parseFloat(dados.saldo || 0);
             document.getElementById('displaySaldoTopo').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
-            // Variáveis de Meta de Aposta
             let meta = parseFloat(dados.rollover_meta || 0);
             let atual = parseFloat(dados.rollover_atual || 0);
             let falta = meta - atual;
@@ -236,65 +251,52 @@
             const roBox = document.getElementById('rolloverBox');
             const btnSubmit = document.getElementById('btnSubmit');
 
-            // Se ainda tem meta a bater (falta mais de 0)
             if (meta > 0 && falta > 0) {
                 saqueLiberado = false;
-                roBox.style.display = 'block'; // Mostra a caixa vermelha
-                
-                // Desativa o botão de saque
+                roBox.style.display = 'block';
                 btnSubmit.disabled = true;
                 btnSubmit.innerHTML = `<i class="fa-solid fa-lock"></i> Cumpra a Meta de Aposta`;
 
-                // Calcula e preenche a barra regressiva
                 let porcentagem = (atual / meta) * 100;
                 document.getElementById('roFill').style.width = porcentagem + '%';
                 document.getElementById('roPercent').innerText = porcentagem.toFixed(0) + '%';
                 document.getElementById('roFalta').innerText = "R$ " + falta.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             } else {
-                // Se não tem meta, ou se a meta foi atingida (falta <= 0)
                 saqueLiberado = true;
-                roBox.style.display = 'none'; // Esconde a caixa
-                
-                // Libera o botão verde
+                roBox.style.display = 'none';
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Finalizar Saque`;
             }
         });
 
         window.sacarTudo = function() {
-            if(bancaAtual < 50) {
-                alert("O valor mínimo para saque é de R$ 50,00.");
-                return;
-            }
+            if(bancaAtual < 50) { alert("O valor mínimo para saque é de R$ 50,00."); return; }
             document.getElementById('valorSaque').value = bancaAtual.toFixed(2);
         }
 
         window.solicitarSaque = function() {
-            // Trava de segurança extra
-            if(!saqueLiberado) {
-                alert("Você precisa cumprir a meta de apostas antes de solicitar um saque.");
-                return;
-            }
+            if(!saqueLiberado) { alert("Cumpra a meta de apostas antes de solicitar o saque."); return; }
 
             let chavePix = document.getElementById('chavePix').value.trim();
             let tipoChave = document.getElementById('tipoChave').value;
             let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
 
-            if (isNaN(valorSaqueInput) || valorSaqueInput < 50.00) {
-                alert("Operação negada: O valor mínimo de saque exigido é de R$ 50,00.");
-                return;
-            }
-            if (valorSaqueInput > bancaAtual) {
-                alert(`Operação negada: Saldo insuficiente. Seu saldo atual é de R$ ${bancaAtual.toFixed(2)}`);
-                return;
-            }
-            if (chavePix === "") {
-                alert("Operação negada: Preencha o campo com a sua chave PIX de destino.");
-                return;
-            }
+            if (isNaN(valorSaqueInput) || valorSaqueInput < 50.00) { alert("O valor mínimo de saque é de R$ 50,00."); return; }
+            if (valorSaqueInput > bancaAtual) { alert("Saldo insuficiente."); return; }
 
-            if(confirm(`AUTORIZAÇÃO DE TRANSFERÊNCIA\n\nConfirma a solicitação de saque no valor de R$ ${valorSaqueInput.toFixed(2)}?\nO valor será processado para a chave PIX: ${chavePix}.`)) {
-                
+            // VALIDAÇÕES ESTritas DO PIX
+            if (tipoChave === 'CPF/CNPJ' && chavePix.length !== 14) {
+                alert("Operação negada: Digite um CPF válido com 11 números."); return;
+            }
+            if (tipoChave === 'Telefone' && chavePix.length !== 15) {
+                alert("Operação negada: Digite um Celular válido com DDD."); return;
+            }
+            if (tipoChave === 'E-mail' && (!chavePix.includes('@') || !chavePix.includes('.'))) {
+                alert("Operação negada: Digite um endereço de E-mail válido."); return;
+            }
+            if (chavePix === "") { alert("Preencha a chave PIX."); return; }
+
+            if(confirm(`Confirma a solicitação de saque no valor de R$ ${valorSaqueInput.toFixed(2)}?\nChave PIX: ${chavePix}.`)) {
                 let novoSaldo = bancaAtual - valorSaqueInput;
                 set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
                     
@@ -305,28 +307,14 @@
                     });
 
                     push(ref(db, `usuarios/${idDispositivo}/transacoes`), {
-                        tipo: "SAQUE",
-                        valor: valorSaqueInput.toFixed(2),
-                        data: new Date().toISOString()
+                        tipo: "SAQUE", valor: valorSaqueInput.toFixed(2), data: new Date().toISOString()
                     });
 
                     let valorFormatado = valorSaqueInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    
-                    let mensagemComposta = `*✅ SAQUE APROVADO PELO SISTEMA*\n` +
-                                           `_Aguardando processamento manual_\n\n` +
-                                           `👤 *ID Jogador:* ${idDispositivo}\n` +
-                                           `💰 *Valor Solicitado:* ${valorFormatado}\n` +
-                                           `🔑 *Chave (${tipoChave}):* ${chavePix}\n\n` +
-                                           `_Saldo debitado. Pode transferir._`;
-                    
-                    let urlFinalWhastapp = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
-                    
-                    alert("Solicitação de Saque registrada com sucesso! Você será redirecionado para o recebimento do comprovante.");
-                    window.location.href = urlFinalWhastapp;
+                    let msg = `*✅ SAQUE APROVADO*\n\n👤 *ID:* ${idDispositivo}\n💰 *Valor:* ${valorFormatado}\n🔑 *Chave (${tipoChave}):* ${chavePix}\n\n_Saldo debitado. Pode transferir._`;
+                    window.location.href = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(msg)}`;
 
-                }).catch((error) => {
-                    alert("Erro interno de conexão. Tente novamente mais tarde.");
-                });
+                }).catch(() => { alert("Erro de conexão. Tente novamente."); });
             }
         }
     </script>
