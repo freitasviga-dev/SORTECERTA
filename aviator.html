@@ -84,7 +84,7 @@
             font-size: 16px; letter-spacing: 1px;
         }
 
-        /* HEADER */
+        /* HEADER PADRONIZADO VIP */
         .header-bar {
             padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
@@ -140,10 +140,10 @@
         .btn-skip.hidden { display: none; }
 
         /* ========================================= */
-        /* PAINEL DE STATUS DA SPRIBE (NOVA FUNÇÃO)  */
+        /* PAINEL DE STATUS DA SPRIBE (SEMPRE VISÍVEL) */
         /* ========================================= */
         .history-wrapper {
-            display: none; /* Só aparece in-game */
+            display: flex; /* Alterado para ficar sempre visível */
             width: 90%; max-width: 350px; background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
             padding: 6px; gap: 6px; margin-top: 15px;
@@ -285,7 +285,7 @@
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
-            <!-- PAINEL DE STATUS DA SPRIBE -->
+            <!-- PAINEL DE STATUS DA SPRIBE (AGORA SEMPRE VISÍVEL) -->
             <div class="history-wrapper" id="historyWrapper">
                 <div class="history-row" id="historyRow">
                     <!-- Mini-cartas inseridas via JS -->
@@ -370,7 +370,6 @@
         const btnBack = document.getElementById('btnBack');
         
         // Elementos do Painel Spribe
-        const historyWrapper = document.getElementById('historyWrapper');
         const historyRow = document.getElementById('historyRow');
         const cardCountElement = document.getElementById('cardCount');
         const currentMultValue = document.getElementById('currentMultValue');
@@ -566,6 +565,10 @@
             tocarSom('sfxClick');
             activeCard = getRandomCard();
             renderCard(activeCard);
+            
+            // Atualiza a primeira miniatura no painel se o cara pular a carta antes de jogar
+            historyRow.innerHTML = '';
+            addCardToHistory(activeCard);
         }
 
         function calculateMultipliers() {
@@ -642,8 +645,7 @@
             document.getElementById('btnCashout').style.display = 'flex';
             btnSkip.classList.add('hidden');
             
-            // REVELA PAINEL E BOTÕES
-            historyWrapper.style.display = 'flex'; 
+            // REVELA OS BOTOES IN-GAME
             hiloOptions.style.display = 'flex'; 
             
             document.getElementById('btnMinus').style.opacity = '0.5';
@@ -747,16 +749,20 @@
             document.getElementById('btnCashout').style.display = 'none';
             btnSkip.classList.remove('hidden');
             
-            // Oculta a mesa limpa o jogo
+            // Apenas oculta os botões de High/Low
             hiloOptions.style.display = 'none';
-            historyWrapper.style.display = 'none';
             
             document.getElementById('btnMinus').style.opacity = '1';
             document.getElementById('btnPlus').style.opacity = '1';
         }
 
+        // Boot Visual: Gera a carta e já põe ela na esteira!
         activeCard = getRandomCard();
         renderCard(activeCard);
+        
+        historyRow.innerHTML = '';
+        addCardToHistory(activeCard);
+        
         window.skipCard = skipCard;
 
     </script>
