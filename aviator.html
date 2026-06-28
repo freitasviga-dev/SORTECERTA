@@ -100,16 +100,7 @@
             justify-content: flex-start; position: relative; width: 100%; padding-top: 15px;
         }
 
-        /* MULTIPLICADOR ACUMULADO */
-        .current-mult-badge {
-            background: rgba(0, 230, 118, 0.15); border: 1px solid var(--btn-green);
-            color: var(--btn-green); font-size: 18px; font-weight: 900; padding: 8px 25px;
-            border-radius: 20px; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,230,118,0.3);
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
-        }
-        .current-mult-badge.hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
-
-        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; }
+        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; }
         
         .hint-icon {
             position: absolute; left: -50px; color: rgba(255,255,255,0.4);
@@ -148,17 +139,26 @@
         .btn-skip:active { box-shadow: none; transform: translateY(4px); }
         .btn-skip.hidden { display: none; }
 
-        /* EMPILHAMENTO DE CARTAS (HISTÓRICO) */
+        /* ========================================= */
+        /* PAINEL DE STATUS DA SPRIBE (NOVA FUNÇÃO)  */
+        /* ========================================= */
+        .history-wrapper {
+            display: none; /* Só aparece in-game */
+            width: 90%; max-width: 350px; background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            padding: 6px; gap: 6px; margin-top: 15px;
+            animation: popUp 0.3s ease-out;
+        }
+
         .history-row {
-            width: 90%; max-width: 350px; height: 60px; background: rgba(0,0,0,0.2);
-            border-radius: 12px; margin-top: 15px; display: flex; align-items: center;
-            padding: 0 10px; gap: 8px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.05);
-            scroll-behavior: smooth;
+            flex: 1; display: flex; align-items: center; gap: 5px;
+            overflow-x: auto; background: rgba(0, 0, 0, 0.3); border-radius: 8px;
+            padding: 5px; height: 55px; scroll-behavior: smooth;
         }
         .history-row::-webkit-scrollbar { display: none; }
-        
+
         .mini-card {
-            min-width: 35px; height: 48px; background: #fff; border-radius: 4px;
+            min-width: 30px; height: 45px; background: #fff; border-radius: 4px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-weight: 900; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -167,15 +167,24 @@
         .mini-card.black { color: var(--card-black); }
         .mini-card span { font-size: 12px; margin-top: -3px; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        .history-stats {
+            width: 75px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; background: rgba(0, 0, 0, 0.3); border-radius: 8px;
+            height: 55px; gap: 4px; flex-shrink: 0;
+        }
+        .stat-count { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .stat-count i { opacity: 0.8; font-size: 12px; }
+        .stat-mult { background: var(--btn-green); color: #000; font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 10px; }
 
-        /* OPÇÕES HI LO (AGORA OCULTAS POR PADRÃO) */
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* OPÇÕES HI LO (OCULTAS POR PADRÃO) */
         .hilo-options { 
-            display: none; /* Só aparece após o clique em apostar */
+            display: none; /* Só aparece in-game */
             gap: 15px; width: 100%; max-width: 320px; justify-content: center; margin-top: 15px; 
             animation: popUp 0.3s ease-out;
         }
-        @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .btn-guess {
             background: rgba(0,0,0,0.4); border: 2px solid transparent;
@@ -267,26 +276,24 @@
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
-            <!-- MULTIPLICADOR TOTAL -->
-            <div class="current-mult-badge hidden" id="currentMultBadge">
-                <i class="fa-solid fa-bolt"></i> <span id="currentMultValue">1.00x</span>
-            </div>
-
             <!-- DISPLAY DAS CARTAS -->
             <div class="cards-display">
                 <div class="hint-icon"><span>A</span><span>v</span><span>2</span></div>
-                
-                <div class="card red" id="currentCard">
-                    <!-- Carta preenchida via JS -->
-                </div>
+                <div class="card red" id="currentCard"></div>
                 <div class="deck-back"></div>
             </div>
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
-            <!-- ESTEIRA DE CARTAS (HISTÓRICO) -->
-            <div class="history-row" id="historyRow">
-                <!-- Mini-cartas inseridas via JS -->
+            <!-- PAINEL DE STATUS DA SPRIBE -->
+            <div class="history-wrapper" id="historyWrapper">
+                <div class="history-row" id="historyRow">
+                    <!-- Mini-cartas inseridas via JS -->
+                </div>
+                <div class="history-stats">
+                    <div class="stat-count"><i class="fa-solid fa-layer-group"></i> <span id="cardCount">0</span></div>
+                    <div class="stat-mult" id="currentMultValue">1.00x</div>
+                </div>
             </div>
 
             <!-- BOTÕES HIGH LOW (OCULTOS POR PADRÃO) -->
@@ -304,7 +311,6 @@
 
         <!-- CONTROLES ESTILO VIP -->
         <div class="controls-wrapper">
-            
             <div class="bet-input-row">
                 <div class="bet-label">Aposta</div>
                 <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
@@ -344,7 +350,6 @@
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
-        // Variáveis de Estado SorteCerta
         let bancaAtual = 0.00;
         let caixaDaCasa = 0.00;
         let margemLucro = 0.30;
@@ -352,12 +357,10 @@
         let estadoSequencia = 0;
         let valorPremioForcado = 0;
 
-        // Padrão de Apostas (Limite 500)
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; 
         let apostaAtual = apostasPermitidas[indexAposta];
 
-        // Referências DOM
         const displayAposta = document.getElementById('displayAposta');
         const displaySaldo = document.getElementById('displaySaldo');
         const toastMsg = document.getElementById('toastMsg');
@@ -365,9 +368,13 @@
         const winAmountDisplay = document.getElementById('winAmount');
         const btnAudio = document.getElementById('btnAudio');
         const btnBack = document.getElementById('btnBack');
+        
+        // Elementos do Painel Spribe
+        const historyWrapper = document.getElementById('historyWrapper');
         const historyRow = document.getElementById('historyRow');
-        const currentMultBadge = document.getElementById('currentMultBadge');
+        const cardCountElement = document.getElementById('cardCount');
         const currentMultValue = document.getElementById('currentMultValue');
+        
         const hiloOptions = document.getElementById('hiloOptions');
         const btnSkip = document.getElementById('btnSkip');
 
@@ -459,7 +466,7 @@
         }
 
         // ==========================================
-        // 3. FIREBASE SYNC & SEGURANÇA
+        // 3. FIREBASE SYNC
         // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
@@ -467,9 +474,7 @@
                 bancaAtual = parseFloat(dados.saldo || 0);
                 displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             }
-            
             if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
-            
             let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
             if (iscaLida > 0 && estadoSequencia === 0) {
                 valorPremioForcado = iscaLida; estadoSequencia = 1;
@@ -477,16 +482,13 @@
             }
         });
 
-        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { 
-            caixaDaCasa = parseFloat(snapshot.val() || 0); 
-        });
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
         // ==========================================
-        // 4. LÓGICA DO HI LO VIP E MOTOR DE CARTAS
+        // 4. LÓGICA DO HI LO VIP
         // ==========================================
         const MAX_BET = 500.00;
         const RTP = 0.97;
-        
         const suits = [
             { name: 'hearts', symbol: '♥', color: 'red' },
             { name: 'diamonds', symbol: '♦', color: 'red' },
@@ -497,6 +499,7 @@
         let isPlaying = false;
         let currentMultiplier = 1.00;
         let activeCard = null;
+        let cardsGuessed = 0;
 
         const uiCard = document.getElementById('currentCard');
 
@@ -517,11 +520,8 @@
 
         function getLosingCard(type, currentRank) {
             let possibleRanks = [];
-            if (type === 'high') {
-                for(let i=2; i < currentRank; i++) possibleRanks.push(i);
-            } else {
-                for(let i=currentRank + 1; i <= 14; i++) possibleRanks.push(i);
-            }
+            if (type === 'high') { for(let i=2; i < currentRank; i++) possibleRanks.push(i); } 
+            else { for(let i=currentRank + 1; i <= 14; i++) possibleRanks.push(i); }
             if (possibleRanks.length === 0) return getRandomCard(); 
             let rank = possibleRanks[Math.floor(Math.random() * possibleRanks.length)];
             let suit = suits[Math.floor(Math.random() * suits.length)];
@@ -530,11 +530,8 @@
 
         function getWinningCard(type, currentRank) {
             let possibleRanks = [];
-            if (type === 'high') {
-                for(let i=currentRank; i <= 14; i++) possibleRanks.push(i);
-            } else {
-                for(let i=2; i <= currentRank; i++) possibleRanks.push(i);
-            }
+            if (type === 'high') { for(let i=currentRank; i <= 14; i++) possibleRanks.push(i); } 
+            else { for(let i=2; i <= currentRank; i++) possibleRanks.push(i); }
             let rank = possibleRanks[Math.floor(Math.random() * possibleRanks.length)];
             let suit = suits[Math.floor(Math.random() * suits.length)];
             return formatCard(rank, suit);
@@ -555,13 +552,12 @@
             }, 50);
         }
 
-        // Função para empilhar a carta no histórico
+        // Adiciona carta acertada na esteira do Painel
         function addCardToHistory(cardData) {
             const miniCard = document.createElement('div');
             miniCard.className = `mini-card ${cardData.suit.color}`;
             miniCard.innerHTML = `${cardData.visual}<span>${cardData.suit.symbol}</span>`;
             historyRow.appendChild(miniCard);
-            // Rolagem automática para a direita
             historyRow.scrollLeft = historyRow.scrollWidth;
         }
 
@@ -573,7 +569,7 @@
         }
 
         function calculateMultipliers() {
-            let rank = activeCard.rank; // 2 a 14
+            let rank = activeCard.rank;
             let pHigh = (15 - rank) / 13;
             let pLow = (rank - 1) / 13;
 
@@ -587,7 +583,7 @@
         }
 
         // ==========================================
-        // 5. CONTROLE DE APOSTAS VIP
+        // 5. CONTROLES DE APOSTA
         // ==========================================
         displayAposta.addEventListener('click', () => {
             if(isPlaying) return;
@@ -615,19 +611,18 @@
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 6. MOTOR DE JOGO (START, GUESS, CASHOUT)
+        // 6. MOTOR DE JOGO 
         // ==========================================
         window.startGame = async function() {
             tocarSom('sfxClick');
             if (apostaAtual > bancaAtual) { mostrarToast("Saldo insuficiente!"); return; }
 
-            // 1. DESCONTA NO SALDO DO JOGADOR E AUMENTA O CAIXA GLOBAL
+            // DESCONTA NO FIREBASE
             let saldoReduzido = bancaAtual - apostaAtual;
             bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
-            
             get(ref(db, 'sistema/caixa_global')).then(async snap => {
                 let cx = parseFloat(snap.val() || 0);
                 await set(ref(db, 'sistema/caixa_global'), parseFloat((cx + apostaAtual).toFixed(2)));
@@ -635,17 +630,21 @@
 
             isPlaying = true;
             currentMultiplier = 1.00;
+            cardsGuessed = 0;
             
-            // Limpa o histórico de cartas para a nova rodada
+            // PREPARA A MESA SPRIBE
             historyRow.innerHTML = '';
-            addCardToHistory(activeCard); // Põe a primeira carta na esteira
-
-            // Esconde botões pré-jogo e revela botões in-game
+            addCardToHistory(activeCard); 
+            cardCountElement.innerText = cardsGuessed;
+            currentMultValue.innerText = "1.00x";
+            
             document.getElementById('btnBet').style.display = 'none';
             document.getElementById('btnCashout').style.display = 'flex';
             btnSkip.classList.add('hidden');
-            hiloOptions.style.display = 'flex'; // Exibe as opções HIGH/LOW
-            currentMultBadge.classList.remove('hidden'); // Exibe badge do multiplicador
+            
+            // REVELA PAINEL E BOTÕES
+            historyWrapper.style.display = 'flex'; 
+            hiloOptions.style.display = 'flex'; 
             
             document.getElementById('btnMinus').style.opacity = '0.5';
             document.getElementById('btnPlus').style.opacity = '0.5';
@@ -655,7 +654,7 @@
 
         function updateGameState() {
             calculateMultipliers();
-            currentMultValue.innerText = currentMultiplier.toFixed(2) + "x"; // Atualiza a tag verde
+            currentMultValue.innerText = currentMultiplier.toFixed(2) + "x"; 
             
             let winAmount = apostaAtual * currentMultiplier;
             document.getElementById('btnCashout').innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2)}`;
@@ -667,13 +666,12 @@
             let mults = calculateMultipliers();
             let nextMult = type === 'high' ? mults.multHigh : mults.multLow;
             let potentialWin = apostaAtual * currentMultiplier * nextMult;
-            
             let availableFunds = caixaDaCasa * (1 - margemLucro);
 
             let forceLose = false;
             let forceWin = false;
 
-            // Motor de Manipulação SorteCerta Pro
+            // Manipulação SorteCerta Pro
             if (estadoSequencia === 1) { 
                 estadoSequencia = 2; forceLose = true; 
             } else if (estadoSequencia === 2 && valorPremioForcado > 0) {
@@ -692,10 +690,9 @@
             } else if (forceWin) {
                 nextCard = getWinningCard(type, activeCard.rank);
             } else {
-                nextCard = getRandomCard(); // Jogo Justo
+                nextCard = getRandomCard();
             }
 
-            // Validação Final 
             let isWin = false;
             if (type === 'high' && nextCard.rank >= activeCard.rank) isWin = true;
             if (type === 'low' && nextCard.rank <= activeCard.rank) isWin = true;
@@ -705,7 +702,11 @@
             if(isWin) {
                 currentMultiplier *= nextMult;
                 activeCard = nextCard;
-                addCardToHistory(activeCard); // Adiciona na esteira
+                
+                cardsGuessed++;
+                cardCountElement.innerText = cardsGuessed;
+                addCardToHistory(activeCard); 
+                
                 updateGameState();
             } else {
                 tocarSom('sfxLose');
@@ -720,12 +721,10 @@
             
             let winAmount = apostaAtual * currentMultiplier;
             
-            // DEDUZ DO CAIXA GLOBAL E DEVOLVE PARA O JOGADOR NO FIREBASE
             get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                 let dbSaldo = parseFloat(snap.val() || 0);
                 await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + winAmount).toFixed(2)));
             });
-            
             get(ref(db, 'sistema/caixa_global')).then(async snap => {
                 let cx = parseFloat(snap.val() || 0);
                 await set(ref(db, 'sistema/caixa_global'), parseFloat((cx - winAmount).toFixed(2)));
@@ -742,20 +741,20 @@
         function resetGame() {
             isPlaying = false;
             currentMultiplier = 1.00;
+            cardsGuessed = 0;
             
             document.getElementById('btnBet').style.display = 'flex';
             document.getElementById('btnCashout').style.display = 'none';
             btnSkip.classList.remove('hidden');
             
-            // Oculta os botões High/Low e o Multiplicador
+            // Oculta a mesa limpa o jogo
             hiloOptions.style.display = 'none';
-            currentMultBadge.classList.add('hidden');
+            historyWrapper.style.display = 'none';
             
             document.getElementById('btnMinus').style.opacity = '1';
             document.getElementById('btnPlus').style.opacity = '1';
         }
 
-        // Boot Visual da primeira carta
         activeCard = getRandomCard();
         renderCard(activeCard);
         window.skipCard = skipCard;
