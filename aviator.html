@@ -95,7 +95,7 @@
         .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
-        /* GAME AREA (CANVAS + BUCKETS) */
+        /* ÁREA DO CANVAS + BUCKETS */
         .game-area {
             flex-grow: 1; width: 100%; position: relative; display: flex; flex-direction: column;
             align-items: center; justify-content: flex-start; padding-top: 25px;
@@ -120,7 +120,7 @@
         .bucket.yellow { background: #f1c40f; }
         .bucket.red { background: #e74c3c; color: #fff;}
 
-        /* POP-UP COMPACTO DE VITÓRIA (ESTILO IMAGEM COM BRILHO) */
+        /* POP-UP COMPACTO DE VITÓRIA (ESTILO GOAL) */
         .win-toast {
             position: absolute; top: -5px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
             background: #00d665; color: #000;
@@ -233,9 +233,9 @@
             </div>
 
             <div class="actions-row">
-                <button class="btn-drop green btn-3d" id="btn-green" data-color="green">VERDE <span>Risco Baixo</span></button>
-                <button class="btn-drop yellow btn-3d" id="btn-yellow" data-color="yellow">AMARELO <span>Risco Médio</span></button>
-                <button class="btn-drop red btn-3d" id="btn-red" data-color="red">VERMELHO <span>Risco Alto</span></button>
+                <button class="btn-drop green btn-3d" id="btn-green">VERDE <span>Risco Baixo</span></button>
+                <button class="btn-drop yellow btn-3d" id="btn-yellow">AMARELO <span>Risco Médio</span></button>
+                <button class="btn-drop red btn-3d" id="btn-red">VERMELHO <span>Risco Alto</span></button>
             </div>
 
             <div class="footer-info">
@@ -264,7 +264,6 @@
         };
         const db = getDatabase(initializeApp(firebaseConfig));
 
-        // REDIRECIONAMENTO STRICT
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
@@ -321,21 +320,21 @@
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if (tipo === 'sfxTick') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
-                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.02);
+                gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.02);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.02);
             } else if (tipo === 'sfxWin') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
-                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
-                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.12); 
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.24); 
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.36); 
+                gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.6);
             }
         };
 
@@ -369,7 +368,7 @@
         buildBuckets();
 
         // ==========================================
-        // 4. MOTOR FÍSICO DO CANVAS
+        // 4. MOTOR FÍSICO DO CANVAS (BOLINHAS)
         // ==========================================
         const canvas = document.getElementById('plinkoCanvas');
         const ctx = canvas.getContext('2d');
@@ -414,7 +413,7 @@
                 let r = Math.floor(ball.progress);
                 let t = ball.progress - r;
 
-                // SOM DO TICK SINCRONIZADO COM O PINO
+                // 🔊 DISPARA O TICK EXATAMENTE AO CRUZAR COM CADA NÍVEL DE PINO
                 if (r > ball.lastFloor && r < ROWS) {
                     tocarSom('sfxTick');
                     ball.lastFloor = r;
@@ -465,7 +464,7 @@
         animate();
 
         // ==========================================
-        // 5. INTERFACE E FIREBASE (MESA)
+        // 5. INTERFACE E EVENT LISTENERS DIRECTS
         // ==========================================
         startScreen.addEventListener('click', function() {
             this.style.opacity = '0';
@@ -522,23 +521,29 @@
         btnMinus.addEventListener('click', () => mudarAposta(-1));
         btnPlus.addEventListener('click', () => mudarAposta(1));
 
+        // ==========================================
+        // 6. FIREBASE SYNC REAL E BLINDAGEM DE SALDO
+        // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
-            bancaAtual = parseFloat(dados.saldo || 0);
-            displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            
-            if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
-            let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
-            if (iscaLida > 0 && estadoSequencia === 0) {
-                valorPremioForcado = iscaLida; estadoSequencia = 1;
-                set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+            // Sincroniza apenas se não houver bolinhas caindo para evitar glitches de saldo na tela
+            if (activeBalls.length === 0) {
+                bancaAtual = parseFloat(dados.saldo || 0);
+                displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
+                
+                let isca Lida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                if (iscaLida > 0 && estadoSequencia === 0) {
+                    valorPremioForcado = iscaLida; estadoSequencia = 1;
+                    set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
+                }
             }
         });
 
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
         // ==========================================
-        // 6. MOTOR DE LANÇAMENTO E RIGGING
+        // 7. MOTOR DE RISCO DA PLATAFORMA (LANÇAMENTO)
         // ==========================================
         function generateRiggedPath(color, bet) {
             let availableFunds = caixaDaCasa * (1 - margemLucro);
@@ -559,14 +564,13 @@
                 payout = bet * mults[sum];
                 attempts++;
                 
-                // Puxa para o meio (multiplicador baixo) se a casa não puder pagar ou se estiver agressivo
                 if ((modoJogo === 'agressivo' || estadoSequencia === 3) && payout > bet) {
-                    continue; // Força nova rota
+                    continue; 
                 }
-            } while(payout > availableFunds && attempts < 50);
+            } while(payout > availableFunds && attempts < 100);
             
-            // Failsafe: Joga no centro (onde o multiplicador é 0, 0.2, 0.5)
             if (payout > availableFunds) {
+                // Força bolinha no centro mecânico do triângulo
                 path = [0,1,0,1,0,1,0,1,0,1,0,1,0,1]; 
             }
             return path;
@@ -576,25 +580,25 @@
             iniciarAudio(); tocarSom('sfxClick');
             
             if (apostaAtual > bancaAtual) {
-                mostrarToast("Saldo insuficiente. Recarregue.");
+                mostrarToast("Saldo insuficiente.");
                 return;
             }
 
-            // 1. DESCONTA APOSTA DO FIREBASE
+            // 1. DESCONTA DA CARTEIRA LOCAL E DO FIREBASE IMEDIATAMENTE
             let saldoReduzido = bancaAtual - apostaAtual;
-            bancaAtual = saldoReduzido; // Atualização instantânea local
+            bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
 
             // 2. ADICIONA NO CAIXA GLOBAL
             await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
 
-            // 3. DEFINE A ROTA PROTEGENDO A CASA
+            // 3. SELECIONA ROTA SEGURA
             let path = generateRiggedPath(color, apostaAtual);
             let finalIndex = path.reduce((a,b) => a+b, 0);
             let payoutValue = apostaAtual * multipliers[color][finalIndex];
 
-            // 4. LANÇA A BOLINHA NO CANVAS
+            // 4. ENVIA BOLINHA PRO CANVAS
             activeBalls.push({
                 color: color,
                 path: path,
@@ -609,7 +613,7 @@
 
         async function processWin(ball, finalX) {
             if (ball.payout > 0) {
-                // 1. PAGA O PRÊMIO NO FIREBASE REAL DO USUÁRIO
+                // 1. PAGA O PRÊMIO NO FIREBASE DO USUÁRIO
                 get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                      let dbSaldo = parseFloat(snap.val() || 0);
                      await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + ball.payout).toFixed(2)));
@@ -621,14 +625,15 @@
                     await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - ball.payout).toFixed(2)));
                 });
 
-                // 3. EFEITO VISUAL (TOAST E FLOATING)
-                if (ball.payout >= ball.bet * 2) {
+                // 3. EFEITO VISUAL DO TOAST DE LUCRO COMPACTO SUPERIOR
+                if (ball.payout > ball.bet) {
                     tocarSom('sfxWin');
                     winAmountDisplay.innerText = "R$ " + ball.payout.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                     winToast.classList.add('show');
-                    setTimeout(() => winToast.classList.remove('show'), 2000);
+                    setTimeout(() => winToast.classList.remove('show'), 2200);
                 }
 
+                // 4. TEXTO FLUTUANTE DA CAÇAPA
                 const el = document.createElement('div');
                 el.className = 'float-win';
                 el.style.color = getBallColorHex(ball.color);
@@ -647,7 +652,7 @@
             }
         }
 
-        // Binds
+        // Conexão direta dos botões
         document.getElementById('btn-green').addEventListener('click', () => dropBallBtn('green'));
         document.getElementById('btn-yellow').addEventListener('click', () => dropBallBtn('yellow'));
         document.getElementById('btn-red').addEventListener('click', () => dropBallBtn('red'));
