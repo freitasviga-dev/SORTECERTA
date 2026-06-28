@@ -24,7 +24,6 @@
             --red: #ff1744;
             --text-main: #ffffff;
             --text-muted: #8e8e99;
-            --border-glow: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -43,11 +42,11 @@
         }
         #gameIframe { width: 100%; height: 100%; border: none; }
 
-        /* --- MANUTENÇÃO ABSOLUTA (CORRIGIDA) --- */
+        /* --- MANUTENÇÃO ABSOLUTA --- */
         #telaManutencao {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(5, 5, 5, 0.98); 
-            z-index: 99999999; /* SUPREMO: Cobre tudo */
+            z-index: 99999999; 
             display: none; flex-direction: column; align-items: center; 
             justify-content: center; color: #fff; text-align: center; 
             backdrop-filter: blur(15px);
@@ -63,38 +62,51 @@
             position: fixed; top: 0; left: 0; width: 100%; 
             background: rgba(15, 15, 18, 0.85); backdrop-filter: blur(25px); 
             z-index: 1000; display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            padding: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-top: calc(10px + env(safe-area-inset-top));
         }
         
-        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; margin-left: 5px; }
         .brand-logo i { color: var(--gold); font-size: 18px; margin-bottom: 2px; filter: drop-shadow(0 2px 5px rgba(241,196,15,0.4)); }
         .brand-logo span { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 1px; line-height: 1; }
         
         .user-panel { 
             display: flex; align-items: center; gap: 8px; 
-            background: rgba(0,0,0,0.5); padding: 5px 6px 5px 12px; 
+            background: rgba(0,0,0,0.6); padding: 4px; 
             border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); 
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            max-width: 70%;
         }
-        .balance-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        .balance-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding-left: 8px; }
         .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
+        /* A mágica anti-quebra do Saldo! */
         .balance { 
-            font-weight: 900; color: var(--green); font-size: 14px; 
-            white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis; 
-            text-shadow: 0 0 10px rgba(0,230,118,0.3); line-height: 1;
+            font-weight: 900; color: var(--green); font-size: 13px; 
+            white-space: nowrap; max-width: 85px; overflow: hidden; text-overflow: ellipsis; 
+            text-shadow: 0 0 8px rgba(0,230,118,0.3); line-height: 1;
         }
         
-        /* BOTÕES HEADER EM BLOCOS 3D ISOLADOS (Não quebram a tela) */
-        .header-actions { display: flex; gap: 6px; }
+        .header-actions { display: flex; gap: 4px; }
         .btn-hd {
-            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 900; color: #000; border: none; cursor: pointer; transition: all 0.1s;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 900; border: none; cursor: pointer; transition: all 0.1s;
+            padding: 6px 10px; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .btn-hd.sacar { background: linear-gradient(180deg, #f1c40f, #b8860b); box-shadow: 0 4px 0 #7a5805, 0 5px 10px rgba(0,0,0,0.5); }
-        .btn-hd.depositar { background: linear-gradient(180deg, #00e676, #00b359); box-shadow: 0 4px 0 #006633, 0 5px 15px rgba(0,230,118,0.3); border: 1px solid rgba(255,255,255,0.4); }
-        .btn-hd:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .btn-hd.sacar { 
+            background: rgba(241, 196, 15, 0.05); color: var(--gold); border: 1px solid var(--gold); 
+        }
+        .btn-hd.depositar { 
+            background: linear-gradient(135deg, #00e676, #00b359); color: #000; 
+            border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 0 10px rgba(0,230,118,0.5); 
+            animation: glowGreen 2s infinite alternate;
+        }
+        .btn-hd:active { transform: scale(0.95); }
+
+        @keyframes glowGreen { 
+            from { box-shadow: 0 0 5px rgba(0,230,118,0.4); } 
+            to { box-shadow: 0 0 15px rgba(0,230,118,0.8); } 
+        }
 
         .btn-login-header {
             background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
@@ -102,7 +114,6 @@
             font-size: 12px; text-transform: uppercase; box-shadow: 0 4px 0 #7a5805, 0 5px 15px rgba(241, 196, 15, 0.3); 
             cursor: pointer; transition: 0.1s;
         }
-        .btn-login-header:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
         .container { max-width: 600px; margin: 90px auto 0; padding: 15px; }
 
@@ -123,14 +134,14 @@
         }
         .btn-hero:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
-        /* --- CATEGORIAS EM PÍLULAS --- */
+        /* --- CATEGORIAS EM PÍLULAS (FUNCIONAIS) --- */
         .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 15px; }
         .categories::-webkit-scrollbar { display: none; }
         .cat-btn { 
             background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); 
             padding: 10px 18px; border-radius: 30px; font-size: 12px; font-weight: 800; white-space: nowrap; 
             display: flex; align-items: center; gap: 8px; transition: 0.2s; 
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.3); cursor: pointer;
         }
         .cat-btn.active { background: rgba(241, 196, 15, 0.1); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15), inset 0 1px 2px rgba(241, 196, 15, 0.3); }
 
@@ -140,7 +151,6 @@
         
         .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
         
-        /* O Card do Jogo como Objeto Físico */
         .game-card { 
             background: linear-gradient(180deg, #1f1f27 0%, #121218 100%); 
             border-radius: 16px; padding: 5px; position: relative; 
@@ -149,7 +159,6 @@
         }
         .game-card:active { transform: scale(0.94) translateY(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); }
         
-        /* Capas em Gradiente Profundo com Emoji Centralizado HD */
         .game-cover { 
             width: 100%; height: 120px; border-radius: 12px; display: flex; align-items: center; 
             justify-content: center; font-size: 55px; position: relative; 
@@ -170,7 +179,6 @@
         .game-name { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 2px; letter-spacing: -0.3px; }
         .game-provider { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Badges Flutuantes */
         .badge { 
             position: absolute; top: -6px; right: -6px; color: #fff; font-size: 9px; padding: 4px 8px; 
             border-radius: 12px; font-weight: 900; letter-spacing: 0.5px; z-index: 10;
@@ -181,7 +189,7 @@
         .badge.vip { background: linear-gradient(45deg, #f1c40f, #b8860b); color: #000; border: 1px solid #ffe57f; }
         .badge.hot { background: linear-gradient(45deg, #ff9100, #ff6d00); border: 1px solid #ffd740; }
 
-        /* --- PROVA SOCIAL (POPUP DE GANHOS 3D) --- */
+        /* --- PROVA SOCIAL (POPUP DE GANHOS REGULADO) --- */
         .live-win-popup {
             position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: linear-gradient(180deg, #111116, #0a0a0c); border: 1px solid var(--green-dark); 
@@ -195,7 +203,7 @@
         .live-win-text { font-size: 11px; color: #a1a1aa; line-height: 1.4; }
         .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; text-shadow: 0 0 5px rgba(0,230,118,0.4); }
 
-        /* --- MENU INFERIOR 3D FLOAT --- */
+        /* --- MENU INFERIOR LOBBY / CONTA --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; 
             background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(20px); 
@@ -203,11 +211,10 @@
             padding: 10px 0; z-index: 1000; padding-bottom: calc(10px + env(safe-area-inset-bottom));
             box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 9px; font-weight: 900; gap: 5px; transition: 0.2s; width: 22%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
-        .nav-item i { font-size: 22px; transition: 0.2s; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 5px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+        .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
         .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-3px); }
-
     </style>
 </head>
 <body>
@@ -217,7 +224,7 @@
         <iframe id="gameIframe"></iframe>
     </div>
 
-    <!-- TELA MANUTENÇÃO (TRAVA TOTAL 8 NOVES Z-INDEX) -->
+    <!-- TELA MANUTENÇÃO (TRAVA TOTAL) -->
     <div id="telaManutencao">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <h2>SISTEMA EM MANUTENÇÃO</h2>
@@ -243,78 +250,75 @@
             <div class="btn-hero btn-3d" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</div>
         </div>
 
-        <!-- CATEGORIAS PÍLULAS -->
+        <!-- CATEGORIAS PÍLULAS (FILTRAGEM ATIVA) -->
         <div class="categories">
-            <div class="cat-btn active"><i class="fa-solid fa-fire" style="color:var(--gold)"></i> Originals</div>
-            <div class="cat-btn"><i class="fa-solid fa-bolt"></i> Instantâneos</div>
-            <div class="cat-btn"><i class="fa-solid fa-trophy"></i> Alta Conversão</div>
+            <div class="cat-btn active" data-filter="all"><i class="fa-solid fa-fire" style="color:var(--gold)"></i> Originals</div>
+            <div class="cat-btn" data-filter="instantaneos"><i class="fa-solid fa-bolt"></i> Instantâneos</div>
+            <div class="cat-btn" data-filter="conversao"><i class="fa-solid fa-trophy"></i> Alta Conversão</div>
         </div>
 
         <h2 class="section-title"><i class="fa-solid fa-gem"></i> Cassino Originals VIP</h2>
         
-        <!-- GRID DE JOGOS 3D PERFEITO (2 COLUNAS) -->
+        <!-- GRID DE JOGOS COM TAGS DE FILTRO -->
         <div class="games-grid">
             
-            <div class="game-card game-link" data-game="mines.html">
+            <div class="game-card game-link" data-category="instantaneos" data-game="mines.html">
                 <div class="badge rtp">99% RTP</div>
                 <div class="game-cover gc-mines"><span>💣</span></div>
                 <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">ORIGINAL</div></div>
             </div>
             
-            <div class="game-card game-link" data-game="goal.html">
+            <div class="game-card game-link" data-category="conversao" data-game="goal.html">
                 <div class="badge novo">NOVO</div>
                 <div class="game-cover gc-goal"><span>⚽</span></div>
                 <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="roleta.html">
+            <div class="game-card game-link" data-category="conversao" data-game="roleta.html">
                 <div class="badge vip">VIP</div>
                 <div class="game-cover gc-roleta"><span>🎰</span></div>
                 <div class="game-info"><div class="game-name">Roleta Imperial</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="plinko.html">
+            <div class="game-card game-link" data-category="instantaneos" data-game="plinko.html">
                 <div class="badge hot">HOT</div>
                 <div class="game-cover gc-plinko"><span>🔺</span></div>
                 <div class="game-info"><div class="game-name">Plinko</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="hotline.html">
+            <div class="game-card game-link" data-category="instantaneos" data-game="hotline.html">
                 <div class="badge novo">NOVO</div>
                 <div class="game-cover gc-hotline"><span>🔥</span></div>
                 <div class="game-info"><div class="game-name">Hotline</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="dice.html">
+            <div class="game-card game-link" data-category="instantaneos" data-game="dice.html">
                 <div class="badge rtp">98% RTP</div>
                 <div class="game-cover gc-dice"><span>🎲</span></div>
                 <div class="game-info"><div class="game-name">Dice</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="hilo.html">
+            <div class="game-card game-link" data-category="conversao" data-game="hilo.html">
                 <div class="badge vip">VIP</div>
                 <div class="game-cover gc-hilo"><span>🃏</span></div>
-                <div class="game-info"><div class="game-name">Hilo</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-info"><div class="game-name">HILO</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
         </div>
     </div>
 
-    <!-- PROVA SOCIAL FLUTUANTE 3D -->
+    <!-- PROVA SOCIAL MATEMÁTICA (NÚMEROS ÚNICOS) -->
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
-            <span id="winUser" style="font-weight: bold; color: #fff;">***lucas</span> acabou de ganhar<br>
-            <span class="live-win-amount" id="winAmount">R$ 1.128,36</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
+            <span id="winUser" style="font-weight: bold; color: #fff;">***7279</span> acabou de ganhar<br>
+            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
         </div>
     </div>
 
-    <!-- MENU INFERIOR FLUTUANTE -->
+    <!-- MENU INFERIOR LOBBY E CONTA -->
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="window.fecharJogo();"><i class="fa-solid fa-gamepad"></i><span>Lobby</span></div>
-        <div class="nav-item game-link" data-game="mines.html"><i class="fa-solid fa-bomb"></i><span>Mines</span></div>
-        <div class="nav-item game-link" data-game="roleta.html"><i class="fa-solid fa-circle-dot"></i><span>Roleta</span></div>
-        <div class="nav-item game-link" data-game="hilo.html"><i class="fa-solid fa-clone"></i><span>Hilo</span></div>
         <div class="nav-item game-link" data-game="perfil.html"><i class="fa-solid fa-user-astronaut"></i><span>Conta</span></div>
     </nav>
 
@@ -331,14 +335,13 @@
         const db = getDatabase(app);
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
 
+        // FUNÇÃO DE FECHAR JOGO (RESETA O IFRAME E RESTAURA O SCROLL)
         window.fecharJogo = function() {
             const shell = document.getElementById('appShell');
             const iframe = document.getElementById('gameIframe');
             iframe.src = 'about:blank'; 
             shell.style.display = 'none';
             document.body.style.overflow = 'auto'; 
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');
         };
 
         window.addEventListener("message", function(event) {
@@ -354,8 +357,8 @@
                         <span class="balance" id="displaySaldo">R$ 0,00</span>
                     </div>
                     <div class="header-actions">
-                        <button class="btn-hd sacar" onclick="window.location.href='saque.html'"><i class="fa-solid fa-minus"></i></button>
-                        <button class="btn-hd depositar" onclick="window.location.href='saldo.html'"><i class="fa-solid fa-plus"></i></button>
+                        <button class="btn-hd sacar" onclick="window.location.href='saque.html'">SACAR</button>
+                        <button class="btn-hd depositar" onclick="window.location.href='saldo.html'">DEPOSITAR</button>
                     </div>
                 </div>`;
                 
@@ -375,10 +378,6 @@
                         return; 
                     }
                     
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-                    const navMatch = document.querySelector(`.bottom-nav .nav-item[data-game="${gameUrl}"]`);
-                    if(navMatch) { navMatch.classList.add('active'); }
-
                     document.getElementById('gameIframe').src = gameUrl;
                     document.getElementById('appShell').style.display = 'block';
                     document.body.style.overflow = 'hidden'; 
@@ -395,7 +394,7 @@
             if (isManutencao) { 
                 tela.style.display = 'flex'; 
                 document.body.style.overflow = 'hidden'; 
-                window.fecharJogo(); // Expulsa o cara de dentro do Iframe na hora!
+                window.fecharJogo(); // Expulsa da tela na hora!
             } 
             else { 
                 tela.style.display = 'none'; 
@@ -403,19 +402,46 @@
             }
         });
 
-        // PROVA SOCIAL VIP
-        const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***chef", "***bruno", "***gabs", "***viga"];
-        const jogosFake = ["Mines", "Goal", "Roleta Imperial", "Plinko", "Hotline", "Dice", "Hilo"];
+        // FILTRO DE CATEGORIAS AO VIVO (Instantâneos vs Alta Conversão)
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                document.querySelectorAll('.game-card').forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    if (filter === 'all' || (category && category.includes(filter))) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // PROVA SOCIAL MATEMÁTICA (Nunca repete padrão, valor ou número exato)
+        const jogosFake = ["Mines", "Goal", "Roleta Imperial", "Plinko", "Hotline", "Dice", "HILO"];
         
         function mostrarGanhoFalso() {
             const popup = document.getElementById('liveWin');
-            document.getElementById('winUser').innerText = nomesFake[Math.floor(Math.random() * nomesFake.length)];
+            
+            // Gera um número de 4 dígitos (Ex: ***7279)
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('winUser').innerText = "***" + randomNum;
+            
+            // Jogo aleatório da casa
             document.getElementById('winGame').innerText = jogosFake[Math.floor(Math.random() * jogosFake.length)];
-            document.getElementById('winAmount').innerText = "R$ " + (Math.random() * (1200 - 30) + 30).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            
+            // Valor picado sem arredondamento falso (Ex: R$ 527,43)
+            const randomAmount = (Math.random() * (1500 - 50) + 50);
+            document.getElementById('winAmount').innerText = "R$ " + randomAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
             popup.classList.add('show'); 
             setTimeout(() => { popup.classList.remove('show'); }, 4000);
         }
-        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (14000 - 8000 + 1) + 8000));
+        // Tempo sempre variado para não parecer robô
+        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (12000 - 6000 + 1) + 6000));
     </script>
 </body>
 </html>
