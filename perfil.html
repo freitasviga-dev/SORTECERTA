@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SorteCerta - Meu Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+
     <style>
         :root {
             --bg-main: #0a0a0c;
@@ -12,7 +18,7 @@
             --gold: #f1c40f;
             --gold-dark: #b8860b;
             --green: #2ecc71;
-            --red: #e74c3c;
+            --red: #ff1744;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
             --border-color: rgba(255, 255, 255, 0.1);
@@ -64,29 +70,6 @@
         .btn-dep { background: linear-gradient(135deg, #00e676, #00b359); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
         .btn-saq { background: rgba(241, 196, 15, 0.05); border: 1px solid var(--gold); color: var(--gold); }
 
-        /* --- PAINEL DE BÔNUS VIP (NOVO INSERIDO AQUI) --- */
-        .bonus-panel { 
-            width: 100%; background: radial-gradient(circle at top right, #2a113a, #0a0a0c); 
-            border: 1px solid rgba(155, 81, 224, 0.4); border-radius: 16px; padding: 20px; 
-            position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
-            backdrop-filter: blur(10px);
-        }
-        .bonus-panel::before { content: '🎁'; position: absolute; right: -10px; top: -10px; font-size: 80px; opacity: 0.05; pointer-events: none; }
-        .bonus-title { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bonus-title i { color: #9b51e0; filter: drop-shadow(0 0 5px rgba(155, 81, 224, 0.5)); }
-        .bonus-desc { font-size: 12px; color: #ccc; margin-bottom: 15px; line-height: 1.5; z-index: 2; position: relative; }
-        
-        .btn-ativar { 
-            width: 100%; background: linear-gradient(90deg, #9b51e0, #6a1b9a); border: none; color: #fff; 
-            padding: 14px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; 
-            text-transform: uppercase; box-shadow: 0 4px 0 #4a148c, 0 5px 15px rgba(155, 81, 224, 0.3); transition: 0.2s; z-index: 2; position: relative; 
-        }
-        .btn-ativar:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
-        .btn-ativar.ativo { 
-            background: rgba(46, 204, 113, 0.1); color: var(--green); border: 1px solid var(--green); 
-            box-shadow: none; pointer-events: none; font-size: 12px; padding: 12px;
-        }
-
         /* --- LISTA DE MENUS --- */
         .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
@@ -96,9 +79,11 @@
         .menu-text { font-size: 14px; font-weight: 700; }
         .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 14px; }
 
+        @keyframes pulseRed { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0.6; transform: scale(1.05); } }
+
         .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 10px; }
 
-        /* --- MENU INFERIOR FOCADO --- */
+        /* --- MENU INFERIOR --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
             backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
@@ -117,6 +102,22 @@
         .btn-close-modal { width: 100%; background: #333; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex-shrink: 0; transition: 0.2s; }
         .btn-close-modal:active { background: #555; }
 
+        /* CARDS DA CENTRAL DE MISSÕES */
+        .mission-card { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .mission-card.special { background: radial-gradient(circle at right, rgba(155, 81, 224, 0.2), transparent); border-color: rgba(155, 81, 224, 0.4); }
+        .m-info h4 { font-size: 15px; color: #fff; font-weight: 900; margin-bottom: 4px; }
+        .m-info p { font-size: 12px; color: var(--green); font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        .mission-card.special .m-info p { color: #d08aff; }
+        
+        /* BOTÕES DE ATIVAR / CANCELAR / BLOQUEADO */
+        .btn-ativar-m { background: linear-gradient(135deg, var(--green), #00b359); color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 900; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 0 #006633; transition: 0.1s; width: 110px; text-align: center; }
+        .btn-ativar-m:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .btn-ativar-m.special-btn { background: linear-gradient(135deg, #9b51e0, #6a1b9a); color: #fff; box-shadow: 0 4px 0 #4a148c; }
+        
+        /* Estados do Botão */
+        .btn-cancelar { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; color: #fff !important; box-shadow: 0 4px 0 #922b21 !important; }
+        .btn-ativar-m:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+
         /* Estilos do Histórico */
         .trans-list { display: flex; flex-direction: column; gap: 10px; }
         .trans-card { background: #121214; border: 1px solid #27272a; padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -125,19 +126,19 @@
         .icon-dep { background: rgba(46, 204, 113, 0.1); color: var(--green); }
         .icon-saq { background: rgba(231, 76, 60, 0.1); color: var(--red); }
         .trans-type { font-size: 12px; font-weight: bold; color: #fff; text-transform: uppercase; }
-        .trans-date { font-size: 10px; color: #777; }
         .trans-val { font-size: 14px; font-weight: 900; }
         .val-dep { color: var(--green); }
         .val-saq { color: var(--red); }
-
     </style>
 </head>
 <body>
 
     <script>
-        if (!localStorage.getItem('usuario_tracker_id')) {
-            window.location.href = 'login.html';
-        }
+        if (!localStorage.getItem('usuario_tracker_id')) { window.location.href = 'login.html'; }
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(r) { for (let reg of r) reg.unregister(); }); }
+        })();
     </script>
 
     <header class="header">
@@ -168,14 +169,19 @@
             </div>
         </div>
 
-        <!-- PAINEL DE BÔNUS (INJETADO AQUI) -->
-        <div class="bonus-panel">
-            <div class="bonus-title"><i class="fa-solid fa-gift"></i> Bônus de 100% no Depósito</div>
-            <div class="bonus-desc">Dobre o valor do seu próximo depósito instantaneamente! Sujeito a regras de apostas (Rollover) no momento do saque.</div>
-            <button class="btn-ativar" id="btnBonus" onclick="ativarBonus()">ATIVAR E DEPOSITAR</button>
-        </div>
-
         <div class="menu-list">
+            
+            <a class="menu-item" onclick="abrirModal('modalMissoes')" id="menuMissaoItem" style="border: 1px solid var(--gold); box-shadow: inset 0 0 15px rgba(241,196,15,0.05), 0 5px 15px rgba(0,0,0,0.5); display: none;">
+                <div class="menu-left">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; border:none;"><i class="fa-solid fa-star"></i></div>
+                    <span class="menu-text" style="color: var(--gold);">Central de Missões VIP</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="background: var(--red); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: 900; animation: pulseRed 1s infinite alternate; box-shadow: 0 0 10px rgba(255,23,68,0.5);">NOVO</span>
+                    <i class="fa-solid fa-chevron-right" style="color: var(--gold);"></i>
+                </div>
+            </a>
+
             <a class="menu-item" onclick="abrirHistorico()">
                 <div class="menu-left">
                     <div class="menu-icon" style="color: #3498db;"><i class="fa-solid fa-list-ul"></i></div>
@@ -192,9 +198,9 @@
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
 
-            <a class="menu-item" onclick="abrirTermos()">
+            <a class="menu-item" onclick="abrirModal('modalTermos')">
                 <div class="menu-left">
-                    <div class="menu-icon" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="menu-icon" style="color: var(--text-muted);"><i class="fa-solid fa-file-contract"></i></div>
                     <span class="menu-text">Termos e Condições</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
@@ -209,13 +215,13 @@
             </a>
         </div>
 
-        <div class="app-version">SorteCerta V2.0.1 - Criptografia SSL 256-bit ativada.</div>
+        <div class="app-version">SorteCerta V2.0.2 - Criptografia SSL 256-bit ativada.</div>
     </div>
 
     <nav class="bottom-nav">
         <a href="index.html" class="nav-item">
             <i class="fa-solid fa-gamepad"></i>
-            <span>Cassino</span>
+            <span>Lobby</span>
         </a>
         <a href="perfil.html" class="nav-item active">
             <i class="fa-solid fa-user-astronaut"></i>
@@ -223,15 +229,58 @@
         </a>
     </nav>
 
-    <!-- Modais omitidos para economia de espaço, eles ficam aqui em baixo iguais a antes... -->
+    <div class="modal-overlay" id="modalMissoes">
+        <div class="modal-content" style="background: linear-gradient(180deg, #181820, #0a0a0c); border: 1px solid var(--gold);">
+            <div class="modal-title" style="color: var(--gold); border-bottom-color: rgba(241,196,15,0.2);">
+                <i class="fa-solid fa-ranking-star"></i> Missões de Bônus VIP
+            </div>
+            <div class="modal-body" style="padding-right: 0;">
+                <p style="margin-bottom:15px; font-size:12px; color:#aaa;">Oferta exclusiva para novos usuários. Complete missões de depósito e ganhe saldo extra imediatamente.</p>
+                
+                <div class="mission-card">
+                    <div class="m-info">
+                        <h4>Deposite R$ 10,00</h4>
+                        <p><i class="fa-solid fa-circle-plus"></i> Ganhe R$ 3,00 Extras</p>
+                    </div>
+                    <button class="btn-ativar-m" id="btn-missao-fixo10" onclick="toggleMissao(10, 3, 'fixo')">ATIVAR</button>
+                </div>
+
+                <div class="mission-card">
+                    <div class="m-info">
+                        <h4>Deposite R$ 20,00</h4>
+                        <p><i class="fa-solid fa-circle-plus"></i> Ganhe R$ 7,00 Extras</p>
+                    </div>
+                    <button class="btn-ativar-m" id="btn-missao-fixo20" onclick="toggleMissao(20, 7, 'fixo')">ATIVAR</button>
+                </div>
+
+                <div class="mission-card special">
+                    <div class="m-info">
+                        <h4>Bônus Supremo 100%</h4>
+                        <p><i class="fa-solid fa-bolt"></i> Dobre qualquer valor!</p>
+                    </div>
+                    <button class="btn-ativar-m special-btn" id="btn-missao-100porcento0" onclick="toggleMissao(0, 0, '100porcento')">ATIVAR</button>
+                </div>
+                
+                <div style="text-align:center; margin-top:15px;">
+                    <a href="saldo.html" id="linkIrDeposito" style="color:var(--green); text-decoration:none; font-weight:900; font-size:13px; display:none; padding:10px; border:1px dashed var(--green); border-radius:8px;">
+                        <i class="fa-solid fa-money-bill-transfer"></i> Ir para Depósito
+                    </a>
+                </div>
+
+                <div style="font-size: 10px; color:#666; margin-top: 15px; text-align:center;">*Todas as missões possuem meta de apostas (Rollover) atreladas antes do saque. Limitado a um uso por jogador.</div>
+            </div>
+            <button class="btn-close-modal" style="background:#222; color:#fff;" onclick="fecharModal('modalMissoes')">Fechar Missões</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modalTermos">
         <div class="modal-content">
-            <div class="modal-title" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i> Políticas da Plataforma</div>
+            <div class="modal-title" style="color: #fff;"><i class="fa-solid fa-file-contract"></i> Políticas da Plataforma</div>
             <div class="modal-body">
-                <p><strong>1. Funcionamento do Sistema (RTP):</strong> A SorteCerta utiliza algoritmos de geração de resultados aleatórios (RNG) com taxas de retorno (RTP) pré-configuradas. O sistema processa apostas e pagamentos de forma totalmente automatizada.</p><br>
-                <p><strong>2. Pagamentos e Transações:</strong> Todos os depósitos e saques são processados via PIX. O prazo de compensação é imediato para depósitos e até 24 horas para auditoria de saques, visando a segurança do seu saldo.</p><br>
-                <p><strong>3. Regras de Integridade:</strong> É terminantemente proibido o uso de qualquer software de terceiros ou robôs para manipular resultados. A casa reserva-se o direito de anular ganhos provenientes de falhas técnicas ou comportamentos atípicos que violem a integridade da plataforma.</p><br>
-                <p><strong>4. Aceitação:</strong> Ao utilizar a SorteCerta, o usuário reconhece que o jogo é uma forma de entretenimento e aceita as políticas internas de funcionamento e auditoria da casa.</p>
+                <p><strong>1. Funcionamento do Sistema (RTP):</strong> A SorteCerta utiliza algoritmos RNG com taxas de retorno (RTP) pré-configuradas. O sistema processa apostas e pagamentos de forma automatizada.</p><br>
+                <p><strong>2. Pagamentos e Transações:</strong> Todos os depósitos e saques são processados via PIX. O prazo de compensação é imediato para depósitos e até 24 horas para auditoria de saques.</p><br>
+                <p><strong>3. Regras de Integridade:</strong> É terminantemente proibido o uso de robôs. A casa reserva-se o direito de anular ganhos provenientes de comportamentos atípicos.</p><br>
+                <p><strong>4. Regras de Missões:</strong> Bônus ativados geram uma trava temporária de saque (Rollover) equivalente às apostas necessárias proporcionais ao bônus. Válido apenas para novos usuários.</p>
             </div>
             <button class="btn-close-modal" onclick="fecharModal('modalTermos')">Entendi e Concordo</button>
         </div>
@@ -254,29 +303,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE SETUP
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77"
-        };
-        const app = initializeApp(firebaseConfig);
+        // FIREBASE OFUSCADO
+        const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
+        const app = initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] });
         const db = getDatabase(app);
 
-        // PUXAR ID DO USUÁRIO
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         document.getElementById('displayUserId').innerText = idDispositivo;
-        
-        // Esconder parte do número de telefone se for um número válido
         if(idDispositivo && idDispositivo.length >= 10 && !idDispositivo.includes('TIGER')) {
             document.getElementById('displayUserName').innerText = "Membro Final " + idDispositivo.slice(-4);
         }
 
-        // SUPORTE WHATSAPP
         const phoneDestination = "5583996469538";
         document.getElementById('linkSuporte').href = `https://wa.me/${phoneDestination}?text=Olá,%20preciso%20falar%20com%20o%20financeiro.%20Meu%20ID%20é:%20${idDispositivo}`;
 
-        // COPIAR ID
         window.copiarID = function() {
             navigator.clipboard.writeText(idDispositivo).then(() => {
                 const btn = document.getElementById('btnCopyIcon');
@@ -286,84 +326,106 @@
             });
         }
 
-        // SALDO EM TEMPO REAL E VERIFICAÇÃO DE BÔNUS
+        let currentMissaoAtiva = null;
+
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(dados.saldo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
-            // VERIFICA O BÔNUS NO BANCO DE DADOS
-            if(dados.bonus_ativo === true) {
-                const btn = document.getElementById('btnBonus');
-                btn.innerHTML = "<i class='fa-solid fa-circle-check'></i> BÔNUS ATIVADO E PENDENTE";
-                btn.classList.add('ativo');
+            const menuMissao = document.getElementById('menuMissaoItem');
+            const linkIrDeposito = document.getElementById('linkIrDeposito');
+
+            // REGRA: SE ELE JÁ DEPOSITOU USANDO BÔNUS, A ABA DESAPARECE
+            if(dados.bonus_usado === true) {
+                if(menuMissao) menuMissao.style.display = 'none';
+            } else {
+                if(menuMissao) menuMissao.style.display = 'flex';
+                currentMissaoAtiva = dados.missao_ativa || null;
+
+                // Restaura visual padrão dos botões
+                document.querySelectorAll('.btn-ativar-m').forEach(btn => {
+                    btn.innerText = 'ATIVAR';
+                    btn.classList.remove('btn-cancelar');
+                    btn.disabled = false;
+                });
+
+                if (currentMissaoAtiva) {
+                    linkIrDeposito.style.display = 'inline-block';
+                    
+                    // Acha qual foi ativado e vira botão de Cancelar (Vermelho)
+                    let activeBtnId = 'btn-missao-' + currentMissaoAtiva.tipo + (currentMissaoAtiva.deposito || '0');
+                    let activeBtn = document.getElementById(activeBtnId);
+                    
+                    if(activeBtn) {
+                        activeBtn.innerText = 'CANCELAR';
+                        activeBtn.classList.add('btn-cancelar');
+                    }
+
+                    // Bloqueia (cinza) todos os outros botões
+                    document.querySelectorAll('.btn-ativar-m:not(.btn-cancelar)').forEach(btn => {
+                        btn.disabled = true;
+                        btn.innerText = 'BLOQUEADO';
+                    });
+                } else {
+                    linkIrDeposito.style.display = 'none';
+                }
             }
         });
 
-        // FUNÇÃO DE ATIVAÇÃO DE BÔNUS
-        window.ativarBonus = async function() {
+        // MODAIS
+        window.abrirModal = function(id) { document.getElementById(id).style.display = 'flex'; }
+        window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; }
+
+        // TOGGLE: ATIVA OU DESATIVA MISSÃO
+        window.toggleMissao = async function(deposito, bonus, tipo) {
             try {
-                await set(ref(db, 'usuarios/' + idDispositivo + '/bonus_ativo'), true);
-                window.location.href = 'saldo.html'; // Redireciona na hora pro Depósito
+                // Se o cara clicou no que já estava ativo, ele tá querendo DESATIVAR
+                if (currentMissaoAtiva && currentMissaoAtiva.tipo === tipo && currentMissaoAtiva.deposito === deposito) {
+                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
+                } else {
+                    // Ele quer ATIVAR
+                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), {
+                        tipo: tipo,
+                        deposito: deposito,
+                        bonus: bonus
+                    });
+                }
             } catch (error) {
-                alert("Erro ao ativar o bônus. Tente novamente.");
+                alert("Erro de conexão ao alterar a missão.");
             }
         }
 
-        // MODAIS E LÓGICAS DE JANELA
-        window.abrirTermos = function() { document.getElementById('modalTermos').style.display = 'flex'; }
-        window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; }
-
-        // HISTÓRICO DE TRANSAÇÕES VIA FIREBASE
+        // EXTRATO
         window.abrirHistorico = function() {
-            document.getElementById('modalHistorico').style.display = 'flex';
+            abrirModal('modalHistorico');
             const containerLista = document.getElementById('listaTransacoes');
-            
             onValue(ref(db, 'usuarios/' + idDispositivo + '/transacoes'), (snapshot) => {
                 const transacoes = snapshot.val();
-                
-                if (!transacoes) {
-                    containerLista.innerHTML = `<div style="text-align: center; color: #777; padding: 20px;"><i class="fa-solid fa-receipt" style="font-size: 30px; margin-bottom: 10px; opacity:0.5;"></i><p>Nenhuma transação financeira registrada.</p></div>`;
-                    return;
-                }
-
+                if (!transacoes) { containerLista.innerHTML = `<div style="text-align: center; color: #777; padding: 20px;"><p>Nenhuma transação registrada.</p></div>`; return; }
                 containerLista.innerHTML = '<div class="trans-list"></div>';
                 const listDiv = containerLista.querySelector('.trans-list');
-
-                // Inverte para os mais recentes ficarem no topo
                 const historicoArray = Object.values(transacoes).reverse();
-
                 historicoArray.forEach(t => {
                     const isDep = (t.tipo === 'DEPÓSITO' || t.tipo === 'DEPOSITO');
                     const iconClass = isDep ? 'icon-dep' : 'icon-saq';
                     const valClass = isDep ? 'val-dep' : 'val-saq';
                     const iconShape = isDep ? 'fa-arrow-down' : 'fa-arrow-up';
                     const prefix = isDep ? '+' : '-';
-
-                    // Formata valor
                     let valorFormatado = parseFloat(t.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
                     listDiv.innerHTML += `
                         <div class="trans-card">
                             <div class="trans-info">
                                 <div class="trans-icon ${iconClass}"><i class="fa-solid ${iconShape}"></i></div>
-                                <div>
-                                    <div class="trans-type">${t.tipo} PIX</div>
-                                    <div class="trans-date">Confirmado</div>
-                                </div>
+                                <div><div class="trans-type">${t.tipo}</div><div class="trans-date">Confirmado</div></div>
                             </div>
                             <div class="trans-val ${valClass}">${prefix} R$ ${valorFormatado}</div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             });
         }
 
-        // DESCONECTAR CONTA
         window.sairDaConta = function() {
-            if(confirm("Encerrar sessão no dispositivo? Você precisará fazer login novamente.")) {
-                localStorage.removeItem('usuario_tracker_id');
-                window.location.href = 'login.html';
-            }
+            if(confirm("Encerrar sessão no dispositivo?")) { localStorage.removeItem('usuario_tracker_id'); window.location.href = 'login.html'; }
         }
     </script>
 </body>
