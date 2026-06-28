@@ -4,38 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- ANTI-CACHE PARA O LOBBY EXTREMO -->
+    <!-- ANTI-CACHE LOBBY STRICT -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Clear-Site-Data" content="cache">
 
-    <title>SorteCerta | O Melhor Cassino VIP</title>
+    <title>SorteCerta | Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --bg-main: #0a0a0c;
-            --bg-card: rgba(18, 18, 24, 0.85);
+            --bg-card: #15151a;
             --gold: #f1c40f;
             --gold-dark: #b8860b;
             --green: #00e676;
-            --red: #e74c3c;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --neon-blue: #00d2ff;
-            --neon-purple: #9b51e0;
+            --green-dark: #00b359;
+            --red: #ff1744;
+            --text-main: #ffffff;
+            --text-muted: #8e8e99;
+            --border-glow: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body { 
             background-color: var(--bg-main); 
-            background-image: radial-gradient(circle at 50% 0%, #1e1300 0%, transparent 60%);
-            color: var(--text-main); padding-bottom: 95px; overflow-x: hidden; 
+            background-image: radial-gradient(circle at 50% -10%, #201a08 0%, var(--bg-main) 60%);
+            color: var(--text-main); padding-bottom: 100px; overflow-x: hidden; 
         }
 
-        /* --- APP SHELL (SISTEMA DE ANCORAGEM DE IFRAME STRICT) --- */
+        /* --- APP SHELL (IFRAME) --- */
         #appShell {
             display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100vh; height: 100dvh; 
@@ -43,124 +43,171 @@
         }
         #gameIframe { width: 100%; height: 100%; border: none; }
 
-        /* --- MANUTENÇÃO BLOQUEADORA --- */
+        /* --- MANUTENÇÃO ABSOLUTA (CORRIGIDA) --- */
         #telaManutencao {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.98); z-index: 999999; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: #fff; text-align: center; backdrop-filter: blur(15px);
+            background: rgba(5, 5, 5, 0.98); 
+            z-index: 99999999; /* SUPREMO: Cobre tudo */
+            display: none; flex-direction: column; align-items: center; 
+            justify-content: center; color: #fff; text-align: center; 
+            backdrop-filter: blur(15px);
         }
-        #telaManutencao i { font-size: 70px; color: var(--red); margin-bottom: 25px; animation: pulse 1s infinite; }
-        #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; }
+        #telaManutencao i { font-size: 75px; color: var(--red); margin-bottom: 25px; animation: pulseRed 1s infinite alternate; }
+        #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 15px rgba(241,196,15,0.4); }
+        #telaManutencao p { color: var(--text-muted); font-size: 15px; max-width: 85%; font-weight: 500; }
 
-        /* --- HEADER PREMIUM ULTRA SLIM --- */
+        @keyframes pulseRed { from { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,23,68,0.5)); } to { transform: scale(1.1); filter: drop-shadow(0 0 25px rgba(255,23,68,0.8)); } }
+
+        /* --- HEADER 3D BLINDADO ANTI-QUEBRA --- */
         .navbar {
-            position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.85);
-            backdrop-filter: blur(20px); z-index: 1000; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
-            padding-top: calc(12px + env(safe-area-inset-top));
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background: rgba(15, 15, 18, 0.85); backdrop-filter: blur(25px); 
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-top: calc(10px + env(safe-area-inset-top));
         }
         
-        .brand-logo { display: flex; align-items: center; text-decoration: none; }
-        .brand-logo span { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+        .brand-logo i { color: var(--gold); font-size: 18px; margin-bottom: 2px; filter: drop-shadow(0 2px 5px rgba(241,196,15,0.4)); }
+        .brand-logo span { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 1px; line-height: 1; }
         
-        .user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 4px 10px 4px 4px; border-radius: 50px; border: 1px solid var(--border-color); }
-        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 8px; margin-right: 5px; }
-        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 3px; font-weight: bold; }
-        .balance { font-weight: 900; color: var(--green); font-size: 14px; white-space: nowrap; line-height: 1; text-shadow: 0 0 10px rgba(0,230,118,0.2); }
-        
-        .action-buttons { display: flex; gap: 6px; }
-        .btn-withdraw { background: rgba(251, 192, 45, 0.08); border: 1px solid var(--gold); color: var(--gold); font-weight: 900; padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; cursor: pointer; }
-        .btn-deposit { 
-            background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; 
-            padding: 6px 14px; border-radius: 20px; font-size: 10px; text-decoration: none; 
-            text-transform: uppercase; white-space: nowrap; border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 0 15px rgba(0,230,118,0.4); cursor: pointer;
+        .user-panel { 
+            display: flex; align-items: center; gap: 8px; 
+            background: rgba(0,0,0,0.5); padding: 5px 6px 5px 12px; 
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
+        .balance-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
+        .balance { 
+            font-weight: 900; color: var(--green); font-size: 14px; 
+            white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis; 
+            text-shadow: 0 0 10px rgba(0,230,118,0.3); line-height: 1;
+        }
+        
+        /* BOTÕES HEADER EM BLOCOS 3D ISOLADOS (Não quebram a tela) */
+        .header-actions { display: flex; gap: 6px; }
+        .btn-hd {
+            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 900; color: #000; border: none; cursor: pointer; transition: all 0.1s;
+        }
+        .btn-hd.sacar { background: linear-gradient(180deg, #f1c40f, #b8860b); box-shadow: 0 4px 0 #7a5805, 0 5px 10px rgba(0,0,0,0.5); }
+        .btn-hd.depositar { background: linear-gradient(180deg, #00e676, #00b359); box-shadow: 0 4px 0 #006633, 0 5px 15px rgba(0,230,118,0.3); border: 1px solid rgba(255,255,255,0.4); }
+        .btn-hd:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
         .btn-login-header {
             background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #000; font-weight: 900; padding: 8px 18px; border-radius: 20px;
-            font-size: 11px; text-decoration: none; text-transform: uppercase;
-            box-shadow: 0 4px 12px rgba(241, 196, 15, 0.3); cursor: pointer;
+            color: #000; font-weight: 900; padding: 10px 20px; border-radius: 20px;
+            font-size: 12px; text-transform: uppercase; box-shadow: 0 4px 0 #7a5805, 0 5px 15px rgba(241, 196, 15, 0.3); 
+            cursor: pointer; transition: 0.1s;
         }
+        .btn-login-header:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
-        .container { max-width: 600px; margin: 85px auto 0; padding: 15px; }
+        .container { max-width: 600px; margin: 90px auto 0; padding: 15px; }
 
-        /* --- CORREÇÃO: HERO BANNER PREMIUM UNIFICADO (FIM DO QUADRADO VERMELHO) --- */
+        /* --- HERO BANNER 3D PREMIUM --- */
         .hero-banner {
-            width: 100%; border-radius: 20px; background: linear-gradient(135deg, #111116 0%, #1a1505 100%);
-            padding: 30px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(241, 196, 15, 0.05);
-            display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(241, 196, 15, 0.15);
+            width: 100%; border-radius: 20px; background: linear-gradient(145deg, #181820 0%, #0d0d12 100%);
+            padding: 25px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.05);
+            border: 1px solid rgba(241, 196, 15, 0.15); display: flex; flex-direction: column; justify-content: center;
         }
-        .hero-banner::after { content: '👑'; position: absolute; right: -10px; bottom: -20px; font-size: 130px; opacity: 0.06; transform: rotate(-10deg); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 0.3)); }
-        .hero-banner h1 { font-size: 26px; color: var(--gold); margin-bottom: 6px; z-index: 2; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 8px rgba(241, 196, 15, 0.4); }
-        .hero-banner p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; z-index: 2; max-width: 70%; font-weight: 500; line-height: 1.4; }
-        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 24px; border-radius: 12px; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 13px; box-shadow: 0 4px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; letter-spacing: 0.5px; cursor: pointer;}
-        .btn-play-now:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a6508; }
+        .hero-banner::after { content: '👑'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.04; transform: rotate(-15deg); filter: drop-shadow(0 0 20px var(--gold)); }
+        .hero-banner h1 { font-size: 24px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4); }
+        .hero-banner p { font-size: 13px; color: #a1a1aa; margin-bottom: 20px; z-index: 2; max-width: 75%; font-weight: 500; line-height: 1.4; }
+        .btn-hero { 
+            background: rgba(255,255,255,0.9); color: #000; padding: 10px 20px; border-radius: 30px; 
+            font-weight: 900; z-index: 2; width: max-content; font-size: 12px; 
+            box-shadow: 0 4px 0 #a1a1aa, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; cursor: pointer;
+        }
+        .btn-hero:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
-        /* --- CATEGORIAS --- */
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; margin-bottom: 15px; }
+        /* --- CATEGORIAS EM PÍLULAS --- */
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 15px; }
         .categories::-webkit-scrollbar { display: none; }
-        .cat-btn { text-decoration: none; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 18px; border-radius: 25px; font-size: 12px; font-weight: 800; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.2s; backdrop-filter: blur(5px); }
-        .cat-btn.active { background: rgba(241, 196, 15, 0.08); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
+        .cat-btn { 
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); 
+            padding: 10px 18px; border-radius: 30px; font-size: 12px; font-weight: 800; white-space: nowrap; 
+            display: flex; align-items: center; gap: 8px; transition: 0.2s; 
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .cat-btn.active { background: rgba(241, 196, 15, 0.1); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15), inset 0 1px 2px rgba(241, 196, 15, 0.3); }
 
-        /* --- GRID DE JOGOS PREMIUM (ESTILO ORIGINAL SPRIBE SPARK) --- */
-        .section-title { font-size: 15px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-        .section-title i { color: var(--gold); font-size: 16px; }
+        /* --- GRID DE JOGOS 3D PERFEITO --- */
+        .section-title { font-size: 14px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
+        .section-title i { color: var(--gold); font-size: 16px; filter: drop-shadow(0 0 5px rgba(241,196,15,0.5)); }
         
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 30px; }
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
         
-        .game-card { background: var(--bg-card); border-radius: 14px; overflow: hidden; position: relative; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .game-card:active { transform: scale(0.94); border-color: var(--gold); }
+        /* O Card do Jogo como Objeto Físico */
+        .game-card { 
+            background: linear-gradient(180deg, #1f1f27 0%, #121218 100%); 
+            border-radius: 16px; padding: 5px; position: relative; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.08); 
+            border: 1px solid rgba(0,0,0,0.8); cursor: pointer; transition: 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .game-card:active { transform: scale(0.94) translateY(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); }
         
-        /* Renderização das capas em formato Gradiente Espacial Premium com Emojis Centralizados */
-        .game-cover { width: 100%; height: 110px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 45px; position: relative; pointer-events: none; }
+        /* Capas em Gradiente Profundo com Emoji Centralizado HD */
+        .game-cover { 
+            width: 100%; height: 120px; border-radius: 12px; display: flex; align-items: center; 
+            justify-content: center; font-size: 55px; position: relative; 
+            box-shadow: inset 0 -15px 30px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.15);
+            overflow: hidden;
+        }
+        .game-cover i, .game-cover span { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8)); }
         
-        .gc-mines { background: radial-gradient(circle, #2c0b3d, #0d0413); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-goal { background: radial-gradient(circle, #113a1a, #041408); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-roleta { background: radial-gradient(circle, #5c0000, #1f0000); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-plinko { background: radial-gradient(circle, #1c3c73, #07152b); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-hotline { background: radial-gradient(circle, #d35400, #4a1900); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-dice { background: radial-gradient(circle, #16a085, #05332a); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        .gc-hilo { background: radial-gradient(circle, #1f4068, #0b132b); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-mines { background: radial-gradient(circle at 50% 20%, #2a113a, #08020d); }
+        .gc-goal { background: radial-gradient(circle at 50% 20%, #103c1c, #031206); }
+        .gc-roleta { background: radial-gradient(circle at 50% 20%, #680404, #1a0000); }
+        .gc-plinko { background: radial-gradient(circle at 50% 20%, #153c82, #041021); }
+        .gc-hotline { background: radial-gradient(circle at 50% 20%, #d85400, #361500); }
+        .gc-dice { background: radial-gradient(circle at 50% 20%, #0d7a64, #021a15); }
+        .gc-hilo { background: radial-gradient(circle at 50% 20%, #202020, #000000); }
 
-        .game-info { padding: 8px; text-align: center; background: rgba(7,7,9,0.7); border-top: 1px solid rgba(255,255,255,0.02); pointer-events: none; }
-        .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; letter-spacing: -0.2px; }
-        .game-provider { font-size: 9px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-info { padding: 12px 5px 5px; text-align: center; }
+        .game-name { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 2px; letter-spacing: -0.3px; }
+        .game-provider { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         
-        .hot-badge { position: absolute; top: 6px; right: 6px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 900; box-shadow: 0 2px 6px rgba(0,0,0,0.4); animation: softPulse 1.5s infinite; z-index: 10; pointer-events: none; letter-spacing: 0.3px; }
-        .hot-badge.new { background: linear-gradient(45deg, #00e676, #00b359); color: #000; }
+        /* Badges Flutuantes */
+        .badge { 
+            position: absolute; top: -6px; right: -6px; color: #fff; font-size: 9px; padding: 4px 8px; 
+            border-radius: 12px; font-weight: 900; letter-spacing: 0.5px; z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        }
+        .badge.rtp { background: linear-gradient(45deg, #ff1744, #d50000); border: 1px solid #ff5252; }
+        .badge.novo { background: linear-gradient(45deg, #00e676, #00b359); color: #000; border: 1px solid #69f0ae; }
+        .badge.vip { background: linear-gradient(45deg, #f1c40f, #b8860b); color: #000; border: 1px solid #ffe57f; }
+        .badge.hot { background: linear-gradient(45deg, #ff9100, #ff6d00); border: 1px solid #ffd740; }
 
-        /* --- PROVA SOCIAL (POPUP DE GANHOS REGULADO) --- */
+        /* --- PROVA SOCIAL (POPUP DE GANHOS 3D) --- */
         .live-win-popup {
             position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: rgba(10, 10, 12, 0.96); border: 1px solid var(--green); border-radius: 50px;
-            padding: 8px 18px; display: flex; align-items: center; gap: 10px; opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.15); width: max-content; max-width: 90%;
+            background: linear-gradient(180deg, #111116, #0a0a0c); border: 1px solid var(--green-dark); 
+            border-radius: 50px; padding: 8px 18px; display: flex; align-items: center; gap: 12px; opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
+            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.2), inset 0 2px 5px rgba(255,255,255,0.05); 
+            width: max-content; max-width: 90%;
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .live-win-icon { background: var(--green); color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .live-win-text { font-size: 11px; color: #ddd; line-height: 1.4; }
-        .live-win-amount { color: var(--green); font-weight: 900; font-size: 12px; }
+        .live-win-icon { background: linear-gradient(135deg, #00e676, #00b359); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 0 10px rgba(0,230,118,0.5); }
+        .live-win-text { font-size: 11px; color: #a1a1aa; line-height: 1.4; }
+        .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; text-shadow: 0 0 5px rgba(0,230,118,0.4); }
 
-        /* --- MENU INFERIOR PADRONIZADO COM ABAS INTERNAS --- */
+        /* --- MENU INFERIOR 3D FLOAT --- */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(12, 12, 16, 0.95);
-            backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-evenly;
             padding: 10px 0; z-index: 1000; padding-bottom: calc(10px + env(safe-area-inset-bottom));
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 9px; font-weight: 800; gap: 5px; transition: 0.2s; width: 22%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
-        .nav-item i { font-size: 20px; transition: 0.2s; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 9px; font-weight: 900; gap: 5px; transition: 0.2s; width: 22%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+        .nav-item i { font-size: 22px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
-        .nav-item.active i { filter: drop-shadow(0 0 8px rgba(241,196,15,0.4)); transform: translateY(-1px); }
+        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-3px); }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
-        @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
     </style>
 </head>
 <body>
@@ -170,98 +217,99 @@
         <iframe id="gameIframe"></iframe>
     </div>
 
-    <!-- TELA MANUTENÇÃO REATIVA -->
+    <!-- TELA MANUTENÇÃO (TRAVA TOTAL 8 NOVES Z-INDEX) -->
     <div id="telaManutencao">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <h2>SISTEMA EM MANUTENÇÃO</h2>
-        <p>Estamos realizando uma atualização de rotina nos motores gráficos. Seus fundos estão completamente protegidos.</p>
+        <p>Aprimorando motores gráficos. Seus fundos estão seguros.</p>
     </div>
 
-    <!-- NAVBAR PREMIUM -->
+    <!-- NAVBAR PREMIUM ANTI-QUEBRA -->
     <nav class="navbar">
         <div class="brand-logo">
-            <span><i class="fa-solid fa-crown" style="color:var(--gold); margin-right: 5px;"></i> SORTECERTA</span>
+            <i class="fa-solid fa-crown"></i>
+            <span>SORTECERTA</span>
         </div>
         <div id="userPanelContainer">
-            <div class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</div>
+            <div class="btn-login-header btn-3d" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</div>
         </div>
     </nav>
 
     <div class="container">
-        <!-- RESOLVIDO: BANNER SUPERIOR VIP ELEVADO (TEMA DA PLATAFORMA) -->
+        <!-- HERO BANNER 3D -->
         <div class="hero-banner">
             <h1>Multiplicadores VIP</h1>
             <p>Aposte com inteligência, controle os seus riscos e garanta os melhores lucros nos jogos originais.</p>
-            <button class="btn-skip btn-3d" style="width:max-content; margin-top:0;" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</button>
+            <div class="btn-hero btn-3d" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</div>
         </div>
 
-        <!-- CATEGORIAS -->
+        <!-- CATEGORIAS PÍLULAS -->
         <div class="categories">
-            <div class="cat-btn active"><i class="fa-solid fa-fire"></i> Originals</div>
+            <div class="cat-btn active"><i class="fa-solid fa-fire" style="color:var(--gold)"></i> Originals</div>
             <div class="cat-btn"><i class="fa-solid fa-bolt"></i> Instantâneos</div>
             <div class="cat-btn"><i class="fa-solid fa-trophy"></i> Alta Conversão</div>
         </div>
 
         <h2 class="section-title"><i class="fa-solid fa-gem"></i> Cassino Originals VIP</h2>
         
-        <!-- GRID DE JOGOS ATUALIZADO 100% SPRIBE/ORIGINALS STYLE -->
+        <!-- GRID DE JOGOS 3D PERFEITO (2 COLUNAS) -->
         <div class="games-grid">
             
             <div class="game-card game-link" data-game="mines.html">
-                <div class="hot-badge">99% RTP</div>
-                <div class="game-cover gc-mines">💣</div>
-                <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">Original</div></div>
+                <div class="badge rtp">99% RTP</div>
+                <div class="game-cover gc-mines"><span>💣</span></div>
+                <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">ORIGINAL</div></div>
             </div>
             
             <div class="game-card game-link" data-game="goal.html">
-                <div class="hot-badge new">NOVO</div>
-                <div class="game-cover gc-goal">⚽</div>
-                <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">Original</div></div>
+                <div class="badge novo">NOVO</div>
+                <div class="game-cover gc-goal"><span>⚽</span></div>
+                <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
             <div class="game-card game-link" data-game="roleta.html">
-                <div class="hot-badge">VIP</div>
-                <div class="game-cover gc-roleta">🎰</div>
-                <div class="game-info"><div class="game-name">Roleta Imperial</div><div class="game-provider">Original</div></div>
+                <div class="badge vip">VIP</div>
+                <div class="game-cover gc-roleta"><span>🎰</span></div>
+                <div class="game-info"><div class="game-name">Roleta Imperial</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
             <div class="game-card game-link" data-game="plinko.html">
-                <div class="hot-badge">HOT</div>
-                <div class="game-cover gc-plinko">🔺</div>
-                <div class="game-info"><div class="game-name">Plinko</div><div class="game-provider">Original</div></div>
+                <div class="badge hot">HOT</div>
+                <div class="game-cover gc-plinko"><span>🔺</span></div>
+                <div class="game-info"><div class="game-name">Plinko</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
             <div class="game-card game-link" data-game="hotline.html">
-                <div class="hot-badge new">NOVO</div>
-                <div class="game-cover gc-hotline">🔥</div>
-                <div class="game-info"><div class="game-name">Hotline</div><div class="game-provider">Original</div></div>
+                <div class="badge novo">NOVO</div>
+                <div class="game-cover gc-hotline"><span>🔥</span></div>
+                <div class="game-info"><div class="game-name">Hotline</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
             <div class="game-card game-link" data-game="dice.html">
-                <div class="hot-badge">98% RTP</div>
-                <div class="game-cover gc-dice">🎲</div>
-                <div class="game-info"><div class="game-name">Dice</div><div class="game-provider">Original</div></div>
+                <div class="badge rtp">98% RTP</div>
+                <div class="game-cover gc-dice"><span>🎲</span></div>
+                <div class="game-info"><div class="game-name">Dice</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
             <div class="game-card game-link" data-game="hilo.html">
-                <div class="hot-badge">VIP</div>
-                <div class="game-cover gc-hilo">🃏</div>
-                <div class="game-info"><div class="game-name">Hilo</div><div class="game-provider">Original</div></div>
+                <div class="badge vip">VIP</div>
+                <div class="game-cover gc-hilo"><span>🃏</span></div>
+                <div class="game-info"><div class="game-name">Hilo</div><div class="game-provider">ORIGINAL</div></div>
             </div>
 
         </div>
     </div>
 
-    <!-- PROVA SOCIAL SINCRONIZADA APENAS COM OS NOVOS JOGOS DA SUA COLEÇÃO -->
+    <!-- PROVA SOCIAL FLUTUANTE 3D -->
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
-            <span id="winUser" style="font-weight: bold; color: #fff;">***vitor</span> acabou de ganhar<br>
-            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
+            <span id="winUser" style="font-weight: bold; color: #fff;">***lucas</span> acabou de ganhar<br>
+            <span class="live-win-amount" id="winAmount">R$ 1.128,36</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
         </div>
     </div>
 
-    <!-- BARRA DE STATUS INFERIOR TOTALMENTE ATUALIZADA -->
+    <!-- MENU INFERIOR FLUTUANTE -->
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="window.fecharJogo();"><i class="fa-solid fa-gamepad"></i><span>Lobby</span></div>
         <div class="nav-item game-link" data-game="mines.html"><i class="fa-solid fa-bomb"></i><span>Mines</span></div>
@@ -297,12 +345,20 @@
             if(event.data === "fecharIframe") { window.fecharJogo(); }
         });
 
+        // MONTAGEM DO PAINEL DO USUÁRIO ANTI-QUEBRA
         if (idDispositivo) {
             document.getElementById('userPanelContainer').innerHTML = `
                 <div class="user-panel">
-                    <div class="balance-box"><span class="balance-label">Saldo</span><span class="balance" id="displaySaldo">R$ 0,00</span></div>
-                    <div class="action-buttons"><div class="btn-withdraw" onclick="window.location.href='saque.html'">Sacar</div><div class="btn-deposit" onclick="window.location.href='saldo.html'">Depositar</div></div>
+                    <div class="balance-box">
+                        <span class="balance-label">Saldo</span>
+                        <span class="balance" id="displaySaldo">R$ 0,00</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-hd sacar" onclick="window.location.href='saque.html'"><i class="fa-solid fa-minus"></i></button>
+                        <button class="btn-hd depositar" onclick="window.location.href='saldo.html'"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                 </div>`;
+                
             onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
                 const saldo = snapshot.val() || 0;
                 const saldoDisplay = document.getElementById('displaySaldo');
@@ -319,7 +375,6 @@
                         return; 
                     }
                     
-                    // Alinha estado ativo da barra inferior se o clique veio de lá
                     document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
                     const navMatch = document.querySelector(`.bottom-nav .nav-item[data-game="${gameUrl}"]`);
                     if(navMatch) { navMatch.classList.add('active'); }
@@ -333,14 +388,22 @@
             document.querySelectorAll('.game-link').forEach(link => { link.addEventListener('click', function(e) { e.preventDefault(); window.location.href = 'login.html'; }); });
         }
 
+        // SISTEMA DE MANUTENÇÃO ABSOLUTO COM EXPULSÃO DO JOGO
         onValue(ref(db, 'sistema/manutencao'), (snapshot) => {
             const isManutencao = snapshot.val() || false;
             const tela = document.getElementById('telaManutencao');
-            if (isManutencao) { tela.style.display = 'flex'; document.body.style.overflow = 'hidden'; } 
-            else { tela.style.display = 'none'; document.body.style.overflow = 'auto'; }
+            if (isManutencao) { 
+                tela.style.display = 'flex'; 
+                document.body.style.overflow = 'hidden'; 
+                window.fecharJogo(); // Expulsa o cara de dentro do Iframe na hora!
+            } 
+            else { 
+                tela.style.display = 'none'; 
+                document.body.style.overflow = 'auto'; 
+            }
         });
 
-        // PROVA SOCIAL SINCRONIZADA APENAS COM OS SEUS JOGOS ORIGINAIS ATUAIS
+        // PROVA SOCIAL VIP
         const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***chef", "***bruno", "***gabs", "***viga"];
         const jogosFake = ["Mines", "Goal", "Roleta Imperial", "Plinko", "Hotline", "Dice", "Hilo"];
         
