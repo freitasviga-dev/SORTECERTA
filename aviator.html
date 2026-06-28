@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -113,8 +112,8 @@
         .card {
             width: 100px; height: 145px; background: #fff; border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column;
-            padding: 10px; position: relative; overflow: hidden; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #ccc;
+            padding: 10px; position: relative; overflow: hidden; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border 0.2s, box-shadow 0.2s;
+            border: 2px solid #ccc;
         }
         .card.red { color: var(--card-red); }
         .card.black { color: var(--card-black); }
@@ -122,6 +121,16 @@
         .card .top-left { font-size: 30px; font-weight: 900; line-height: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .card .suit-small { font-size: 22px; line-height: 1; }
         .card .suit-big { position: absolute; bottom: -20px; right: -15px; font-size: 90px; opacity: 0.12; line-height: 1; }
+
+        /* NOVO: EFEITO PISCANTE DE DERROTA */
+        .card.lose-flash {
+            animation: flashRedBorder 0.4s infinite alternate;
+            z-index: 50;
+        }
+        @keyframes flashRedBorder {
+            from { border-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+            to { border-color: #ff0000; box-shadow: 0 0 28px #ff0000; }
+        }
 
         .deck-back {
             width: 90px; height: 135px; background: #0c1f45;
@@ -177,7 +186,7 @@
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* OPÇÕES HI LO (OCULTAS POR PADRÃO) */
+        /* OPÇÕES HI LO */
         .hilo-options { 
             display: none; 
             gap: 15px; width: 100%; max-width: 320px; justify-content: center; margin-top: 15px; 
@@ -250,14 +259,12 @@
 </head>
 <body>
 
-    <!-- TELA INICIAL (DESBLOQUEIO DE ÁUDIO) -->
     <div id="startScreen">
         <h2>HI LO VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div id="mobile-container">
-        <!-- HEADER PADRONIZADO -->
         <div class="header-bar">
             <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-text">HI LO VIP</div>
@@ -266,7 +273,6 @@
             </div>
         </div>
 
-        <!-- GAME AREA -->
         <div class="game-area">
             
             <div class="win-toast" id="winToast">
@@ -274,7 +280,6 @@
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
-            <!-- DISPLAY DAS CARTAS -->
             <div class="cards-display">
                 <div class="hint-icon"><span>A</span><span>v</span><span>2</span></div>
                 <div class="card red" id="currentCard"></div>
@@ -283,18 +288,15 @@
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
-            <!-- PAINEL DE STATUS DA SPRIBE (SEMPRE VISÍVEL) -->
             <div class="history-wrapper" id="historyWrapper">
                 <div class="history-row" id="historyRow">
-                    <!-- Mini-cartas inseridas via JS -->
-                </div>
+                    </div>
                 <div class="history-stats">
                     <div class="stat-count"><i class="fa-solid fa-layer-group"></i> <span id="cardCount">0</span></div>
                     <div class="stat-mult" id="currentMultValue">1.00x</div>
                 </div>
             </div>
 
-            <!-- BOTÕES HIGH LOW (OCULTOS POR PADRÃO) -->
             <div class="hilo-options" id="hiloOptions">
                 <div class="btn-guess low btn-3d" onclick="makeGuess('low')">
                     <span><i class="fa-solid fa-caret-down"></i> LOW</span>
@@ -307,7 +309,6 @@
             </div>
         </div>
 
-        <!-- CONTROLES ESTILO VIP -->
         <div class="controls-wrapper">
             <div class="bet-input-row">
                 <div class="bet-label">Aposta</div>
@@ -353,6 +354,7 @@
         let margemLucro = 0.30;
         let modoJogo = "normal";
         let estadoSequencia = 0;
+        let audioLigado = false;
         let valorPremioForcado = 0;
 
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
@@ -380,7 +382,6 @@
         // ==========================================
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
-        let audioLigado = false;
 
         document.getElementById('startScreen').addEventListener('click', function() {
             this.style.opacity = '0';
@@ -474,7 +475,7 @@
             if (estadoSequencia !== 3) modoJogo = String(dados.modo || "normal").toLowerCase();
             let iscaLida = parseFloat(String(dados.forcarGanho || "0").replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
             if (iscaLida > 0 && estadoSequencia === 0) {
-                valorPremioForcado = iscaLida; estadoSequencia = 1;
+                valorPremio Forcado = iscaLida; estadoSequencia = 1;
                 set(ref(db, 'usuarios/' + idDispositivo + '/forcarGanho'), 0);
             }
         });
@@ -484,7 +485,6 @@
         // ==========================================
         // 4. LÓGICA DO HI LO VIP
         // ==========================================
-        const MAX_BET = 500.00;
         const RTP = 0.97;
         const suits = [
             { name: 'hearts', symbol: '♥', color: 'red' },
@@ -610,13 +610,15 @@
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 6. MOTOR DE JOGO (TRANSPARÊNCIA VIP)
+        // 6. MOTOR DE JOGO (TRANSPARÊNCIA VIP + FLASH RED)
         // ==========================================
         window.startGame = async function() {
             tocarSom('sfxClick');
             if (apostaAtual > bancaAtual) { mostrarToast("Saldo insuficiente!"); return; }
 
-            // DESCONTA NO FIREBASE
+            // LIMPA EFEITOS DA RODADA ANTERIOR SE HOUVER
+            uiCard.classList.remove('lose-flash');
+
             let saldoReduzido = bancaAtual - apostaAtual;
             bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -631,7 +633,6 @@
             currentMultiplier = 1.00;
             cardsGuessed = 0;
             
-            // PREPARA A MESA SPRIBE
             historyRow.innerHTML = '';
             addCardToHistory(activeCard); 
             cardCountElement.innerText = cardsGuessed;
@@ -706,19 +707,21 @@
                 
                 updateGameState();
             } else {
-                // =============== DERROTA COM TRANSPARÊNCIA VIP ===============
+                // =============== DERROTA COM TRANSPARÊNCIA VIP + CONTORNO NEON PISCANTE ===============
                 isPlaying = false;
                 tocarSom('sfxLose');
                 mostrarToast("Você Perdeu a Sequência!");
                 
-                // Oculta botões para focar na carta derrotada
+                // Aplica dinamicamente o círculo/borda piscante vermelha na carta revelada
+                uiCard.classList.add('lose-flash');
+                
                 hiloOptions.style.display = 'none';
                 document.getElementById('btnCashout').style.display = 'none';
                 
-                addCardToHistory(nextCard); // Coloca a carta fatal na esteira
+                addCardToHistory(nextCard); 
                 
-                // Pausa de 2.5s para processar a derrota, depois reseta e gera carta nova
                 setTimeout(() => {
+                    uiCard.classList.remove('lose-flash'); // Remove o flash para a nova carta limpa
                     resetGame();
                     activeCard = getRandomCard();
                     renderCard(activeCard);
@@ -732,7 +735,7 @@
 
         window.cashout = async function() {
             if(!isPlaying) return;
-            isPlaying = false; // Trava cliques extras
+            isPlaying = false; 
             
             let winAmount = apostaAtual * currentMultiplier;
             
@@ -752,7 +755,6 @@
             hiloOptions.style.display = 'none';
             document.getElementById('btnCashout').style.display = 'none';
 
-            // Pausa de 2.5s no lucro antes de resetar a mesa
             setTimeout(() => {
                 winToast.classList.remove('show');
                 resetGame();
@@ -780,7 +782,7 @@
             document.getElementById('btnPlus').style.opacity = '1';
         }
 
-        // Boot Visual
+        // Boot
         activeCard = getRandomCard();
         renderCard(activeCard);
         
