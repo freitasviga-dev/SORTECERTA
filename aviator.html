@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -102,33 +101,34 @@
             align-items: center; justify-content: center; padding: 15px;
         }
 
+        /* Escurece levemente o fundo da pirâmide para o Neon brilhar mais */
         .plinko-board {
             position: relative; width: 350px; height: 350px; flex-shrink: 0;
-            background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.25); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.7);
         }
 
         canvas {
             position: absolute; top: 0; left: 0;
-            width: 100%; height: 325px; z-index: 10; pointer-events: none;
+            width: 100%; height: 320px; z-index: 10; pointer-events: none;
         }
 
         .buckets-wrapper {
-            position: absolute; top: 285px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 275px; left: 50%; transform: translateX(-50%);
             width: 335px; display: flex; flex-direction: column; gap: 2px; z-index: 5;
         }
         .bucket-row { display: flex; gap: 2px; width: 100%; justify-content: center; }
         .bucket {
             flex: 1; height: 22px; font-size: 9px; font-weight: 900; color: #000;
             display: flex; align-items: center; justify-content: center; border-radius: 4px;
-            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: all 0.1s ease;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: all 0.15s ease-out;
         }
         .bucket.green { background: #2ecc71; }
         .bucket.yellow { background: #f1c40f; }
         .bucket.red { background: #e74c3c; color: #fff;}
         
-        /* Efeito de flash dinâmico nos baldes */
-        .bucket.hit { transform: scaleY(1.25); filter: brightness(1.6); }
+        /* Efeito quando a bolinha cai no multiplicador */
+        .bucket.hit { transform: scale(1.15); filter: brightness(1.5); box-shadow: 0 0 15px currentColor; z-index: 10; position: relative; }
 
         /* POP-UP COMPACTO DE VITÓRIA (ESTILO GOAL) */
         .win-toast {
@@ -202,7 +202,6 @@
 </head>
 <body>
 
-    <!-- TELA INICIAL PARA DESBLOQUEIO DE ÁUDIO -->
     <div id="startScreen">
         <h2>PLINKO VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
@@ -210,7 +209,6 @@
 
     <div id="mobile-container">
         
-        <!-- HEADER BAR -->
         <div class="header-bar">
             <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-text">PLINKO VIP</div>
@@ -219,18 +217,15 @@
             </div>
         </div>
 
-        <!-- GAME AREA -->
         <div class="game-area" id="gameArea">
             
-            <!-- POP-UP DE VITÓRIA NO TOPO DA ÁREA DO JOGO -->
             <div class="win-toast" id="winToast">
                 <span>LUCRO TOTAL</span>
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
-            <!-- CAIXA QUE PROTEGE A ALTURA DA PIRÂMIDE -->
             <div class="plinko-board">
-                <canvas id="plinkoCanvas" width="350" height="325"></canvas>
+                <canvas id="plinkoCanvas" width="350" height="320"></canvas>
                 
                 <div class="buckets-wrapper">
                     <div class="bucket-row" id="row-green"></div>
@@ -241,7 +236,6 @@
 
         </div>
 
-        <!-- CONTROLES FIXOS NA BASE -->
         <div class="controls-wrapper">
             
             <div class="bet-input-row">
@@ -271,7 +265,7 @@
 
     <script type="module">
         // ==========================================
-        // 1. IMPORTAÇÕES CORRETAS (FIREBASE DATABASE)
+        // 1. IMPORTAÇÕES E FIREBASE STRICT
         // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -293,9 +287,7 @@
         let modoJogo = "normal";
         let estadoSequencia = 0;
         let audioLigado = false;
-        let valorPremioForcado = 0;
         
-        // Padrão de Apostas (Limite 500)
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; 
         let apostaAtual = apostasPermitidas[indexAposta];
@@ -312,7 +304,7 @@
         const winToast = document.getElementById('winToast');
         const winAmountDisplay = document.getElementById('winAmount');
 
-        // Estrutura para animação individual de pulsação de cada pino
+        // Estrutura para os Efeitos Especiais nos Pinos (Neon Dynamics)
         let pinStates = {};
 
         // ==========================================
@@ -343,12 +335,12 @@
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if (tipo === 'sfxTick') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(950, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.02);
-                gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.02);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.02);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             } else if (tipo === 'sfxWin') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
@@ -368,7 +360,7 @@
         }
 
         // ==========================================
-        // 3. MATEMÁTICA DO PLINKO (14 PINS)
+        // 3. MATEMÁTICA DO PLINKO E BUCKETS
         // ==========================================
         const multipliers = {
             green: [18, 3.2, 1.6, 1.3, 1.2, 1.1, 1, 0.5, 1, 1.1, 1.2, 1.3, 1.6, 3.2, 18],
@@ -383,7 +375,7 @@
                 multipliers[color].forEach((mult, index) => {
                     const div = document.createElement('div');
                     div.className = `bucket ${color}`;
-                    div.id = `bucket-${color}-${index}`;
+                    div.id = `bucket-${color}-${index}`; // ID exato para animação de hit
                     div.innerText = mult >= 100 ? mult : (mult % 1 === 0 ? mult : mult.toFixed(1)); 
                     row.appendChild(div);
                 });
@@ -392,7 +384,7 @@
         buildBuckets();
 
         // ==========================================
-        // 4. MOTOR FÍSICO DO CANVAS (EFEITOS ESPECIAIS ATIVOS)
+        // 4. MOTOR FÍSICO COM EFEITOS ESPECIAIS ATIVOS
         // ==========================================
         const canvas = document.getElementById('plinkoCanvas');
         const ctx = canvas.getContext('2d');
@@ -404,25 +396,27 @@
         
         let activeBalls = [];
 
+        // EFEITO 1: Linhas guias de neon para a estrutura da pirâmide
         function drawBoardLines() {
-            ctx.strokeStyle = 'rgba(0, 230, 118, 0.35)';
-            ctx.lineWidth = 2.5;
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = '#00e676';
+            ctx.strokeStyle = 'rgba(0, 210, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00d2ff';
             
             ctx.beginPath();
-            ctx.moveTo(START_X, START_Y - 8);
-            ctx.lineTo(START_X - (ROWS / 2) * X_SPACING - 8, START_Y + (ROWS - 1) * Y_SPACING + 12);
+            ctx.moveTo(START_X, START_Y - 10);
+            ctx.lineTo(START_X - (ROWS / 2) * X_SPACING - 10, START_Y + (ROWS - 1) * Y_SPACING + 10);
             ctx.stroke();
             
             ctx.beginPath();
-            ctx.moveTo(START_X, START_Y - 5);
-            ctx.lineTo(START_X + (ROWS / 2) * X_SPACING + 8, START_Y + (ROWS-1) * Y_SPACING + 10);
+            ctx.moveTo(START_X, START_Y - 10);
+            ctx.lineTo(START_X + (ROWS / 2) * X_SPACING + 10, START_Y + (ROWS - 1) * Y_SPACING + 10);
             ctx.stroke();
             
             ctx.shadowBlur = 0; 
         }
 
+        // EFEITO 2: Pinos com brilho pulsante (Shockwave no impacto)
         function drawPins() {
             for (let r = 0; r <= ROWS - 1; r++) { 
                 for (let c = 0; c <= r; c++) {
@@ -431,26 +425,27 @@
                     let pinKey = `${r}_${c}`;
                     
                     let radius = 2.5;
-                    let styleColor = '#00d2ff'; // Pino neon ciano
+                    let styleColor = '#00d2ff'; // Base: Azul Ciano Neon
+                    let glowIntensity = 6;
                     
                     if (pinStates[pinKey] && pinStates[pinKey] > 0) {
-                        radius = 2.5 + (pinStates[pinKey] * 3.5); 
-                        styleColor = '#00e676'; 
+                        radius = 2.5 + (pinStates[pinKey] * 3); 
+                        styleColor = '#00e676'; // Impacto: Brilha Verde
+                        glowIntensity = 15;
                         
+                        // Desenha a onda de choque circular (Shockwave)
                         ctx.strokeStyle = `rgba(0, 230, 118, ${pinStates[pinKey]})`;
                         ctx.lineWidth = 1.5;
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = '#00e676';
                         ctx.beginPath();
-                        ctx.arc(x, y, radius + 8 * (1 - pinStates[pinKey]), 0, Math.PI * 2);
+                        ctx.arc(x, y, radius + 6 * (1 - pinStates[pinKey]), 0, Math.PI*2);
                         ctx.stroke();
                         
-                        pinStates[pinKey] -= 0.08; 
+                        pinStates[pinKey] -= 0.05; // Vai reduzindo a intensidade
                     }
 
                     ctx.fillStyle = styleColor;
-                    ctx.shadowBlur = pinStates[pinKey] > 0 ? 15 : 6;
-                    ctx.shadowColor = pinStates[pinKey] > 0 ? '#00e676' : '#00d2ff';
+                    ctx.shadowBlur = glowIntensity;
+                    ctx.shadowColor = styleColor;
                     
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, Math.PI*2);
@@ -479,13 +474,14 @@
                 let r = Math.floor(ball.progress);
                 let t = ball.progress - r;
 
+                // 🔊 GATILHO DO IMPACTO (TICK E BRILHO NO PINO)
                 if (r > ball.lastFloor && r < ROWS) {
                     tocarSom('sfxTick');
                     ball.lastFloor = r;
                     
                     let colPassed = ball.path.slice(0, r).reduce((a, b) => a + b, 0);
                     let pinKey = `${r}_${colPassed}`;
-                    pinStates[pinKey] = 1.0; 
+                    pinStates[pinKey] = 1.0; // Inicia a pulsação do pino
                 }
 
                 if (r < ROWS) {
@@ -519,27 +515,27 @@
                     }
                 }
 
-                // Rastro do cometa
+                // EFEITO 3: Rastro luminoso da Bolinha (Comet Glow Tail)
                 ball.history.push({x: ball.x, y: ball.y});
-                if (ball.history.length > 7) ball.history.shift();
+                if (ball.history.length > 8) ball.history.shift();
 
                 for (let h = 0; h < ball.history.length; h++) {
                     let pos = ball.history[h];
-                    let opacity = (h / ball.history.length) * 0.45;
+                    let opacity = (h / ball.history.length) * 0.5;
                     ctx.fillStyle = getBallColorHex(ball.color);
                     ctx.globalAlpha = opacity;
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, 3.8, 0, Math.PI*2);
+                    ctx.arc(pos.x, pos.y, 3.5, 0, Math.PI*2);
                     ctx.fill();
                 }
-                ctx.globalAlpha = 1.0; 
-
-                // Bolinha principal
+                ctx.globalAlpha = 1.0; // Reset
+                
+                // Desenha a bolinha em si com forte brilho
                 ctx.fillStyle = getBallColorHex(ball.color);
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = getBallColorHex(ball.color);
                 ctx.beginPath();
-                ctx.arc(ball.x, ball.y, 5, 0, Math.PI*2);
+                ctx.arc(ball.x, ball.y, 4.5, 0, Math.PI*2);
                 ctx.fill();
                 ctx.shadowBlur = 0;
                 ctx.lineWidth = 1;
@@ -552,7 +548,7 @@
         animate();
 
         // ==========================================
-        // 5. INTERFACE E EVENT LISTENERS DIRECTS
+        // 5. INTERFACE E EVENT LISTENERS
         // ==========================================
         startScreen.addEventListener('click', function() {
             this.style.opacity = '0';
@@ -609,9 +605,6 @@
         btnMinus.addEventListener('click', () => mudarAposta(-1));
         btnPlus.addEventListener('click', () => mudarAposta(1));
 
-        // ==========================================
-        // 6. FIREBASE SYNC REAL E BLINDAGEM DE SALDO
-        // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             if (activeBalls.length === 0) {
@@ -630,7 +623,7 @@
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
         // ==========================================
-        // 7. MOTOR DE RISCO DA PLATAFORMA (LANÇAMENTO)
+        // 6. MOTOR DE RISCO DA PLATAFORMA (LANÇAMENTO)
         // ==========================================
         function generateRiggedPath(color, bet) {
             let availableFunds = caixaDaCasa * (1 - margemLucro);
@@ -674,7 +667,6 @@
             bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
-
             await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
 
             let path = generateRiggedPath(color, apostaAtual);
@@ -688,19 +680,20 @@
                 lastFloor: -1,
                 bet: apostaAtual,
                 payout: payoutValue,
-                history: [],
+                history: [], 
+                finalIndex: finalIndex, // Salva o destino para animação
                 x: START_X,
                 y: START_Y
             });
         }
 
         async function processWin(ball, finalX) {
-            let finalIndex = ball.path.reduce((a,b) => a+b, 0);
-            const targetBucket = document.getElementById(`bucket-${ball.color}-${finalIndex}`);
             
+            // 🌟 EFEITO 4: Animação de impacto no multiplicador (Bucket Flash)
+            const targetBucket = document.getElementById(`row-${ball.color}`).children[ball.finalIndex];
             if (targetBucket) {
                 targetBucket.classList.add('hit');
-                setTimeout(() => targetBucket.classList.remove('hit'), 150);
+                setTimeout(() => targetBucket.classList.remove('hit'), 200);
             }
 
             if (ball.payout > 0) {
