@@ -94,10 +94,10 @@
         .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
-        /* GAME AREA (Tudo descido com padding-top) */
+        /* GAME AREA (Tudo descido com padding-top 80px) */
         .game-area {
             flex-grow: 1; display: flex; flex-direction: column; align-items: center;
-            justify-content: flex-start; position: relative; width: 100%; padding-top: 50px; /* ABRE ESPAÇO PRO AVISO */
+            justify-content: flex-start; position: relative; width: 100%; padding-top: 80px; 
         }
 
         .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; }
@@ -213,7 +213,7 @@
         .btn-guess.high i { color: #2ecc71; margin-right: 5px; font-size: 20px; }
         .btn-guess.low i { color: #e74c3c; margin-right: 5px; font-size: 20px; }
 
-        /* TOAST DE DERROTA (PERFEITAMENTE NO TOPO, SEM COBRIR A CARTA) */
+        /* TOAST DE DERROTA (POSICIONADO NO ESPAÇO VAZIO DO TOPO) */
         .lose-toast {
             position: absolute; top: 15px; left: 50%; transform: translate(-50%, -20px) scale(0.9);
             background: #e74c3c; color: #fff; padding: 10px 25px; border-radius: 30px;
