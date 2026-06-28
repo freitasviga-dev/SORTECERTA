@@ -42,9 +42,6 @@
             --btn-green: #00e676;
             --btn-green-dark: #00b359;
             --btn-yellow: #f1c40f;
-            --btn-yellow-dark: #b8860b;
-            --btn-red: #e74c3c;
-            --btn-red-dark: #c0392b;
             --text-light: #ffffff;
             --card-red: #e74c3c;
             --card-black: #1a1a1a;
@@ -87,7 +84,7 @@
             font-size: 16px; letter-spacing: 1px;
         }
 
-        /* HEADER PADRONIZADO VIP */
+        /* HEADER */
         .header-bar {
             padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
@@ -100,10 +97,19 @@
         /* GAME AREA */
         .game-area {
             flex-grow: 1; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; position: relative; gap: 20px; width: 100%;
+            justify-content: flex-start; position: relative; width: 100%; padding-top: 15px;
         }
 
-        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; }
+        /* MULTIPLICADOR ACUMULADO */
+        .current-mult-badge {
+            background: rgba(0, 230, 118, 0.15); border: 1px solid var(--btn-green);
+            color: var(--btn-green); font-size: 18px; font-weight: 900; padding: 8px 25px;
+            border-radius: 20px; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,230,118,0.3);
+            display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .current-mult-badge.hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
+
+        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; }
         
         .hint-icon {
             position: absolute; left: -50px; color: rgba(255,255,255,0.4);
@@ -112,7 +118,7 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* CARTAS LUXO */
+        /* CARTA PRINCIPAL */
         .card {
             width: 100px; height: 145px; background: #fff; border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column;
@@ -134,9 +140,42 @@
         }
         .deck-back::after { content: '♠♥\A♦♣'; white-space: pre-wrap; font-size: 20px; color: rgba(255,255,255,0.2); text-align: center; font-weight: 900; line-height: 1.2;}
 
-        /* OPÇÕES HI LO */
-        .hilo-options { display: flex; gap: 15px; opacity: 0; pointer-events: none; transition: 0.3s; width: 100%; max-width: 300px; justify-content: center; }
-        .hilo-options.active { opacity: 1; pointer-events: auto; }
+        .btn-skip {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 20px; padding: 8px 25px; font-size: 14px; font-weight: bold;
+            margin-top: 10px; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .btn-skip:active { box-shadow: none; transform: translateY(4px); }
+        .btn-skip.hidden { display: none; }
+
+        /* EMPILHAMENTO DE CARTAS (HISTÓRICO) */
+        .history-row {
+            width: 90%; max-width: 350px; height: 60px; background: rgba(0,0,0,0.2);
+            border-radius: 12px; margin-top: 15px; display: flex; align-items: center;
+            padding: 0 10px; gap: 8px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.05);
+            scroll-behavior: smooth;
+        }
+        .history-row::-webkit-scrollbar { display: none; }
+        
+        .mini-card {
+            min-width: 35px; height: 48px; background: #fff; border-radius: 4px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .mini-card.red { color: var(--card-red); }
+        .mini-card.black { color: var(--card-black); }
+        .mini-card span { font-size: 12px; margin-top: -3px; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px) scale(0.5); } to { opacity: 1; transform: translateX(0) scale(1); } }
+
+        /* OPÇÕES HI LO (AGORA OCULTAS POR PADRÃO) */
+        .hilo-options { 
+            display: none; /* Só aparece após o clique em apostar */
+            gap: 15px; width: 100%; max-width: 320px; justify-content: center; margin-top: 15px; 
+            animation: popUp 0.3s ease-out;
+        }
+        @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .btn-guess {
             background: rgba(0,0,0,0.4); border: 2px solid transparent;
@@ -153,14 +192,6 @@
         .btn-guess.high i { color: #2ecc71; margin-right: 5px; font-size: 20px; }
         .btn-guess.low i { color: #e74c3c; margin-right: 5px; font-size: 20px; }
 
-        .btn-skip {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; border-radius: 20px; padding: 8px 25px; font-size: 14px; font-weight: bold;
-            margin-top: 10px; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-        }
-        .btn-skip:active { box-shadow: none; transform: translateY(4px); }
-        .btn-skip.hidden { opacity: 0; pointer-events: none; position: absolute; }
-
         /* POP-UP COMPACTO DE VITÓRIA */
         .win-toast {
             position: absolute; top: 10px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
@@ -173,7 +204,7 @@
         .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 1px; letter-spacing: 0.5px; }
         .win-toast #winAmount { font-size: 18px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
 
-        /* CONTROLES ESTILO VIP */
+        /* CONTROLES */
         .controls-wrapper {
             width: 100%; background: var(--panel-bg); border-top: 2px solid #143570;
             padding: 15px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;
@@ -236,6 +267,12 @@
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
+            <!-- MULTIPLICADOR TOTAL -->
+            <div class="current-mult-badge hidden" id="currentMultBadge">
+                <i class="fa-solid fa-bolt"></i> <span id="currentMultValue">1.00x</span>
+            </div>
+
+            <!-- DISPLAY DAS CARTAS -->
             <div class="cards-display">
                 <div class="hint-icon"><span>A</span><span>v</span><span>2</span></div>
                 
@@ -245,14 +282,20 @@
                 <div class="deck-back"></div>
             </div>
             
-            <button class="btn-skip" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
+            <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
+            <!-- ESTEIRA DE CARTAS (HISTÓRICO) -->
+            <div class="history-row" id="historyRow">
+                <!-- Mini-cartas inseridas via JS -->
+            </div>
+
+            <!-- BOTÕES HIGH LOW (OCULTOS POR PADRÃO) -->
             <div class="hilo-options" id="hiloOptions">
-                <div class="btn-guess low" onclick="makeGuess('low')">
+                <div class="btn-guess low btn-3d" onclick="makeGuess('low')">
                     <span><i class="fa-solid fa-caret-down"></i> LOW</span>
                     <span id="multLow">2.10x</span>
                 </div>
-                <div class="btn-guess high" onclick="makeGuess('high')">
+                <div class="btn-guess high btn-3d" onclick="makeGuess('high')">
                     <span><i class="fa-solid fa-caret-up"></i> HIGH</span>
                     <span id="multHigh">1.54x</span>
                 </div>
@@ -322,6 +365,11 @@
         const winAmountDisplay = document.getElementById('winAmount');
         const btnAudio = document.getElementById('btnAudio');
         const btnBack = document.getElementById('btnBack');
+        const historyRow = document.getElementById('historyRow');
+        const currentMultBadge = document.getElementById('currentMultBadge');
+        const currentMultValue = document.getElementById('currentMultValue');
+        const hiloOptions = document.getElementById('hiloOptions');
+        const btnSkip = document.getElementById('btnSkip');
 
         // ==========================================
         // 2. MOTOR DE ÁUDIO NATIVO
@@ -380,7 +428,6 @@
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if (tipo === 'sfxCard') {
-                // Som de carta virando rápido (swoosh)
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(400, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.08);
@@ -468,7 +515,6 @@
             return formatCard(rank, suit);
         }
 
-        // Funções para manipular a rodada quando o Caixa Global exige
         function getLosingCard(type, currentRank) {
             let possibleRanks = [];
             if (type === 'high') {
@@ -501,13 +547,22 @@
                 <div class="top-left">${cardData.visual}<br><span class="suit-small">${cardData.suit.symbol}</span></div>
                 <div class="suit-big">${cardData.suit.symbol}</div>
             `;
-            // Animação suave de virada/deslize
             uiCard.style.transform = 'scale(0.85) translateX(30px)';
             uiCard.style.opacity = '0';
             setTimeout(() => {
                 uiCard.style.transform = 'scale(1) translateX(0)';
                 uiCard.style.opacity = '1';
             }, 50);
+        }
+
+        // Função para empilhar a carta no histórico
+        function addCardToHistory(cardData) {
+            const miniCard = document.createElement('div');
+            miniCard.className = `mini-card ${cardData.suit.color}`;
+            miniCard.innerHTML = `${cardData.visual}<span>${cardData.suit.symbol}</span>`;
+            historyRow.appendChild(miniCard);
+            // Rolagem automática para a direita
+            historyRow.scrollLeft = historyRow.scrollWidth;
         }
 
         function skipCard() {
@@ -568,7 +623,7 @@
 
             // 1. DESCONTA NO SALDO DO JOGADOR E AUMENTA O CAIXA GLOBAL
             let saldoReduzido = bancaAtual - apostaAtual;
-            bancaAtual = saldoReduzido; // Atualiza RAM
+            bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
@@ -580,12 +635,18 @@
 
             isPlaying = true;
             currentMultiplier = 1.00;
+            
+            // Limpa o histórico de cartas para a nova rodada
+            historyRow.innerHTML = '';
+            addCardToHistory(activeCard); // Põe a primeira carta na esteira
 
+            // Esconde botões pré-jogo e revela botões in-game
             document.getElementById('btnBet').style.display = 'none';
             document.getElementById('btnCashout').style.display = 'flex';
-            document.getElementById('btnSkip').classList.add('hidden');
+            btnSkip.classList.add('hidden');
+            hiloOptions.style.display = 'flex'; // Exibe as opções HIGH/LOW
+            currentMultBadge.classList.remove('hidden'); // Exibe badge do multiplicador
             
-            // Opacidade nos controles de aposta
             document.getElementById('btnMinus').style.opacity = '0.5';
             document.getElementById('btnPlus').style.opacity = '0.5';
 
@@ -594,7 +655,8 @@
 
         function updateGameState() {
             calculateMultipliers();
-            document.getElementById('hiloOptions').classList.add('active');
+            currentMultValue.innerText = currentMultiplier.toFixed(2) + "x"; // Atualiza a tag verde
+            
             let winAmount = apostaAtual * currentMultiplier;
             document.getElementById('btnCashout').innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2)}`;
         }
@@ -611,7 +673,7 @@
             let forceLose = false;
             let forceWin = false;
 
-            // INTEGRAÇÃO DE RISCO: Manipulação SorteCerta Pro
+            // Motor de Manipulação SorteCerta Pro
             if (estadoSequencia === 1) { 
                 estadoSequencia = 2; forceLose = true; 
             } else if (estadoSequencia === 2 && valorPremioForcado > 0) {
@@ -630,10 +692,10 @@
             } else if (forceWin) {
                 nextCard = getWinningCard(type, activeCard.rank);
             } else {
-                nextCard = getRandomCard(); // 100% Justo se o caixa permitir
+                nextCard = getRandomCard(); // Jogo Justo
             }
 
-            // Validação Final (Empate é considerado Vitória para manter fluxo)
+            // Validação Final 
             let isWin = false;
             if (type === 'high' && nextCard.rank >= activeCard.rank) isWin = true;
             if (type === 'low' && nextCard.rank <= activeCard.rank) isWin = true;
@@ -643,6 +705,7 @@
             if(isWin) {
                 currentMultiplier *= nextMult;
                 activeCard = nextCard;
+                addCardToHistory(activeCard); // Adiciona na esteira
                 updateGameState();
             } else {
                 tocarSom('sfxLose');
@@ -657,7 +720,7 @@
             
             let winAmount = apostaAtual * currentMultiplier;
             
-            // 2. DEDUZ DO CAIXA GLOBAL E DEVOLVE PARA O JOGADOR NO FIREBASE
+            // DEDUZ DO CAIXA GLOBAL E DEVOLVE PARA O JOGADOR NO FIREBASE
             get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
                 let dbSaldo = parseFloat(snap.val() || 0);
                 await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + winAmount).toFixed(2)));
@@ -682,13 +745,14 @@
             
             document.getElementById('btnBet').style.display = 'flex';
             document.getElementById('btnCashout').style.display = 'none';
-            document.getElementById('btnSkip').classList.remove('hidden');
-            document.getElementById('hiloOptions').classList.remove('active');
+            btnSkip.classList.remove('hidden');
+            
+            // Oculta os botões High/Low e o Multiplicador
+            hiloOptions.style.display = 'none';
+            currentMultBadge.classList.add('hidden');
             
             document.getElementById('btnMinus').style.opacity = '1';
             document.getElementById('btnPlus').style.opacity = '1';
-            
-            // Atualiza saldo visual via Firebase onValue que volta a rodar
         }
 
         // Boot Visual da primeira carta
