@@ -533,7 +533,6 @@
         // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
-            // Sincroniza apenas se não houver bolinhas caindo para evitar glitches de saldo na tela
             if (activeBalls.length === 0) {
                 bancaAtual = parseFloat(dados.saldo || 0);
                 displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -577,7 +576,6 @@
             } while(payout > availableFunds && attempts < 100);
             
             if (payout > availableFunds) {
-                // CORREÇÃO: Puxa a bolinha cirurgicamente para o meio
                 path = [0,1,0,1,0,1,0,1,0,1,0,1,0,1]; 
             }
             return path;
@@ -660,7 +658,7 @@
             }
         }
 
-        // CORREÇÃO DIRETA DE VINCULAÇÃO DOS EVENTOS DO MÓDULO (Sem conflito de escopo)
+        // Conexão direta dos botões
         document.getElementById('btn-green').addEventListener('click', () => dropBallBtn('green'));
         document.getElementById('btn-yellow').addEventListener('click', () => dropBallBtn('yellow'));
         document.getElementById('btn-red').addEventListener('click', () => dropBallBtn('red'));
