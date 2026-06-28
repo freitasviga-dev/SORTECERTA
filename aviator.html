@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -100,7 +99,7 @@
             justify-content: flex-start; position: relative; width: 100%; padding-top: 80px; 
         }
 
-        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; }
+        .cards-display { display: flex; gap: 20px; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; z-index: 10; }
         
         .hint-icon {
             position: absolute; left: -50px; color: rgba(255,255,255,0.4);
@@ -134,9 +133,9 @@
             to { box-shadow: 0 0 35px #ff0000, inset 0 0 25px rgba(255,0,0,0.5); transform: scale(1.05); }
         }
 
-        /* NOVO: BARALHO EM FORMATO DE PILHA (BOLINHO DE CARTA) 3D */
+        /* BARALHO EM FORMATO DE PILHA (BOLINHO DE CARTA) 3D */
         .deck-back {
-            width: 100px; height: 145px; background: #0c1f45; /* Mesmo tamanho da carta principal */
+            width: 100px; height: 145px; background: #0c1f45;
             background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px);
             border: 3px solid #fff; border-radius: 10px; z-index: 5;
             display: flex; align-items: center; justify-content: center;
@@ -269,8 +268,9 @@
             height: 55px; display: flex; justify-content: center; align-items: center; gap: 10px; border-bottom: 2px solid #004d26;
             background: linear-gradient(180deg, var(--btn-green), var(--btn-green-dark));
         }
+        /* Estilização nativa para o botão desativado */
         .btn-action.cashout { background: linear-gradient(180deg, #f1c40f, #b8860b); box-shadow: 0 6px 0 #8a6508, 0 8px 15px rgba(241, 196, 15, 0.3); border-bottom: 2px solid #5c4305; display: none; color: #000; }
-        .btn-action:disabled { filter: grayscale(100%); opacity: 0.5; pointer-events: none; }
+        .btn-action:disabled { filter: grayscale(100%) !important; opacity: 0.4 !important; pointer-events: none !important; box-shadow: none !important; border-bottom: none !important; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
@@ -280,14 +280,12 @@
 </head>
 <body>
 
-    <!-- TELA INICIAL -->
     <div id="startScreen">
         <h2>HILO VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div id="mobile-container">
-        <!-- HEADER PADRONIZADO -->
         <div class="header-bar">
             <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-text">HILO VIP</div>
@@ -296,7 +294,6 @@
             </div>
         </div>
 
-        <!-- GAME AREA -->
         <div class="game-area">
             
             <div class="win-toast" id="winToast">
@@ -304,33 +301,27 @@
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
-            <!-- TOAST DE DERROTA -->
             <div class="lose-toast" id="loseToast">
                 Você Perdeu a Sequência!
             </div>
 
-            <!-- DISPLAY DAS CARTAS -->
             <div class="cards-display">
                 <div class="hint-icon"><span>A</span><span>v</span><span>2</span></div>
                 <div class="card red" id="currentCard"></div>
-                <!-- NOVO: DECK SIMULANDO PILHA -->
                 <div class="deck-back"></div>
             </div>
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
-            <!-- PAINEL DE STATUS DA SPRIBE -->
             <div class="history-wrapper" id="historyWrapper">
                 <div class="history-row" id="historyRow">
-                    <!-- Mini-cartas inseridas via JS -->
-                </div>
+                    </div>
                 <div class="history-stats">
                     <div class="stat-count"><i class="fa-solid fa-layer-group"></i> <span id="cardCount">0</span></div>
                     <div class="stat-mult" id="currentMultValue">1.00x</div>
                 </div>
             </div>
 
-            <!-- BOTÕES HIGH LOW -->
             <div class="hilo-options" id="hiloOptions">
                 <div class="btn-guess low btn-3d" onclick="makeGuess('low')">
                     <span><i class="fa-solid fa-caret-down"></i> LOW</span>
@@ -343,7 +334,6 @@
             </div>
         </div>
 
-        <!-- CONTROLES ESTILO VIP -->
         <div class="controls-wrapper">
             <div class="bet-input-row">
                 <div class="bet-label">Aposta</div>
@@ -409,6 +399,7 @@
         const hiloOptions = document.getElementById('hiloOptions');
         const btnSkip = document.getElementById('btnSkip');
         const uiCard = document.getElementById('currentCard');
+        const btnCashout = document.getElementById('btnCashout');
 
         // ==========================================
         // 2. MOTOR DE ÁUDIO NATIVO
@@ -569,9 +560,8 @@
             tocarSom('sfxCard');
             uiCard.classList.remove('lose-flash');
             
-            // ANIMAÇÃO DE DISTRIBUIÇÃO SAINDO DO BARALHO
-            uiCard.style.transition = 'none'; // Reseta instantaneamente sem o olho ver
-            uiCard.style.transform = 'translateX(120px)'; // Teleporta a carta para a direita (em cima do deck)
+            uiCard.style.transition = 'none'; 
+            uiCard.style.transform = 'translateX(120px)'; 
             uiCard.style.opacity = '0';
             
             uiCard.className = `card ${cardData.suit.color}`;
@@ -580,10 +570,8 @@
                 <div class="suit-big">${cardData.suit.symbol}</div>
             `;
             
-            // Força renderização do navegador para aplicar o teleporte
             void uiCard.offsetWidth;
             
-            // Ativa a animação de deslize suave para a posição original
             uiCard.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out, border 0.2s, box-shadow 0.2s';
             uiCard.style.transform = 'translateX(0)';
             uiCard.style.opacity = '1';
@@ -664,7 +652,7 @@
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 6. MOTOR DE JOGO (TRANSPARÊNCIA VIP + FLASH RED)
+        // 6. MOTOR DE JOGO (START, GUESS, CASHOUT)
         // ==========================================
         window.startGame = async function() {
             tocarSom('sfxClick');
@@ -697,7 +685,7 @@
             currentMultValue.innerText = "1.00x";
             
             document.getElementById('btnBet').style.display = 'none';
-            document.getElementById('btnCashout').style.display = 'flex';
+            btnCashout.style.display = 'flex';
             btnSkip.classList.add('hidden');
             
             hiloOptions.style.display = 'flex'; 
@@ -708,12 +696,20 @@
             updateGameState();
         }
 
+        // NOVO: CONTROLADOR DE TRAVA E LIBERAÇÃO DO CASHOUT VIA MULTIPLICADOR/RODADA
         function updateGameState() {
             calculateMultipliers();
             currentMultValue.innerText = currentMultiplier.toFixed(2) + "x"; 
             
             let winAmount = apostaAtual * currentMultiplier;
-            document.getElementById('btnCashout').innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2)}`;
+            btnCashout.innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2)}`;
+            
+            // TRAVA STRICT: Se não escolheu nenhuma vez (cardsGuessed == 0), desativa o botão nativamente
+            if (cardsGuessed === 0) {
+                btnCashout.disabled = true;
+            } else {
+                btnCashout.disabled = false;
+            }
         }
 
         window.makeGuess = function(type) {
@@ -759,7 +755,7 @@
                 currentMultiplier *= nextMult;
                 activeCard = nextCard;
                 
-                cardsGuessed++;
+                cardsGuessed++; // Sobe contador (Libera Cashout na próxima atualização)
                 cardCountElement.innerText = cardsGuessed;
                 addCardToHistory(activeCard, type); 
                 
@@ -773,7 +769,7 @@
                 uiCard.classList.add('lose-flash');
                 
                 hiloOptions.style.display = 'none';
-                document.getElementById('btnCashout').style.display = 'none';
+                btnCashout.style.display = 'none';
                 
                 addCardToHistory(nextCard, type); 
                 
@@ -793,7 +789,8 @@
         }
 
         window.cashout = async function() {
-            if(!isPlaying) return;
+            // Failsafe se tentarem forçar clique via console
+            if(!isPlaying || cardsGuessed === 0) return;
             isPlaying = false; 
             
             let winAmount = apostaAtual * currentMultiplier;
@@ -812,7 +809,7 @@
             winToast.classList.add('show');
             
             hiloOptions.style.display = 'none';
-            document.getElementById('btnCashout').style.display = 'none';
+            btnCashout.style.display = 'none';
 
             setTimeout(() => {
                 winToast.classList.remove('show');
@@ -832,7 +829,7 @@
             cardsGuessed = 0;
             
             document.getElementById('btnBet').style.display = 'flex';
-            document.getElementById('btnCashout').style.display = 'none';
+            btnCashout.style.display = 'none';
             btnSkip.classList.remove('hidden');
             
             hiloOptions.style.display = 'none';
