@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE FORTE) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
+    
+    <title>Dice VIP | SorteCerta Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; user-select: none; touch-action: manipulation; }
+        html { height: -webkit-fill-available; overscroll-behavior: none; }
+        
+        /* Fundo Padrão Goal VIP (Imagem) */
+        body { 
+            background: linear-gradient(180deg, #184b9e 0%, #0d2b5e 100%);
+            color: #ffffff; min-height: 100vh; min-height: 100dvh;
+            display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: none;
+        }
+
+        .btn-3d { transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease; cursor: pointer; }
+        .btn-3d:active:not(.disabled) { transform: translateY(4px) !important; box-shadow: none !important; border-bottom-width: 0px !important; margin-top: 4px; }
+
+        /* TELA INICIAL (DESBLOQUEIO DE ÁUDIO) */
+        #startScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000000; z-index: 9999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: opacity 0.3s ease;
+        }
+        #startScreen h2 {
+            color: #00e676; text-transform: uppercase; font-weight: 900;
+            letter-spacing: 1px; margin-bottom: 30px; font-size: 28px;
+            text-shadow: 0 0 15px rgba(0,230,118,0.5);
+        }
+        .btn-start {
+            background: linear-gradient(180deg, #00e676, #00b359); color: #000;
+            padding: 15px 40px; border-radius: 30px; font-weight: 900;
+            text-transform: uppercase; box-shadow: 0 5px 20px rgba(0, 230, 118, 0.4);
+            font-size: 16px; letter-spacing: 1px;
+        }
+
+        /* HEADER */
+        .header-bar {
+            padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
+        .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
+
+        /* ÁREA DO RESULTADO E SLIDER */
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; gap: 20px; position: relative; }
+
+        .result-box {
+            width: 100%; background: rgba(0,0,0,0.15); border-radius: 16px; padding: 30px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3); position: relative;
+        }
+
+        .number-display {
+            font-size: 80px; font-weight: 900; margin-bottom: 30px; margin-top: 10px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: color 0.3s;
+        }
+        .number-display.win { color: #00e676; text-shadow: 0 0 20px rgba(0, 230, 118, 0.5); }
+        .number-display.lose { color: #e74c3c; text-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
+
+        /* SLIDER TRACKS - Reduzido a altura para ficar igual a foto */
+        .slider-container { width: 100%; position: relative; margin-bottom: 5px; }
+        .track-group { position: relative; height: 32px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; border: 2px solid rgba(0,0,0,0.5); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .track-top, .track-bottom { height: 50%; width: 100%; position: relative; }
+        .track-pattern { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 6px); pointer-events: none; z-index: 2; }
+        .scale-marks { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; padding: 0 5px; font-weight: bold; }
+
+        input[type="range"] { -webkit-appearance: none; position: absolute; top: -2px; left: 0; width: 100%; height: 36px; background: transparent; outline: none; z-index: 5; margin: 0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: #f1c40f; border: 4px solid #b8860b; border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.8); position: relative; }
+        
+        /* PAINEL DE ESTATÍSTICAS */
+        .stats-panel {
+            width: 100%; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;
+            display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; }
+        .stats-col { display: flex; flex-direction: column; gap: 4px; }
+        .stats-label { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; }
+        .stats-value { font-size: 16px; font-weight: 900; color: #fff; }
+        .stats-value.gold { color: #f1c40f; }
+
+        .payout-input-wrapper { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .payout-input-wrapper input { background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; width: 60px; outline: none; text-align: right; }
+        .payout-input-wrapper span { color: rgba(255,255,255,0.5); font-weight: bold; margin-left: 5px; }
+
+        /* CONTROLES ESTILO GOAL VIP (Fiel à imagem 6 e 7) */
+        .controls-wrapper { width: 100%; background: #0c1f45; border-top: 2px solid #143570; padding: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative; }
+
+        .bet-input-row { display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; }
+        .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; }
+        .bet-display:active { background: rgba(255,255,255,0.1); }
+        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; cursor: pointer; }
+
+        .roll-actions { display: flex; gap: 12px; }
+        
+        /* Botões Redesenhados para igualar à foto */
+        .bet-button { flex: 1; border: none; border-radius: 12px; padding: 14px 5px; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; }
+        .bet-button span:nth-child(1) { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bet-button span:nth-child(2) { font-size: 10px; opacity: 0.9; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .btn-under { background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 6px 0 #1e8449, 0 8px 15px rgba(46, 204, 113, 0.3); color: #000; }
+        .btn-over { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 6px 0 #1a5276, 0 8px 15px rgba(52, 152, 219, 0.3); }
+        .bet-button.disabled { background: #555 !important; box-shadow: 0 6px 0 #222 !important; color: #888 !important; pointer-events: none; }
+
+        .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; padding: 0 5px; }
+        .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
+        .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
+        .balance-info i { color: #00e676; font-size: 12px; }
+
+        /* POP-UP LUCRO TOTAL (Subido para não cobrir o número) */
+        .win-toast {
+            position: absolute; top: -20px; left: 50%; transform: translate(-50%, -10px) scale(0.9);
+            background: #00d665; color: #000;
+            padding: 8px 24px; border-radius: 40px; 
+            border: 2px solid #ffffff; 
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.8);
+            opacity: 0; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000; display: flex; flex-direction: column; align-items: center;
+            justify-content: center;
+        }
+        .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 1px; letter-spacing: 0.5px; }
+        .win-toast #winAmount { font-size: 18px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
+
+        .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+        .system-toast.show { opacity: 1; top: 100px; }
+    </style>
+</head>
+<body>
+
+    <!-- TELA INICIAL PARA DESBLOQUEIO DE ÁUDIO E JOGO -->
+    <div id="startScreen">
+        <h2>DICE VIP</h2>
+        <div class="btn-start btn-3d">Jogar Agora</div>
+    </div>
+
+    <div class="header-bar">
+        <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="logo-text">DICE VIP</div>
+        <div class="top-actions">
+            <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="result-box">
+            
+            <!-- POP-UP DE VITÓRIA (AGORA NO TOPO DA CAIXA, NÃO COBRE O NÚMERO) -->
+            <div class="win-toast" id="winToast">
+                <span>LUCRO TOTAL</span>
+                <div id="winAmount">R$ 0,00</div>
+            </div>
+
+            <div class="number-display" id="result-display">50.00</div>
+            
+            <div class="slider-container">
+                <div class="track-group">
+                    <div class="track-pattern"></div>
+                    <div class="track-top" id="track-top"></div>
+                    <div class="track-bottom" id="track-bottom"></div>
+                </div>
+                <input type="range" id="chance-slider" min="0.10" max="96.90" step="0.10" value="48.50">
+                <div class="scale-marks">
+                    <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stats-row">
+                <div class="stats-col">
+                    <span class="stats-label">Multiplicador</span>
+                    <div class="payout-input-wrapper">
+                        <input type="number" id="payout-input" value="2.00" step="0.01" min="1.01" max="970.00">
+                        <span>x</span>
+                    </div>
+                </div>
+                <div class="stats-col" style="align-items: flex-end;">
+                    <span class="stats-label">Chance</span>
+                    <span class="stats-value" id="chance-display">48.50 %</span>
+                </div>
+            </div>
+            <div class="stats-row" style="margin-top: 5px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <span class="stats-label">Lucro Possível</span>
+                <span class="stats-value gold" id="potential-win">R$ 2,00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-wrapper">
+        <div class="bet-input-row">
+            <div class="bet-label">Aposta</div>
+            <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+            <div class="bet-display" id="displayAposta">R$ 1,00</div>
+            <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <div class="roll-actions">
+            <button class="bet-button btn-under btn-3d" id="btn-under">
+                <span><i class="fa-solid fa-arrow-down"></i> UNDER</span>
+                <span id="target-under">Abaixo de 48.50</span>
+            </button>
+            <button class="bet-button btn-over btn-3d" id="btn-over">
+                <span><i class="fa-solid fa-arrow-up"></i> OVER</span>
+                <span id="target-over">Acima de 51.50</span>
+            </button>
+        </div>
+
+        <div class="footer-info">
+            <div class="game-name">DICE <i class="fa-solid fa-dice-d20" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="balance-info">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="displaySaldo">R$ 0,00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
+
+    <script type="module">
+        // ANTI-CACHE FORTE E PROTEÇÃO DE NAVEGAÇÃO
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload(true);
+            }
+        });
+
+        // ==========================================
+        // 1. IMPORTAÇÕES E FIREBASE STRICT
+        // ==========================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
+            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
+            projectId: "sortecerta-75b77"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+        
+        // REDIRECIONAMENTO STRICT (SEM ID FALSO)
+        const idDispositivo = localStorage.getItem('usuario_tracker_id');
+        if (!idDispositivo) { window.location.href = 'login.html'; }
+
+        // Variáveis Globais de Estado
+        let bancaAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let isRolling = false;
+        let audioLigado = false;
+        
+        // Padrão de Apostas (Limite 500)
+        const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
+        let indexAposta = 0; 
+        let apostaAtual = apostasPermitidas[indexAposta];
+
+        const RTP = 97.00; 
+
+        // Referências do DOM
+        const slider = document.getElementById('chance-slider');
+        const trackTop = document.getElementById('track-top');
+        const trackBottom = document.getElementById('track-bottom');
+        const payoutInput = document.getElementById('payout-input');
+        const chanceDisplay = document.getElementById('chance-display');
+        const potentialWin = document.getElementById('potential-win');
+        const targetUnder = document.getElementById('target-under');
+        const targetOver = document.getElementById('target-over');
+        const resultDisplay = document.getElementById('result-display');
+        const btnUnder = document.getElementById('btn-under');
+        const btnOver = document.getElementById('btn-over');
+        const btnMinus = document.getElementById('btnMinus');
+        const btnPlus = document.getElementById('btnPlus');
+        const displayAposta = document.getElementById('displayAposta');
+        const btnBack = document.getElementById('btnBack');
+        const btnAudio = document.getElementById('btnAudio');
+        const displaySaldo = document.getElementById('displaySaldo');
+        const toastMsg = document.getElementById('toastMsg');
+        const startScreen = document.getElementById('startScreen');
+        
+        const winToast = document.getElementById('winToast');
+        const winAmountDisplay = document.getElementById('winAmount');
+
+        // ==========================================
+        // 2. MOTOR DE ÁUDIO NATIVO PROFISSIONAL
+        // ==========================================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function iniciarAudio() {
+            if (!audioCtx) { audioCtx = new AudioContext(); }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+        }
+
+        const tocarSom = (tipo) => {
+            if (!audioLigado || !audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tipo === 'sfxClick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxRoll') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.03);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
+            } else if (tipo === 'sfxWin') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+            } else if (tipo === 'sfxLose') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
+        };
+
+        function mostrarToast(msg) {
+            toastMsg.innerText = msg; 
+            toastMsg.classList.add('show');
+            setTimeout(() => toastMsg.classList.remove('show'), 3000);
+        }
+
+        // ==========================================
+        // 3. EVENT LISTENERS E LÓGICA DE INTERFACE
+        // ==========================================
+        
+        startScreen.addEventListener('click', function() {
+            this.style.opacity = '0';
+            setTimeout(() => { this.style.display = 'none'; }, 300);
+            
+            audioLigado = true;
+            btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+            btnAudio.style.color = '#fff';
+
+            iniciarAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
+        });
+
+        btnBack.addEventListener('click', () => {
+            iniciarAudio(); tocarSom('sfxClick'); 
+            if (isRolling) isRolling = false;
+            if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
+            else { window.location.href = 'index.html'; }
+        });
+
+        btnAudio.addEventListener('click', () => {
+            iniciarAudio();
+            audioLigado = !audioLigado; 
+            if(audioLigado) { 
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btnAudio.style.color = '#fff'; tocarSom('sfxClick');
+            } else { 
+                btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btnAudio.style.color = '#888'; 
+            }
+        });
+
+        displayAposta.addEventListener('click', () => {
+            if(isRolling) return;
+            iniciarAudio();
+            let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
+            if(novoValor !== null) {
+                let parsed = parseFloat(novoValor.replace(',', '.'));
+                if(!isNaN(parsed) && parsed >= 0.10) {
+                    apostaAtual = Math.min(parsed, 500.00);
+                    displayAposta.innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    tocarSom('sfxClick');
+                    updateStats();
+                } else { mostrarToast("Valor inválido."); }
+            }
+        });
+
+        function mudarAposta(direcao) {
+            if(isRolling) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            let novoIndex = indexAposta + direcao;
+            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
+                indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
+                displayAposta.innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                updateStats();
+            }
+        }
+        btnMinus.addEventListener('click', () => mudarAposta(-1));
+        btnPlus.addEventListener('click', () => mudarAposta(1));
+
+        // ==========================================
+        // 4. FIREBASE SYNC REAL (SEM CONTAS FALSAS)
+        // ==========================================
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val() || {};
+            if (!isRolling) {
+                bancaAtual = parseFloat(dados.saldo || 0);
+                displaySaldo.innerText = "R$ " + bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            }
+        });
+
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => {
+            caixaDaCasa = parseFloat(snapshot.val() || 0);
+        });
+
+        window.addEventListener('pagehide', () => { if (isRolling) isRolling = false; });
+        document.addEventListener('visibilitychange', function() { if (document.hidden) isRolling = false; });
+
+        // ==========================================
+        // 5. LÓGICA DO DICE (SLIDER & MATH)
+        // ==========================================
+        function updateStats() {
+            let chance = parseFloat(slider.value);
+            let payout = RTP / chance;
+            payoutInput.value = payout.toFixed(2);
+            syncUI(chance, payout);
+        }
+
+        function updateFromPayout() {
+            iniciarAudio();
+            let payout = parseFloat(payoutInput.value);
+            if(payout < 1.01) payout = 1.01;
+            if(payout > 970.00) payout = 970.00; 
+
+            let chance = RTP / payout;
+            slider.value = chance.toFixed(2);
+            syncUI(chance, payout);
+        }
+
+        slider.addEventListener('input', () => {
+            iniciarAudio();
+            if(!isRolling) tocarSom('sfxClick');
+            updateStats();
+        });
+        
+        payoutInput.addEventListener('change', updateFromPayout);
+
+        function syncUI(chance, payout) {
+            let winAmount = apostaAtual * payout;
+            
+            chanceDisplay.innerText = chance.toFixed(2) + ' %';
+            potentialWin.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            
+            let tUnder = chance;
+            let tOver = 100 - chance;
+            targetUnder.innerText = "Abaixo de " + tUnder.toFixed(2);
+            targetOver.innerText = "Acima de " + tOver.toFixed(2);
+
+            trackTop.style.background = `linear-gradient(to right, #e74c3c ${tOver}%, #3498db ${tOver}%)`;
+            trackBottom.style.background = `linear-gradient(to right, #00e676 ${tUnder}%, #e74c3c ${tUnder}%)`;
+        }
+
+        async function rollDice(type) {
+            if (isRolling) return;
+            iniciarAudio(); tocarSom('sfxClick');
+            
+            if (apostaAtual > bancaAtual) {
+                mostrarToast("Saldo insuficiente. Recarregue.");
+                return;
+            }
+
+            // TRAVA A INTERFACE CONTRA MULTI-CLIQUE
+            isRolling = true;
+            btnUnder.classList.add('disabled');
+            btnOver.classList.add('disabled');
+            btnMinus.style.opacity = '0.5';
+            btnPlus.style.opacity = '0.5';
+            slider.disabled = true;
+            payoutInput.disabled = true;
+            resultDisplay.classList.remove('win', 'lose');
+
+            // 1. DESCONTA DO SALDO DO JOGADOR NO FIREBASE REAL
+            let saldoReduzido = bancaAtual - apostaAtual;
+            displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
+
+            // 2. ENVIA O VALOR DA APOSTA PARA O CAIXA GLOBAL DO SISTEMA
+            await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
+
+            const chance = parseFloat(slider.value);
+            const payout = parseFloat(payoutInput.value);
+            
+            // SORTEIO REAL RNG (0.00 a 99.99)
+            const finalResult = (Math.random() * 100).toFixed(2);
+
+            let ticks = 0;
+            const rollInterval = setInterval(() => {
+                resultDisplay.innerText = (Math.random() * 100).toFixed(2);
+                tocarSom('sfxRoll');
+                ticks++;
+                
+                if (ticks > 25) { 
+                    clearInterval(rollInterval);
+                    finishRoll(finalResult, type, chance, payout);
+                }
+            }, 40);
+        }
+
+        async function finishRoll(result, type, chance, payout) {
+            resultDisplay.innerText = result;
+            let numResult = parseFloat(result);
+            
+            let isWin = false;
+            if (type === 'under' && numResult < chance) {
+                isWin = true;
+            } else if (type === 'over' && numResult > (100 - chance)) {
+                isWin = true;
+            }
+
+            if (isWin) {
+                resultDisplay.classList.add('win');
+                tocarSom('sfxWin');
+                
+                let winAmount = apostaAtual * payout;
+                
+                // EXIBE O TOAST DE LUCRO TOTAL
+                winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                winToast.classList.add('show');
+                setTimeout(() => winToast.classList.remove('show'), 2500);
+
+                // 3. ATUALIZA SALDO (LUCRO) NO FIREBASE REAL DO USUÁRIO
+                get(ref(db, `usuarios/${idDispositivo}/saldo`)).then(async snap => {
+                     let dbSaldo = parseFloat(snap.val() || 0);
+                     await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((dbSaldo + winAmount).toFixed(2)));
+                });
+
+                // 4. RETIRA O VALOR DO PRÊMIO DO CAIXA GLOBAL DA CASA
+                get(ref(db, 'sistema/caixa_global')).then(async snap => {
+                    let dbCaixa = parseFloat(snap.val() || 0);
+                    await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - winAmount).toFixed(2)));
+                });
+
+            } else {
+                resultDisplay.classList.add('lose');
+                tocarSom('sfxLose');
+            }
+
+            // LIBERA OS CONTROLES PARA A PRÓXIMA RODADA
+            isRolling = false;
+            btnUnder.classList.remove('disabled');
+            btnOver.classList.remove('disabled');
+            btnMinus.style.opacity = '1';
+            btnPlus.style.opacity = '1';
+            slider.disabled = false;
+            payoutInput.disabled = false;
+        }
+
+        // Eventos dos botões de Rolagem
+        btnUnder.addEventListener('click', () => rollDice('under'));
+        btnOver.addEventListener('click', () => rollDice('over'));
+
+        // Inicia dados do painel ocioso
+        updateStats();
+    </script>
+</body>
+</html>
