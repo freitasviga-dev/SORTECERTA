@@ -3,6 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+    
+    <script>
+        // BLINDAGEM ANTI-CACHE GRAU MILITAR
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    let urlBase = window.location.href.split('?')[0]; window.location.replace(urlBase + '?clear=' + new Date().getTime());
+                }
+            });
+        })();
+    </script>
+    
     <title>SorteCerta - Retirada Financeira</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -13,6 +32,7 @@
             --gold-dark: #b8860b;
             --green: #2ecc71;
             --green-dark: #27ae60;
+            --red: #e74c3c;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
             --border-color: #27272a;
@@ -46,6 +66,15 @@
         
         .btn-max { background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.4); color: var(--gold); padding: 10px 15px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
         .btn-max:active { background: var(--gold); color: #000; transform: scale(0.95); }
+
+        /* --- PAINEL DE BLOQUEIO (ROLLOVER) --- */
+        .rollover-box { display: none; background: rgba(231, 76, 60, 0.08); border: 1px solid var(--red); padding: 18px; border-radius: 16px; margin-bottom: 5px; position: relative; overflow: hidden; }
+        .ro-title { font-size: 14px; font-weight: 900; color: var(--red); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ro-title i { font-size: 16px; }
+        .ro-bar-bg { width: 100%; height: 12px; background: rgba(0,0,0,0.6); border-radius: 10px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .ro-bar-fill { height: 100%; background: linear-gradient(90deg, #ff1744, #ff5252); width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .ro-desc { font-size: 11px; color: #ccc; margin-top: 12px; line-height: 1.4; }
+        .ro-amount { font-weight: 900; color: #fff; background: rgba(231, 76, 60, 0.2); padding: 2px 6px; border-radius: 6px; }
 
         /* --- ÁREA DE SAQUE (FORMULÁRIO) --- */
         .withdraw-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
@@ -82,11 +111,15 @@
         /* --- BOTÃO DE SOLICITAR --- */
         .btn-submit {
             width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
-            color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 16px;
+            color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 15px;
             font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
             box-shadow: 0 8px 0 #145a32, 0 15px 25px rgba(46, 204, 113, 0.3); transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-submit:active { transform: translateY(8px); box-shadow: 0 0 0 #145a32; }
+        .btn-submit:active:not(:disabled) { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
+        .btn-submit:disabled { 
+            background: #2a2a2a; color: #666; box-shadow: none; cursor: not-allowed; 
+            border: 1px solid #444; filter: grayscale(100%); 
+        }
 
         .footer-info { text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.5; padding: 0 10px; margin-top: 10px; }
         .footer-info strong { color: #fff; }
@@ -114,6 +147,15 @@
                 <div class="bs-value"><span class="bs-currency">R$</span> <span id="displaySaldoTopo">0,00</span></div>
             </div>
             <button class="btn-max" onclick="sacarTudo()">Usar Máximo</button>
+        </div>
+
+        <div class="rollover-box" id="rolloverBox">
+            <div class="ro-title">
+                <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-lock"></i> Saque Bloqueado</span>
+                <span id="roPercent">0%</span>
+            </div>
+            <div class="ro-bar-bg"><div class="ro-bar-fill" id="roFill"></div></div>
+            <div class="ro-desc">Para evitar fraudes e lavagem de dinheiro, você precisa apostar no cassino pelo menos o valor depositado. Faltam apostar: <span class="ro-amount" id="roFalta">R$ 0,00</span></div>
         </div>
 
         <div class="withdraw-card">
@@ -153,7 +195,7 @@
                 <div class="s-badge"><i class="fa-solid fa-building-columns"></i> Auditoria Financeira</div>
             </div>
 
-            <button class="btn-submit" onclick="solicitarSaque()">
+            <button class="btn-submit" id="btnSubmit" onclick="solicitarSaque()">
                 <i class="fa-solid fa-paper-plane"></i> Finalizar Saque
             </button>
         </div>
@@ -168,21 +210,55 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77"
-        };
+        // CONFIGURAÇÃO OFUSCADA DO FIREBASE
+        const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
+        const firebaseConfig = { apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] };
+        
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         let bancaAtual = 0.00;
+        let saqueLiberado = false;
         const phoneDestination = "5583996469538";
 
-        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-            bancaAtual = parseFloat(snapshot.val() || 0);
+        // LEITURA DO SALDO E REGRAS DE ROLLOVER
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val() || {};
+            bancaAtual = parseFloat(dados.saldo || 0);
             document.getElementById('displaySaldoTopo').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            
+            // Variáveis de Meta de Aposta
+            let meta = parseFloat(dados.rollover_meta || 0);
+            let atual = parseFloat(dados.rollover_atual || 0);
+            let falta = meta - atual;
+
+            const roBox = document.getElementById('rolloverBox');
+            const btnSubmit = document.getElementById('btnSubmit');
+
+            // Se ainda tem meta a bater (falta mais de 0)
+            if (meta > 0 && falta > 0) {
+                saqueLiberado = false;
+                roBox.style.display = 'block'; // Mostra a caixa vermelha
+                
+                // Desativa o botão de saque
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `<i class="fa-solid fa-lock"></i> Cumpra a Meta de Aposta`;
+
+                // Calcula e preenche a barra regressiva
+                let porcentagem = (atual / meta) * 100;
+                document.getElementById('roFill').style.width = porcentagem + '%';
+                document.getElementById('roPercent').innerText = porcentagem.toFixed(0) + '%';
+                document.getElementById('roFalta').innerText = "R$ " + falta.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            } else {
+                // Se não tem meta, ou se a meta foi atingida (falta <= 0)
+                saqueLiberado = true;
+                roBox.style.display = 'none'; // Esconde a caixa
+                
+                // Libera o botão verde
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Finalizar Saque`;
+            }
         });
 
         window.sacarTudo = function() {
@@ -194,6 +270,12 @@
         }
 
         window.solicitarSaque = function() {
+            // Trava de segurança extra
+            if(!saqueLiberado) {
+                alert("Você precisa cumprir a meta de apostas antes de solicitar um saque.");
+                return;
+            }
+
             let chavePix = document.getElementById('chavePix').value.trim();
             let tipoChave = document.getElementById('tipoChave').value;
             let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
@@ -213,25 +295,21 @@
 
             if(confirm(`AUTORIZAÇÃO DE TRANSFERÊNCIA\n\nConfirma a solicitação de saque no valor de R$ ${valorSaqueInput.toFixed(2)}?\nO valor será processado para a chave PIX: ${chavePix}.`)) {
                 
-                // 1. DEDUZ SALDO DO USUÁRIO
                 let novoSaldo = bancaAtual - valorSaqueInput;
                 set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
                     
-                    // 2. ATUALIZA A MÉTRICA GERAL DE SAQUES NO ADMIN
                     const refTotalSaques = ref(db, 'sistema/total_saques');
                     get(refTotalSaques).then((snap) => {
                         let totalAtual = parseFloat(snap.val() || 0);
                         set(refTotalSaques, totalAtual + valorSaqueInput);
                     });
 
-                    // 3. GERA O COMPROVANTE NO EXTRATO DO JOGADOR
                     push(ref(db, `usuarios/${idDispositivo}/transacoes`), {
                         tipo: "SAQUE",
                         valor: valorSaqueInput.toFixed(2),
                         data: new Date().toISOString()
                     });
 
-                    // 4. ENVIA DADOS PARA O SEU WHATSAPP
                     let valorFormatado = valorSaqueInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     
                     let mensagemComposta = `*✅ SAQUE APROVADO PELO SISTEMA*\n` +
