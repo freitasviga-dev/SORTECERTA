@@ -139,11 +139,9 @@
         .btn-skip:active { box-shadow: none; transform: translateY(4px); }
         .btn-skip.hidden { display: none; }
 
-        /* ========================================= */
-        /* PAINEL DE STATUS DA SPRIBE (SEMPRE VISÍVEL) */
-        /* ========================================= */
+        /* PAINEL DE STATUS DA SPRIBE */
         .history-wrapper {
-            display: flex; /* Alterado para ficar sempre visível */
+            display: flex;
             width: 90%; max-width: 350px; background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
             padding: 6px; gap: 6px; margin-top: 15px;
@@ -181,7 +179,7 @@
 
         /* OPÇÕES HI LO (OCULTAS POR PADRÃO) */
         .hilo-options { 
-            display: none; /* Só aparece in-game */
+            display: none; 
             gap: 15px; width: 100%; max-width: 320px; justify-content: center; margin-top: 15px; 
             animation: popUp 0.3s ease-out;
         }
@@ -285,7 +283,7 @@
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
-            <!-- PAINEL DE STATUS DA SPRIBE (AGORA SEMPRE VISÍVEL) -->
+            <!-- PAINEL DE STATUS DA SPRIBE (SEMPRE VISÍVEL) -->
             <div class="history-wrapper" id="historyWrapper">
                 <div class="history-row" id="historyRow">
                     <!-- Mini-cartas inseridas via JS -->
@@ -551,7 +549,6 @@
             }, 50);
         }
 
-        // Adiciona carta acertada na esteira do Painel
         function addCardToHistory(cardData) {
             const miniCard = document.createElement('div');
             miniCard.className = `mini-card ${cardData.suit.color}`;
@@ -566,7 +563,6 @@
             activeCard = getRandomCard();
             renderCard(activeCard);
             
-            // Atualiza a primeira miniatura no painel se o cara pular a carta antes de jogar
             historyRow.innerHTML = '';
             addCardToHistory(activeCard);
         }
@@ -614,7 +610,7 @@
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
         // ==========================================
-        // 6. MOTOR DE JOGO 
+        // 6. MOTOR DE JOGO (TRANSPARÊNCIA VIP)
         // ==========================================
         window.startGame = async function() {
             tocarSom('sfxClick');
@@ -645,7 +641,6 @@
             document.getElementById('btnCashout').style.display = 'flex';
             btnSkip.classList.add('hidden');
             
-            // REVELA OS BOTOES IN-GAME
             hiloOptions.style.display = 'flex'; 
             
             document.getElementById('btnMinus').style.opacity = '0.5';
@@ -711,15 +706,33 @@
                 
                 updateGameState();
             } else {
+                // =============== DERROTA COM TRANSPARÊNCIA VIP ===============
+                isPlaying = false;
                 tocarSom('sfxLose');
                 mostrarToast("Você Perdeu a Sequência!");
-                resetGame();
-                activeCard = nextCard; 
+                
+                // Oculta botões para focar na carta derrotada
+                hiloOptions.style.display = 'none';
+                document.getElementById('btnCashout').style.display = 'none';
+                
+                addCardToHistory(nextCard); // Coloca a carta fatal na esteira
+                
+                // Pausa de 2.5s para processar a derrota, depois reseta e gera carta nova
+                setTimeout(() => {
+                    resetGame();
+                    activeCard = getRandomCard();
+                    renderCard(activeCard);
+                    historyRow.innerHTML = '';
+                    addCardToHistory(activeCard);
+                    cardCountElement.innerText = "0";
+                    currentMultValue.innerText = "1.00x";
+                }, 2500);
             }
         }
 
         window.cashout = async function() {
             if(!isPlaying) return;
+            isPlaying = false; // Trava cliques extras
             
             let winAmount = apostaAtual * currentMultiplier;
             
@@ -735,9 +748,21 @@
             tocarSom('sfxWin');
             winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
             winToast.classList.add('show');
-            setTimeout(() => winToast.classList.remove('show'), 2500);
+            
+            hiloOptions.style.display = 'none';
+            document.getElementById('btnCashout').style.display = 'none';
 
-            resetGame();
+            // Pausa de 2.5s no lucro antes de resetar a mesa
+            setTimeout(() => {
+                winToast.classList.remove('show');
+                resetGame();
+                activeCard = getRandomCard();
+                renderCard(activeCard);
+                historyRow.innerHTML = '';
+                addCardToHistory(activeCard);
+                cardCountElement.innerText = "0";
+                currentMultValue.innerText = "1.00x";
+            }, 2500);
         }
 
         function resetGame() {
@@ -749,14 +774,13 @@
             document.getElementById('btnCashout').style.display = 'none';
             btnSkip.classList.remove('hidden');
             
-            // Apenas oculta os botões de High/Low
             hiloOptions.style.display = 'none';
             
             document.getElementById('btnMinus').style.opacity = '1';
             document.getElementById('btnPlus').style.opacity = '1';
         }
 
-        // Boot Visual: Gera a carta e já põe ela na esteira!
+        // Boot Visual
         activeCard = getRandomCard();
         renderCard(activeCard);
         
