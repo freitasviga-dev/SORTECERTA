@@ -103,6 +103,8 @@
 
         .plinko-board {
             position: relative; width: 350px; height: 350px; flex-shrink: 0;
+            background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
         }
 
         canvas {
@@ -111,7 +113,7 @@
         }
 
         .buckets-wrapper {
-            position: absolute; top: 275px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 285px; left: 50%; transform: translateX(-50%);
             width: 335px; display: flex; flex-direction: column; gap: 2px; z-index: 5;
         }
         .bucket-row { display: flex; gap: 2px; width: 100%; justify-content: center; }
@@ -124,8 +126,7 @@
         .bucket.yellow { background: #f1c40f; }
         .bucket.red { background: #e74c3c; color: #fff;}
         
-        /* Efeito de flash dinâmico nos baldes */
-        .bucket.hit { transform: scaleY(1.2); filter: brightness(1.8); box-shadow: 0 0 10px currentColor; }
+        .bucket.hit { transform: scaleY(1.25); filter: brightness(1.6); }
 
         /* POP-UP COMPACTO DE VITÓRIA (ESTILO GOAL) */
         .win-toast {
@@ -265,7 +266,7 @@
         // 1. IMPORTAÇÕES E FIREBASE STRICT
         // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
@@ -284,6 +285,7 @@
         let modoJogo = "normal";
         let estadoSequencia = 0;
         let audioLigado = false;
+        let valorPremioForcado = 0;
         
         // Padrão de Apostas (Limite 500)
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
@@ -302,7 +304,7 @@
         const winToast = document.getElementById('winToast');
         const winAmountDisplay = document.getElementById('winAmount');
 
-        // Matriz de pinos ativos para animação de pulsação individual
+        // Estrutura para animação individual de pulsação de cada pino
         let pinStates = {};
 
         // ==========================================
@@ -382,7 +384,7 @@
         buildBuckets();
 
         // ==========================================
-        // 4. MOTOR FÍSICO DO CANVAS COM EFEITOS ESPECIAIS
+        // 4. MOTOR FÍSICO E RENDERIZADOR GRAFICO (MUDANÇA VISUAL TOTAL)
         // ==========================================
         const canvas = document.getElementById('plinkoCanvas');
         const ctx = canvas.getContext('2d');
@@ -394,6 +396,28 @@
         
         let activeBalls = [];
 
+        // NOVO: Desenha as linhas guias de proteção laterais em neon
+        function drawBoardLines() {
+            ctx.strokeStyle = 'rgba(0, 230, 118, 0.35)'; // Linha verde neon suave
+            ctx.lineWidth = 2.5;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#00e676';
+            
+            // Parede Esquerda da Pirâmide
+            ctx.beginPath();
+            ctx.moveTo(START_X, START_Y - 8);
+            ctx.lineTo(START_X - (ROWS / 2) * X_SPACING - 8, START_Y + (ROWS - 1) * Y_SPACING + 12);
+            ctx.stroke();
+            
+            // Parede Direita da Pirâmide
+            ctx.beginPath();
+            ctx.moveTo(START_X, START_Y - 5);
+            ctx.lineTo(START_X + (ROWS / 2) * X_SPACING + 8, START_Y + (ROWS-1) * Y_SPACING + 10);
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0; // Desativa a sombra global para as outras renderizações
+        }
+
         function drawPins() {
             for (let r = 0; r <= ROWS - 1; r++) { 
                 for (let c = 0; c <= r; c++) {
@@ -401,26 +425,37 @@
                     let y = START_Y + r * Y_SPACING;
                     let pinKey = `${r}_${c}`;
                     
-                    // Lógica de pulsação se o pino foi atingido
                     let radius = 2.5;
-                    let styleColor = 'rgba(255, 255, 255, 0.8)';
+                    let styleColor = '#00d2ff'; // Novo padrão: Azul Ciano Neon constante
                     
                     if (pinStates[pinKey] && pinStates[pinKey] > 0) {
-                        radius = 2.5 + (pinStates[pinKey] * 3.5); // Aumenta o tamanho temporariamente
-                        styleColor = `rgba(0, 230, 118, ${pinStates[pinKey]})`; // Brilha verde/branco
-                        pinStates[pinKey] -= 0.08; // Desembaça aos poucos
+                        // Impacto! Expansão do pino e mudança drástica de cor
+                        radius = 2.5 + (pinStates[pinKey] * 3.5); 
+                        styleColor = '#00e676'; // Brilha Verde
+                        
+                        // Desenha onda de choque circular se expandindo em volta do pino
+                        ctx.strokeStyle = `rgba(0, 230, 118, ${pinStates[pinKey]})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = '#00e676';
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius + 8 * (1 - pinStates[pinKey]), 0, Math.PI * 2);
+                        ctx.stroke();
+                        
+                        pinStates[pinKey] -= 0.08; // Suaviza o efeito aos poucos
                     }
 
+                    // Renderização estável do pino com efeito de lâmpada neon acesa
                     ctx.fillStyle = styleColor;
-                    ctx.shadowBlur = pinStates[pinKey] > 0 ? 12 : 4;
-                    ctx.shadowColor = pinStates[pinKey] > 0 ? '#00e676' : 'rgba(255,255,255,0.4)';
+                    ctx.shadowBlur = pinStates[pinKey] > 0 ? 15 : 6;
+                    ctx.shadowColor = pinStates[pinKey] > 0 ? '#00e676' : '#00d2ff';
                     
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, Math.PI*2);
                     ctx.fill();
                 }
             }
-            ctx.shadowBlur = 0; // Limpa sombra para não pesar o canvas
+            ctx.shadowBlur = 0; 
         }
 
         function getBallColorHex(color) {
@@ -431,6 +466,11 @@
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 1. Desenha as linhas de neon do tabuleiro primeiro
+            drawBoard();
+            
+            // 2. Desenha as fatias de pinos por cima
             drawPins();
 
             for (let i = activeBalls.length - 1; i >= 0; i--) {
@@ -440,15 +480,14 @@
                 let r = Math.floor(ball.progress);
                 let t = ball.progress - r;
 
-                // 🔊 DISPARA O TICK EXATAMENTE AO BATER NO PINO
                 if (r > ball.lastFloor && r < ROWS) {
                     tocarSom('sfxTick');
                     ball.lastFloor = r;
                     
-                    // Ativa o estado de efeito especial aceso no pino atingido
+                    // Ativa a animação de pulsação e onda de choque no pino correspondente
                     let colPassed = ball.path.slice(0, r).reduce((a, b) => a + b, 0);
                     let pinKey = `${r}_${colPassed}`;
-                    pinStates[pinKey] = 1.0; // Intensidade máxima inicial
+                    pinStates[pinKey] = 1.0; 
                 }
 
                 if (r < ROWS) {
@@ -482,25 +521,24 @@
                     }
                 }
 
-                // Salva a posição na esteira para o efeito cauda (Glow Tail)
+                // Efeito Rastro de Cometa do Pro
                 ball.history.push({x: ball.x, y: ball.y});
-                if (ball.history.length > 6) ball.history.shift();
+                if (ball.history.length > 7) ball.history.shift();
 
-                // Desenha a cauda brilhante de rastro
                 for (let h = 0; h < ball.history.length; h++) {
                     let pos = ball.history[h];
-                    let opacity = (h / ball.history.length) * 0.4;
+                    let opacity = (h / ball.history.length) * 0.45;
                     ctx.fillStyle = getBallColorHex(ball.color);
                     ctx.globalAlpha = opacity;
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, 4, 0, Math.PI*2);
+                    ctx.arc(pos.x, pos.y, 3.8, 0, Math.PI*2);
                     ctx.fill();
                 }
-                ctx.globalAlpha = 1.0; // Reseta transparência
+                ctx.globalAlpha = 1.0; 
 
-                // Desenha a Bolinha principal com Brilho Extra
+                // Desenha a bolinha principal
                 ctx.fillStyle = getBallColorHex(ball.color);
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 10;
                 ctx.shadowColor = getBallColorHex(ball.color);
                 ctx.beginPath();
                 ctx.arc(ball.x, ball.y, 5, 0, Math.PI*2);
@@ -573,6 +611,9 @@
         btnMinus.addEventListener('click', () => mudarAposta(-1));
         btnPlus.addEventListener('click', () => mudarAposta(1));
 
+        // ==========================================
+        // 6. FIREBASE SYNC REAL E BLINDAGEM DE SALDO
+        // ==========================================
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             if (activeBalls.length === 0) {
@@ -635,6 +676,7 @@
             bancaAtual = saldoReduzido; 
             displaySaldo.innerText = "R$ " + saldoReduzido.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
+
             await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaAtual).toFixed(2)));
 
             let path = generateRiggedPath(color, apostaAtual);
@@ -649,18 +691,19 @@
                 bet: apostaAtual,
                 payout: payoutValue,
                 history: [],
-                finalIndex: finalIndex,
                 x: START_X,
                 y: START_Y
             });
         }
 
         async function processWin(ball, finalX) {
-            // EFEITO VISUAL DE FLASH NO BALDE ATINGIDO
-            const bucketEl = document.getElementById(`bucket-${ball.color}-${ball.finalIndex}`);
-            if (bucketEl) {
-                bucketEl.classList.add('hit');
-                setTimeout(() => bucketEl.classList.remove('hit'), 400);
+            let finalIndex = ball.path.reduce((a,b) => a+b, 0);
+            const targetBucket = document.getElementById(`bucket-${ball.color}-${finalIndex}`);
+            
+            // Efeito visual de colisão (hit flash) nas caçapas
+            if (targetItem) {
+                targetBucket.classList.add('hit');
+                setTimeout(() => targetBucket.classList.remove('hit'), 150);
             }
 
             if (ball.payout > 0) {
