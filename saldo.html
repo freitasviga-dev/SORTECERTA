@@ -3,6 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+    
+    <script>
+        // BLINDAGEM ANTI-CACHE GRAU MILITAR
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    let urlBase = window.location.href.split('?')[0]; window.location.replace(urlBase + '?clear=' + new Date().getTime());
+                }
+            });
+        })();
+    </script>
+    
     <title>SorteCerta - Adicionar Saldo</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -77,7 +96,7 @@
         .security-badges span { font-size: 9px; color: #888; display: flex; align-items: center; gap: 4px; font-weight: 700; text-transform: uppercase; }
         .security-badges i { color: var(--green); font-size: 12px; }
 
-        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
         .bonus-alert i { color: var(--gold); font-size: 20px; }
         .bonus-alert p { font-size: 11px; color: #ccc; line-height: 1.4; }
         .bonus-alert strong { color: #fff; }
@@ -143,7 +162,7 @@
                 <span><i class="fa-solid fa-bolt"></i> Rápido</span>
             </div>
 
-            <div class="bonus-alert">
+            <div class="bonus-alert" id="avisoBonus">
                 <i class="fa-solid fa-circle-info"></i>
                 <p>O saldo mínimo para depósito é de <strong>R$ 1,00</strong>. Ao continuar, você será direcionado ao nosso setor financeiro para receber a chave Pix oficial.</p>
             </div>
@@ -158,12 +177,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE SETUP
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77"
-        };
+        // CONFIGURAÇÃO OFUSCADA DO FIREBASE
+        const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
+        const firebaseConfig = { apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] };
+        
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
@@ -172,15 +189,29 @@
 
         let bancaAtual = 0.00;
         let valorSelecionado = 100.00;
+        let temBonus = false; // Rastreia se ele ativou no Perfil
+        
         const phoneDestination = "5583996469538";
 
-        // PUXAR SALDO ATUAL
-        onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-            bancaAtual = parseFloat(snapshot.val() || 0);
+        // PUXAR SALDO ATUAL E CHECAR BÔNUS
+        onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+            const dados = snapshot.val() || {};
+            bancaAtual = parseFloat(dados.saldo || 0);
             document.getElementById('displaySaldoTop').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            
+            // VERIFICA SE O CARA ATIVOU O BÔNUS NO PERFIL
+            if(dados.bonus_ativo === true) {
+                temBonus = true;
+                const avisoBox = document.getElementById('avisoBonus');
+                avisoBox.style.background = 'rgba(155, 81, 224, 0.1)';
+                avisoBox.style.borderLeftColor = '#9b51e0';
+                avisoBox.innerHTML = `
+                    <i class="fa-solid fa-gift" style="color: #9b51e0;"></i>
+                    <p style="color:#fff;"><strong>🎁 BÔNUS DE 100% ATIVADO!</strong> O valor depositado será dobrado no seu saldo instantaneamente após o pagamento. Sujeito a regras de apostas (Rollover).</p>
+                `;
+            }
         });
 
-        // Configura o botão superior de suporte para ir direto sem mostrar número
         document.getElementById('linkSuporteDireto').href = `https://wa.me/${phoneDestination}?text=Olá,%20estou%20na%20página%20de%20depósito%20e%20gostaria%20de%20tirar%20uma%20dúvida.%20Meu%20ID%20é%20${idDispositivo}`;
 
         window.selecionarValor = function(valor, btnElement) {
@@ -195,16 +226,35 @@
             valorSelecionado = parseFloat(document.getElementById('inputValor').value);
         }
 
-        window.enviarOrdemDeposito = function() {
+        window.enviarOrdemDeposito = async function() {
             let valorInput = parseFloat(document.getElementById('inputValor').value);
             
-            // Validação do valor mínimo de R$ 1,00
             if(isNaN(valorInput) || valorInput < 1.00) {
                 alert("Operação negada: O valor mínimo de depósito é de R$ 1,00.");
                 return;
             }
             
-            // ATUALIZA A MÉTRICA GERAL DE DEPÓSITOS NO ADMIN PANEL ANTES DE IR PRO WPP
+            // LÓGICA DE INJEÇÃO DO ROLLOVER
+            let novaMetaDeAposta = 0;
+            
+            if(temBonus) {
+                // Se tem bônus, a meta de aposta exigida para ele poder sacar é o dobro do depósito x 2
+                novaMetaDeAposta = (valorInput * 2) * 2; 
+            } else {
+                // Se não tem bônus, ele só precisa jogar o que depositou pra evitar lavagem de dinheiro
+                novaMetaDeAposta = valorInput;
+            }
+
+            // Grava a meta de saque na conta do jogador e zera o rastreio (ele tá começando do 0)
+            await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_meta'), novaMetaDeAposta);
+            await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), 0);
+
+            // Remove o bônus para ele não ativar duas vezes na malandragem
+            if(temBonus) {
+                await set(ref(db, 'usuarios/' + idDispositivo + '/bonus_ativo'), null);
+            }
+
+            // ATUALIZA A MÉTRICA GERAL DE DEPÓSITOS NO ADMIN PANEL
             const refTotalDepositos = ref(db, 'sistema/total_depositos');
             get(refTotalDepositos).then((snap) => {
                 let totalAtual = parseFloat(snap.val() || 0);
@@ -214,10 +264,10 @@
             valorSelecionado = valorInput;
             let valorFormatado = valorSelecionado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             
-            // Montagem da mensagem automatizada
             let mensagemComposta = `*⚠️ NOVA INTENÇÃO DE DEPÓSITO*\n\n` +
                                    `👤 *ID Jogador:* ${idDispositivo}\n` +
-                                   `💰 *Valor Solicitado:* ${valorFormatado}\n\n` +
+                                   `💰 *Valor Solicitado:* ${valorFormatado}\n` +
+                                   `🎁 *Bônus Ativado:* ${temBonus ? 'SIM (100%)' : 'NÃO'}\n\n` +
                                    `_Aguardando chave PIX para realizar o pagamento._`;
             
             let urlFinalWhastapp = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
