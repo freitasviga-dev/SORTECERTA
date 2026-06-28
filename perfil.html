@@ -6,6 +6,7 @@
     <title>SorteCerta - Meu Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- ANTI-CACHE STRICT -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -70,6 +71,26 @@
         .btn-dep { background: linear-gradient(135deg, #00e676, #00b359); color: #000; box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2); }
         .btn-saq { background: rgba(241, 196, 15, 0.05); border: 1px solid var(--gold); color: var(--gold); }
 
+        /* --- PAINEL DE BÔNUS DE NOVO USUÁRIO --- */
+        .bonus-panel {
+            background: radial-gradient(circle at top right, rgba(155, 81, 224, 0.15), #0a0a0c); 
+            border: 1px solid rgba(155, 81, 224, 0.4); border-radius: 16px; padding: 20px; 
+            position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
+            backdrop-filter: blur(10px); margin-bottom: 5px; display: none; /* Só exibe via JS */
+        }
+        .bonus-panel::before { content: '🎁'; position: absolute; right: -10px; top: -10px; font-size: 80px; opacity: 0.05; pointer-events: none; }
+        .bonus-title { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bonus-title i { color: #d08aff; filter: drop-shadow(0 0 5px rgba(155, 81, 224, 0.5)); }
+        .bonus-desc { font-size: 12px; color: #ccc; margin-bottom: 15px; line-height: 1.5; z-index: 2; position: relative; }
+        
+        .bonus-buttons { display: flex; gap: 10px; z-index: 2; position: relative; }
+        .btn-bonus-action { flex: 1; border: none; padding: 12px; border-radius: 10px; font-weight: 900; font-size: 12px; text-transform: uppercase; cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-bonus-action:active { transform: translateY(4px); box-shadow: none !important; }
+        
+        .btn-bonus-activate { background: linear-gradient(135deg, #9b51e0, #6a1b9a); color: #fff; box-shadow: 0 4px 0 #4a148c; }
+        .btn-bonus-cancel { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; box-shadow: 0 4px 0 #922b21; }
+        .btn-bonus-deposit { background: linear-gradient(135deg, var(--green), #00b359); color: #000; box-shadow: 0 4px 0 #006633; }
+
         /* --- LISTA DE MENUS --- */
         .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .menu-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #fff; transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
@@ -78,8 +99,6 @@
         .menu-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.05); }
         .menu-text { font-size: 14px; font-weight: 700; }
         .menu-item i.fa-chevron-right { color: var(--text-muted); font-size: 14px; }
-
-        @keyframes pulseRed { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0.6; transform: scale(1.05); } }
 
         .app-version { text-align: center; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 10px; }
 
@@ -102,22 +121,6 @@
         .btn-close-modal { width: 100%; background: #333; color: #fff; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex-shrink: 0; transition: 0.2s; }
         .btn-close-modal:active { background: #555; }
 
-        /* CARDS DA CENTRAL DE MISSÕES */
-        .mission-card { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .mission-card.special { background: radial-gradient(circle at right, rgba(155, 81, 224, 0.2), transparent); border-color: rgba(155, 81, 224, 0.4); }
-        .m-info h4 { font-size: 15px; color: #fff; font-weight: 900; margin-bottom: 4px; }
-        .m-info p { font-size: 12px; color: var(--green); font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .mission-card.special .m-info p { color: #d08aff; }
-        
-        /* BOTÕES DE ATIVAR / CANCELAR / BLOQUEADO */
-        .btn-ativar-m { background: linear-gradient(135deg, var(--green), #00b359); color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 900; font-size: 12px; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 0 #006633; transition: 0.1s; width: 110px; text-align: center; }
-        .btn-ativar-m:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
-        .btn-ativar-m.special-btn { background: linear-gradient(135deg, #9b51e0, #6a1b9a); color: #fff; box-shadow: 0 4px 0 #4a148c; }
-        
-        /* Estados do Botão */
-        .btn-cancelar { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; color: #fff !important; box-shadow: 0 4px 0 #922b21 !important; }
-        .btn-ativar-m:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
-
         /* Estilos do Histórico */
         .trans-list { display: flex; flex-direction: column; gap: 10px; }
         .trans-card { background: #121214; border: 1px solid #27272a; padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -126,9 +129,11 @@
         .icon-dep { background: rgba(46, 204, 113, 0.1); color: var(--green); }
         .icon-saq { background: rgba(231, 76, 60, 0.1); color: var(--red); }
         .trans-type { font-size: 12px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .trans-date { font-size: 10px; color: #777; }
         .trans-val { font-size: 14px; font-weight: 900; }
         .val-dep { color: var(--green); }
         .val-saq { color: var(--red); }
+
     </style>
 </head>
 <body>
@@ -169,19 +174,22 @@
             </div>
         </div>
 
-        <div class="menu-list">
+        <!-- PAINEL DE BÔNUS SUPREMO (APENAS PARA NOVOS USUÁRIOS) -->
+        <div class="bonus-panel" id="panelBonusSupremo">
+            <div class="bonus-title"><i class="fa-solid fa-bolt"></i> Bônus de Novo Usuário</div>
+            <div class="bonus-desc">Ative o Bônus Supremo de 100% e dobre o valor do seu primeiro depósito instantaneamente! Sujeito a meta de apostas (Rollover).</div>
             
-            <a class="menu-item" onclick="abrirModal('modalMissoes')" id="menuMissaoItem" style="border: 1px solid var(--gold); box-shadow: inset 0 0 15px rgba(241,196,15,0.05), 0 5px 15px rgba(0,0,0,0.5); display: none;">
-                <div class="menu-left">
-                    <div class="menu-icon" style="background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; border:none;"><i class="fa-solid fa-star"></i></div>
-                    <span class="menu-text" style="color: var(--gold);">Central de Missões VIP</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="background: var(--red); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: 900; animation: pulseRed 1s infinite alternate; box-shadow: 0 0 10px rgba(255,23,68,0.5);">NOVO</span>
-                    <i class="fa-solid fa-chevron-right" style="color: var(--gold);"></i>
-                </div>
-            </a>
+            <div class="bonus-buttons">
+                <button class="btn-bonus-action btn-bonus-activate" id="btnToggleBonus" onclick="toggleMissao(0, 0, '100porcento')">
+                    ATIVAR BÔNUS
+                </button>
+                <a href="saldo.html" class="btn-bonus-action btn-bonus-deposit" id="linkIrDeposito" style="display: none;">
+                    DEPOSITAR AGORA
+                </a>
+            </div>
+        </div>
 
+        <div class="menu-list">
             <a class="menu-item" onclick="abrirHistorico()">
                 <div class="menu-left">
                     <div class="menu-icon" style="color: #3498db;"><i class="fa-solid fa-list-ul"></i></div>
@@ -198,9 +206,9 @@
                 <i class="fa-solid fa-chevron-right"></i>
             </a>
 
-            <a class="menu-item" onclick="abrirModal('modalTermos')">
+            <a class="menu-item" onclick="abrirTermos()">
                 <div class="menu-left">
-                    <div class="menu-icon" style="color: var(--text-muted);"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="menu-icon" style="color: var(--gold);"><i class="fa-solid fa-file-contract"></i></div>
                     <span class="menu-text">Termos e Condições</span>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
@@ -229,50 +237,7 @@
         </a>
     </nav>
 
-    <div class="modal-overlay" id="modalMissoes">
-        <div class="modal-content" style="background: linear-gradient(180deg, #181820, #0a0a0c); border: 1px solid var(--gold);">
-            <div class="modal-title" style="color: var(--gold); border-bottom-color: rgba(241,196,15,0.2);">
-                <i class="fa-solid fa-ranking-star"></i> Missões de Bônus VIP
-            </div>
-            <div class="modal-body" style="padding-right: 0;">
-                <p style="margin-bottom:15px; font-size:12px; color:#aaa;">Oferta exclusiva para novos usuários. Complete missões de depósito e ganhe saldo extra imediatamente.</p>
-                
-                <div class="mission-card">
-                    <div class="m-info">
-                        <h4>Deposite R$ 10,00</h4>
-                        <p><i class="fa-solid fa-circle-plus"></i> Ganhe R$ 3,00 Extras</p>
-                    </div>
-                    <button class="btn-ativar-m" id="btn-missao-fixo10" onclick="toggleMissao(10, 3, 'fixo')">ATIVAR</button>
-                </div>
-
-                <div class="mission-card">
-                    <div class="m-info">
-                        <h4>Deposite R$ 20,00</h4>
-                        <p><i class="fa-solid fa-circle-plus"></i> Ganhe R$ 7,00 Extras</p>
-                    </div>
-                    <button class="btn-ativar-m" id="btn-missao-fixo20" onclick="toggleMissao(20, 7, 'fixo')">ATIVAR</button>
-                </div>
-
-                <div class="mission-card special">
-                    <div class="m-info">
-                        <h4>Bônus Supremo 100%</h4>
-                        <p><i class="fa-solid fa-bolt"></i> Dobre qualquer valor!</p>
-                    </div>
-                    <button class="btn-ativar-m special-btn" id="btn-missao-100porcento0" onclick="toggleMissao(0, 0, '100porcento')">ATIVAR</button>
-                </div>
-                
-                <div style="text-align:center; margin-top:15px;">
-                    <a href="saldo.html" id="linkIrDeposito" style="color:var(--green); text-decoration:none; font-weight:900; font-size:13px; display:none; padding:10px; border:1px dashed var(--green); border-radius:8px;">
-                        <i class="fa-solid fa-money-bill-transfer"></i> Ir para Depósito
-                    </a>
-                </div>
-
-                <div style="font-size: 10px; color:#666; margin-top: 15px; text-align:center;">*Todas as missões possuem meta de apostas (Rollover) atreladas antes do saque. Limitado a um uso por jogador.</div>
-            </div>
-            <button class="btn-close-modal" style="background:#222; color:#fff;" onclick="fecharModal('modalMissoes')">Fechar Missões</button>
-        </div>
-    </div>
-
+    <!-- MODAL DE TERMOS -->
     <div class="modal-overlay" id="modalTermos">
         <div class="modal-content">
             <div class="modal-title" style="color: #fff;"><i class="fa-solid fa-file-contract"></i> Políticas da Plataforma</div>
@@ -280,12 +245,13 @@
                 <p><strong>1. Funcionamento do Sistema (RTP):</strong> A SorteCerta utiliza algoritmos RNG com taxas de retorno (RTP) pré-configuradas. O sistema processa apostas e pagamentos de forma automatizada.</p><br>
                 <p><strong>2. Pagamentos e Transações:</strong> Todos os depósitos e saques são processados via PIX. O prazo de compensação é imediato para depósitos e até 24 horas para auditoria de saques.</p><br>
                 <p><strong>3. Regras de Integridade:</strong> É terminantemente proibido o uso de robôs. A casa reserva-se o direito de anular ganhos provenientes de comportamentos atípicos.</p><br>
-                <p><strong>4. Regras de Missões:</strong> Bônus ativados geram uma trava temporária de saque (Rollover) equivalente às apostas necessárias proporcionais ao bônus. Válido apenas para novos usuários.</p>
+                <p><strong>4. Regras de Missões:</strong> Bônus ativados geram uma trava temporária de saque (Rollover) equivalente às apostas necessárias. Válido apenas para novos usuários na primeira transação.</p>
             </div>
             <button class="btn-close-modal" onclick="fecharModal('modalTermos')">Entendi e Concordo</button>
         </div>
     </div>
 
+    <!-- MODAL DE HISTÓRICO -->
     <div class="modal-overlay" id="modalHistorico">
         <div class="modal-content">
             <div class="modal-title" style="color: #3498db;"><i class="fa-solid fa-clock-rotate-left"></i> Extrato de Conta</div>
@@ -332,42 +298,28 @@
             const dados = snapshot.val() || {};
             document.getElementById('displaySaldo').innerText = "R$ " + parseFloat(dados.saldo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
-            const menuMissao = document.getElementById('menuMissaoItem');
-            const linkIrDeposito = document.getElementById('linkIrDeposito');
+            const panelBonus = document.getElementById('panelBonusSupremo');
+            const btnToggle = document.getElementById('btnToggleBonus');
+            const linkDep = document.getElementById('linkIrDeposito');
 
-            // REGRA: SE ELE JÁ DEPOSITOU USANDO BÔNUS, A ABA DESAPARECE
+            // REGRA SUPREMA: SE JÁ USOU BÔNUS, A ABA DESAPARECE PARA SEMPRE
             if(dados.bonus_usado === true) {
-                if(menuMissao) menuMissao.style.display = 'none';
+                if(panelBonus) panelBonus.style.display = 'none';
             } else {
-                if(menuMissao) menuMissao.style.display = 'flex';
+                if(panelBonus) panelBonus.style.display = 'block';
                 currentMissaoAtiva = dados.missao_ativa || null;
 
-                // Restaura visual padrão dos botões
-                document.querySelectorAll('.btn-ativar-m').forEach(btn => {
-                    btn.innerText = 'ATIVAR';
-                    btn.classList.remove('btn-cancelar');
-                    btn.disabled = false;
-                });
-
-                if (currentMissaoAtiva) {
-                    linkIrDeposito.style.display = 'inline-block';
-                    
-                    // Acha qual foi ativado e vira botão de Cancelar (Vermelho)
-                    let activeBtnId = 'btn-missao-' + currentMissaoAtiva.tipo + (currentMissaoAtiva.deposito || '0');
-                    let activeBtn = document.getElementById(activeBtnId);
-                    
-                    if(activeBtn) {
-                        activeBtn.innerText = 'CANCELAR';
-                        activeBtn.classList.add('btn-cancelar');
-                    }
-
-                    // Bloqueia (cinza) todos os outros botões
-                    document.querySelectorAll('.btn-ativar-m:not(.btn-cancelar)').forEach(btn => {
-                        btn.disabled = true;
-                        btn.innerText = 'BLOQUEADO';
-                    });
+                // Troca o botão dependendo do status de ativação
+                if (currentMissaoAtiva && currentMissaoAtiva.tipo === '100porcento') {
+                    btnToggle.innerText = 'CANCELAR BÔNUS';
+                    btnToggle.classList.remove('btn-bonus-activate');
+                    btnToggle.classList.add('btn-bonus-cancel');
+                    linkDep.style.display = 'flex'; // Mostra botão de Depositar
                 } else {
-                    linkIrDeposito.style.display = 'none';
+                    btnToggle.innerText = 'ATIVAR BÔNUS DE 100%';
+                    btnToggle.classList.remove('btn-bonus-cancel');
+                    btnToggle.classList.add('btn-bonus-activate');
+                    linkDep.style.display = 'none'; // Esconde botão de Depositar
                 }
             }
         });
@@ -376,14 +328,14 @@
         window.abrirModal = function(id) { document.getElementById(id).style.display = 'flex'; }
         window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
-        // TOGGLE: ATIVA OU DESATIVA MISSÃO
+        // TOGGLE: ATIVA OU DESATIVA O BÔNUS 100%
         window.toggleMissao = async function(deposito, bonus, tipo) {
             try {
-                // Se o cara clicou no que já estava ativo, ele tá querendo DESATIVAR
-                if (currentMissaoAtiva && currentMissaoAtiva.tipo === tipo && currentMissaoAtiva.deposito === deposito) {
+                if (currentMissaoAtiva && currentMissaoAtiva.tipo === tipo) {
+                    // DESATIVAR
                     await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
                 } else {
-                    // Ele quer ATIVAR
+                    // ATIVAR
                     await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), {
                         tipo: tipo,
                         deposito: deposito,
@@ -391,7 +343,7 @@
                     });
                 }
             } catch (error) {
-                alert("Erro de conexão ao alterar a missão.");
+                alert("Erro de conexão. Tente novamente.");
             }
         }
 
