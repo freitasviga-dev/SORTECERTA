@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -126,6 +127,7 @@
         .bucket.yellow { background: #f1c40f; }
         .bucket.red { background: #e74c3c; color: #fff;}
         
+        /* Efeito de flash dinâmico nos baldes */
         .bucket.hit { transform: scaleY(1.25); filter: brightness(1.6); }
 
         /* POP-UP COMPACTO DE VITÓRIA (ESTILO GOAL) */
@@ -200,6 +202,7 @@
 </head>
 <body>
 
+    <!-- TELA INICIAL PARA DESBLOQUEIO DE ÁUDIO -->
     <div id="startScreen">
         <h2>PLINKO VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
@@ -207,6 +210,7 @@
 
     <div id="mobile-container">
         
+        <!-- HEADER BAR -->
         <div class="header-bar">
             <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-text">PLINKO VIP</div>
@@ -215,13 +219,16 @@
             </div>
         </div>
 
+        <!-- GAME AREA -->
         <div class="game-area" id="gameArea">
             
+            <!-- POP-UP DE VITÓRIA NO TOPO DA ÁREA DO JOGO -->
             <div class="win-toast" id="winToast">
                 <span>LUCRO TOTAL</span>
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
+            <!-- CAIXA QUE PROTEGE A ALTURA DA PIRÂMIDE -->
             <div class="plinko-board">
                 <canvas id="plinkoCanvas" width="350" height="325"></canvas>
                 
@@ -234,6 +241,7 @@
 
         </div>
 
+        <!-- CONTROLES FIXOS NA BASE -->
         <div class="controls-wrapper">
             
             <div class="bet-input-row">
@@ -263,7 +271,7 @@
 
     <script type="module">
         // ==========================================
-        // 1. IMPORTAÇÕES E FIREBASE STRICT
+        // 1. IMPORTAÇÕES CORRETAS (FIREBASE DATABASE)
         // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -384,7 +392,7 @@
         buildBuckets();
 
         // ==========================================
-        // 4. MOTOR FÍSICO E RENDERIZADOR GRAFICO (MUDANÇA VISUAL TOTAL)
+        // 4. MOTOR FÍSICO DO CANVAS (EFEITOS ESPECIAIS ATIVOS)
         // ==========================================
         const canvas = document.getElementById('plinkoCanvas');
         const ctx = canvas.getContext('2d');
@@ -396,26 +404,23 @@
         
         let activeBalls = [];
 
-        // NOVO: Desenha as linhas guias de proteção laterais em neon
         function drawBoardLines() {
-            ctx.strokeStyle = 'rgba(0, 230, 118, 0.35)'; // Linha verde neon suave
+            ctx.strokeStyle = 'rgba(0, 230, 118, 0.35)';
             ctx.lineWidth = 2.5;
             ctx.shadowBlur = 12;
             ctx.shadowColor = '#00e676';
             
-            // Parede Esquerda da Pirâmide
             ctx.beginPath();
             ctx.moveTo(START_X, START_Y - 8);
             ctx.lineTo(START_X - (ROWS / 2) * X_SPACING - 8, START_Y + (ROWS - 1) * Y_SPACING + 12);
             ctx.stroke();
             
-            // Parede Direita da Pirâmide
             ctx.beginPath();
             ctx.moveTo(START_X, START_Y - 5);
             ctx.lineTo(START_X + (ROWS / 2) * X_SPACING + 8, START_Y + (ROWS-1) * Y_SPACING + 10);
             ctx.stroke();
             
-            ctx.shadowBlur = 0; // Desativa a sombra global para as outras renderizações
+            ctx.shadowBlur = 0; 
         }
 
         function drawPins() {
@@ -426,14 +431,12 @@
                     let pinKey = `${r}_${c}`;
                     
                     let radius = 2.5;
-                    let styleColor = '#00d2ff'; // Novo padrão: Azul Ciano Neon constante
+                    let styleColor = '#00d2ff'; // Pino neon ciano
                     
                     if (pinStates[pinKey] && pinStates[pinKey] > 0) {
-                        // Impacto! Expansão do pino e mudança drástica de cor
                         radius = 2.5 + (pinStates[pinKey] * 3.5); 
-                        styleColor = '#00e676'; // Brilha Verde
+                        styleColor = '#00e676'; 
                         
-                        // Desenha onda de choque circular se expandindo em volta do pino
                         ctx.strokeStyle = `rgba(0, 230, 118, ${pinStates[pinKey]})`;
                         ctx.lineWidth = 1.5;
                         ctx.shadowBlur = 15;
@@ -442,10 +445,9 @@
                         ctx.arc(x, y, radius + 8 * (1 - pinStates[pinKey]), 0, Math.PI * 2);
                         ctx.stroke();
                         
-                        pinStates[pinKey] -= 0.08; // Suaviza o efeito aos poucos
+                        pinStates[pinKey] -= 0.08; 
                     }
 
-                    // Renderização estável do pino com efeito de lâmpada neon acesa
                     ctx.fillStyle = styleColor;
                     ctx.shadowBlur = pinStates[pinKey] > 0 ? 15 : 6;
                     ctx.shadowColor = pinStates[pinKey] > 0 ? '#00e676' : '#00d2ff';
@@ -467,10 +469,7 @@
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // 1. Desenha as linhas de neon do tabuleiro primeiro
-            drawBoard();
-            
-            // 2. Desenha as fatias de pinos por cima
+            drawBoardLines();
             drawPins();
 
             for (let i = activeBalls.length - 1; i >= 0; i--) {
@@ -484,7 +483,6 @@
                     tocarSom('sfxTick');
                     ball.lastFloor = r;
                     
-                    // Ativa a animação de pulsação e onda de choque no pino correspondente
                     let colPassed = ball.path.slice(0, r).reduce((a, b) => a + b, 0);
                     let pinKey = `${r}_${colPassed}`;
                     pinStates[pinKey] = 1.0; 
@@ -521,7 +519,7 @@
                     }
                 }
 
-                // Efeito Rastro de Cometa do Pro
+                // Rastro do cometa
                 ball.history.push({x: ball.x, y: ball.y});
                 if (ball.history.length > 7) ball.history.shift();
 
@@ -536,7 +534,7 @@
                 }
                 ctx.globalAlpha = 1.0; 
 
-                // Desenha a bolinha principal
+                // Bolinha principal
                 ctx.fillStyle = getBallColorHex(ball.color);
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = getBallColorHex(ball.color);
@@ -700,8 +698,7 @@
             let finalIndex = ball.path.reduce((a,b) => a+b, 0);
             const targetBucket = document.getElementById(`bucket-${ball.color}-${finalIndex}`);
             
-            // Efeito visual de colisão (hit flash) nas caçapas
-            if (targetItem) {
+            if (targetBucket) {
                 targetBucket.classList.add('hit');
                 setTimeout(() => targetBucket.classList.remove('hit'), 150);
             }
