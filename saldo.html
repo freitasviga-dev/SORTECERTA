@@ -50,9 +50,26 @@
         .input-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 20px 20px 20px 60px; border-radius: 12px; font-size: 26px; font-weight: 900; outline: none; transition: 0.2s; }
         .input-custom:focus { border-color: var(--green); background: rgba(46, 204, 113, 0.05); }
 
-        /* AVISO DE BÔNUS (COM TRANSIÇÃO SUAVE) */
-        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
-        .bonus-alert i { font-size: 20px; }
+        /* --- BÔNUS DENTRO DO DEPÓSITO --- */
+        .bonus-panel {
+            background: radial-gradient(circle at top right, rgba(155, 81, 224, 0.15), #0a0a0c); 
+            border: 1px solid rgba(155, 81, 224, 0.4); border-radius: 16px; padding: 20px; 
+            position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
+            backdrop-filter: blur(10px); margin-bottom: 25px; display: none; /* Só exibe se não usou */
+        }
+        .bonus-panel::before { content: '🎁'; position: absolute; right: -10px; top: -10px; font-size: 80px; opacity: 0.05; pointer-events: none; }
+        .bonus-title { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bonus-title i { color: #d08aff; filter: drop-shadow(0 0 5px rgba(155, 81, 224, 0.5)); }
+        .bonus-desc { font-size: 12px; color: #ccc; margin-bottom: 15px; line-height: 1.5; z-index: 2; position: relative; }
+        
+        .btn-bonus-action { border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; z-index: 2; position: relative; }
+        .btn-bonus-action:active { transform: translateY(4px); box-shadow: none !important; }
+        .btn-bonus-activate { background: linear-gradient(135deg, #9b51e0, #6a1b9a); color: #fff; box-shadow: 0 4px 0 #4a148c; }
+        .btn-bonus-cancel { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; box-shadow: 0 4px 0 #922b21; }
+
+        /* AVISO DO SIMULADOR (COM TRANSIÇÃO SUAVE) */
+        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 12px; transition: all 0.3s ease; }
+        .bonus-alert i { font-size: 20px; margin-top: 2px; }
         .bonus-alert p { font-size: 11px; color: #ccc; line-height: 1.4; }
 
         .btn-submit { width: 100%; background: linear-gradient(180deg, var(--green) 0%, #00b359 100%); color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 8px 0 #145a32; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -97,24 +114,36 @@
                 </div>
             </div>
             
+            <!-- PAINEL DE BÔNUS DIRETO NO DEPÓSITO -->
+            <div class="bonus-panel" id="panelBonusDeposito">
+                <div class="bonus-title"><i class="fa-solid fa-bolt"></i> Bônus de Novo Usuário</div>
+                <div class="bonus-desc">Ative agora e dobre o valor do seu depósito instantaneamente! Sujeito a meta de apostas (Rollover) antes do primeiro saque.</div>
+                <button class="btn-bonus-action btn-bonus-activate" id="btnToggleBonusDep" onclick="toggleMissao(0, 0, '100porcento')">
+                    ATIVAR BÔNUS DE 100%
+                </button>
+            </div>
+
             <div class="value-grid" id="gridBotoes">
-                <button class="btn-value" onclick="selecionarValor(30, this)">R$ 30</button>
+                <button class="btn-value" onclick="selecionarValor(5, this)">R$ 5</button>
+                <button class="btn-value active" onclick="selecionarValor(10, this)">R$ 10</button>
+                <button class="btn-value" onclick="selecionarValor(20, this)">R$ 20</button>
                 <button class="btn-value" onclick="selecionarValor(50, this)">R$ 50</button>
-                <button class="btn-value active" onclick="selecionarValor(100, this)">R$ 100</button>
+                <button class="btn-value" onclick="selecionarValor(100, this)">R$ 100</button>
                 <button class="btn-value" onclick="selecionarValor(200, this)">R$ 200</button>
-                <button class="btn-value" onclick="selecionarValor(500, this)">R$ 500</button>
-                <button class="btn-value" onclick="selecionarValor(1000, this)">R$ 1000</button>
             </div>
 
             <div class="custom-input-group">
                 <span>R$</span>
-                <input type="number" id="inputValor" class="input-custom" value="100" oninput="limparBotoes()">
+                <input type="number" id="inputValor" class="input-custom" value="10" oninput="limparBotoes()">
             </div>
 
-            <!-- CAIXA DE AVISO (MUDA DINAMICAMENTE) -->
+            <!-- SIMULADOR DINÂMICO DE GANHO -->
             <div class="bonus-alert" id="avisoBonus">
-                <i class="fa-solid fa-circle-info" style="color:var(--gold);"></i>
-                <p>O saldo mínimo para depósito é de <strong>R$ 1,00</strong>. Ao continuar, você receberá a chave Pix oficial do financeiro.</p>
+                <i class="fa-solid fa-circle-info" style="color:var(--gold);" id="iconeAviso"></i>
+                <div>
+                    <p style="color:#fff; margin-bottom: 5px; font-size: 13px;">Total de saldo a receber: <strong id="totalReceber" style="font-size: 16px; color: var(--green);">R$ 10,00</strong></p>
+                    <p>O valor mínimo exigido para o depósito na plataforma é de <strong>R$ 5,00</strong>.</p>
+                </div>
             </div>
 
             <button class="btn-submit" onclick="enviarOrdemDeposito()">
@@ -137,62 +166,113 @@
         let missaoAtiva = null; 
         const phoneDestination = "5583996469538";
 
-        // LÓGICA DO INTERRUPTOR (LIGA/DESLIGA O VISUAL DO BÔNUS)
+        // VERIFICA DADOS E MUDA A TELA EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             document.getElementById('displaySaldoTop').innerText = parseFloat(dados.saldo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
             missaoAtiva = dados.missao_ativa || null;
+            
+            const panelBonus = document.getElementById('panelBonusDeposito');
+            const btnToggle = document.getElementById('btnToggleBonusDep');
             const avisoBox = document.getElementById('avisoBonus');
+            const iconeAviso = document.getElementById('iconeAviso');
 
-            // Verifica se o Bônus 100% está ativo
-            if(missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                avisoBox.style.background = 'rgba(155, 81, 224, 0.1)';
-                avisoBox.style.borderLeftColor = '#9b51e0';
-                avisoBox.innerHTML = `<i class="fa-solid fa-gift" style="color:#9b51e0"></i><p style="color:#fff;"><strong>BÔNUS SUPREMO 100% ATIVADO!</strong> O valor que você escolher depositar será dobrado na hora.</p>`;
+            // REGRA: SE JÁ USOU BÔNUS, A ABA DESAPARECE PARA SEMPRE
+            if(dados.bonus_usado === true) {
+                if(panelBonus) panelBonus.style.display = 'none';
             } else {
-                // Se ele desativar (cancelar) no perfil, o código entra aqui e restaura a cor normal
-                avisoBox.style.background = 'rgba(241, 196, 15, 0.05)';
-                avisoBox.style.borderLeftColor = 'var(--gold)';
-                avisoBox.innerHTML = `<i class="fa-solid fa-circle-info" style="color:var(--gold);"></i><p>O saldo mínimo para depósito é de <strong>R$ 1,00</strong>. Ao continuar, você receberá a chave Pix oficial do financeiro.</p>`;
+                if(panelBonus) panelBonus.style.display = 'block';
+
+                // Verifica se o Bônus 100% está ativo
+                if(missaoAtiva && missaoAtiva.tipo === '100porcento') {
+                    btnToggle.innerText = 'CANCELAR BÔNUS';
+                    btnToggle.classList.remove('btn-bonus-activate');
+                    btnToggle.classList.add('btn-bonus-cancel');
+                    
+                    avisoBox.style.background = 'rgba(155, 81, 224, 0.1)';
+                    avisoBox.style.borderLeftColor = '#9b51e0';
+                    iconeAviso.className = 'fa-solid fa-gift';
+                    iconeAviso.style.color = '#9b51e0';
+                } else {
+                    btnToggle.innerText = 'ATIVAR BÔNUS DE 100%';
+                    btnToggle.classList.remove('btn-bonus-cancel');
+                    btnToggle.classList.add('btn-bonus-activate');
+                    
+                    avisoBox.style.background = 'rgba(241, 196, 15, 0.05)';
+                    avisoBox.style.borderLeftColor = 'var(--gold)';
+                    iconeAviso.className = 'fa-solid fa-circle-info';
+                    iconeAviso.style.color = 'var(--gold)';
+                }
             }
+            
+            // Recalcula o simulador assim que o Firebase responde
+            atualizarSimulador();
         });
 
         document.getElementById('linkSuporteDireto').href = `https://wa.me/${phoneDestination}?text=Olá,%20estou%20na%20página%20de%20depósito.%20Meu%20ID:%20${idDispositivo}`;
+
+        // FUNÇÕES DO SIMULADOR E BOTÕES DE VALOR
+        window.atualizarSimulador = function() {
+            let val = parseFloat(document.getElementById('inputValor').value) || 0;
+            let multiplicador = (missaoAtiva && missaoAtiva.tipo === '100porcento') ? 2 : 1;
+            document.getElementById('totalReceber').innerText = "R$ " + (val * multiplicador).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
 
         window.selecionarValor = function(valor, btnElement) {
             document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
             document.getElementById('inputValor').value = valor;
+            atualizarSimulador();
         }
-        window.limparBotoes = function() { document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active')); }
 
+        window.limparBotoes = function() { 
+            document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active')); 
+            atualizarSimulador();
+        }
+
+        // TOGGLE: LIGA/DESLIGA NO BANCO DE DADOS
+        window.toggleMissao = async function(deposito, bonus, tipo) {
+            try {
+                if (missaoAtiva && missaoAtiva.tipo === tipo) {
+                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
+                } else {
+                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), { tipo: tipo, deposito: deposito, bonus: bonus });
+                }
+            } catch (error) {
+                alert("Erro de conexão. Tente novamente.");
+            }
+        }
+
+        // ORDEM DE DEPÓSITO
         window.enviarOrdemDeposito = async function() {
             let valorInput = parseFloat(document.getElementById('inputValor').value);
-            if(isNaN(valorInput) || valorInput < 1.00) { alert("Valor mínimo de depósito é R$ 1,00."); return; }
             
-            // LÓGICA DE METAS DE APOSTAS (ROLLOVER) PARA O SAQUE
-            let novaMetaDeAposta = valorInput; // Padrão: Sem bônus, tem que apostar o que depositou
+            if(isNaN(valorInput) || valorInput < 5.00) { 
+                alert("Operação negada: O valor mínimo exigido para o depósito é de R$ 5,00."); 
+                return; 
+            }
+            
+            let novaMetaDeAposta = valorInput; // Padrão
             let msgBonusZap = "NENHUM";
 
             if (missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                // Bônus Supremo: (Depósito x 2) * 2 = Meta
-                novaMetaDeAposta = (valorInput * 2) * 2;
+                novaMetaDeAposta = (valorInput * 2) * 2; // Regra de Ouro: (Valor x 2) x 2
                 msgBonusZap = "BÔNUS 100% SUPREMO";
             }
 
             try {
-                // 1. Grava a meta no Banco de Dados (Rollover)
+                // 1. Grava a meta de Rollover e zera o contador atual do jogador
                 await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_meta'), novaMetaDeAposta);
                 await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), 0);
                 
-                // 2. Marca o bônus como usado (Isso apaga o painel do perfil para sempre!)
+                // 2. Trava o bônus para ele NUNCA MAIS APARECER no perfil/depósito deste usuário
                 await set(ref(db, 'usuarios/' + idDispositivo + '/bonus_usado'), true);
 
-                // 3. Limpa a variável de ativação
+                // 3. Limpa o gatilho visual de ativação
                 if(missaoAtiva) await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
 
-                // 4. Salva a métrica global de depósitos
+                // 4. Somador Geral do Cassino (Pro seu painel admin)
                 const refTotalDepositos = ref(db, 'sistema/total_depositos');
                 get(refTotalDepositos).then((snap) => {
                     let totalAtual = parseFloat(snap.val() || 0);
@@ -210,7 +290,7 @@
                 window.location.href = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
             
             } catch (error) {
-                alert("Ocorreu um erro ao processar sua solicitação. Tente novamente.");
+                alert("Ocorreu um erro ao processar sua solicitação. Verifique a internet e tente novamente.");
             }
         }
     </script>
