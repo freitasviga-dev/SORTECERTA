@@ -4,35 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- ANTI-CACHE PARA O LOBBY -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- ANTI-CACHE PARA O LOBBY EXTREMO -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
 
-    <title>SorteCerta - O Melhor Cassino VIP</title>
+    <title>SorteCerta | O Melhor Cassino VIP</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-main: #0a0a0c;
-            --bg-card: rgba(24, 24, 27, 0.7);
+            --bg-card: rgba(18, 18, 24, 0.85);
             --gold: #f1c40f;
             --gold-dark: #b8860b;
             --green: #00e676;
             --red: #e74c3c;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --neon-blue: #00d2ff;
+            --neon-purple: #9b51e0;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body { 
             background-color: var(--bg-main); 
-            background-image: radial-gradient(circle at 50% 0%, #2a1a00 0%, transparent 60%);
-            color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; 
+            background-image: radial-gradient(circle at 50% 0%, #1e1300 0%, transparent 60%);
+            color: var(--text-main); padding-bottom: 95px; overflow-x: hidden; 
         }
 
-        /* --- APP SHELL (O IFRAME QUE RODA OS JOGOS ESCONDIDO) --- */
+        /* --- APP SHELL (SISTEMA DE ANCORAGEM DE IFRAME STRICT) --- */
         #appShell {
             display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100vh; height: 100dvh; 
@@ -51,126 +54,133 @@
         #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
         #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; }
 
-        /* --- HEADER PREMIUM --- */
+        /* --- HEADER PREMIUM ULTRA SLIM --- */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 10, 12, 0.85);
-            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
             padding-top: calc(12px + env(safe-area-inset-top));
         }
         
         .brand-logo { display: flex; align-items: center; text-decoration: none; }
-        .brand-logo span { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .brand-logo span { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
         
-        .user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); }
-        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 5px; }
-        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 2px; }
-        .balance { font-weight: 900; color: var(--green); font-size: 13px; white-space: nowrap; line-height: 1; }
+        .user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 4px 10px 4px 4px; border-radius: 50px; border: 1px solid var(--border-color); }
+        .balance-box { display: flex; flex-direction: column; align-items: flex-end; margin-left: 8px; margin-right: 5px; }
+        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 3px; font-weight: bold; }
+        .balance { font-weight: 900; color: var(--green); font-size: 14px; white-space: nowrap; line-height: 1; text-shadow: 0 0 10px rgba(0,230,118,0.2); }
         
-        .action-buttons { display: flex; gap: 5px; }
-        .btn-withdraw { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--gold); color: var(--gold); font-weight: bold; padding: 6px 10px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; cursor: pointer; }
+        .action-buttons { display: flex; gap: 6px; }
+        .btn-withdraw { background: rgba(251, 192, 45, 0.08); border: 1px solid var(--gold); color: var(--gold); font-weight: 900; padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; text-transform: uppercase; transition: 0.2s; white-space: nowrap; cursor: pointer; }
         .btn-deposit { 
             background: linear-gradient(135deg, #00e676, #00b359); color: #000; font-weight: 900; 
-            padding: 6px 12px; border-radius: 20px; font-size: 10px; text-decoration: none; 
-            text-transform: uppercase; white-space: nowrap; border: 1px solid #fff;
-            animation: neonGlow 1.5s infinite alternate; cursor: pointer;
+            padding: 6px 14px; border-radius: 20px; font-size: 10px; text-decoration: none; 
+            text-transform: uppercase; white-space: nowrap; border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 15px rgba(0,230,118,0.4); cursor: pointer;
         }
 
         .btn-login-header {
             background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #000; font-weight: 900; padding: 8px 16px; border-radius: 20px;
+            color: #000; font-weight: 900; padding: 8px 18px; border-radius: 20px;
             font-size: 11px; text-decoration: none; text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4); cursor: pointer;
+            box-shadow: 0 4px 12px rgba(241, 196, 15, 0.3); cursor: pointer;
         }
 
-        .container { max-width: 800px; margin: 90px auto 0; padding: 15px; }
+        .container { max-width: 600px; margin: 85px auto 0; padding: 15px; }
 
-        /* --- BANNER --- */
+        /* --- CORREÇÃO: HERO BANNER PREMIUM UNIFICADO (FIM DO QUADRADO VERMELHO) --- */
         .hero-banner {
-            width: 100%; border-radius: 20px; background: linear-gradient(135deg, #2a0000 0%, #4a0000 100%);
-            padding: 35px 25px; position: relative; overflow: hidden; margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(255, 69, 0, 0.3);
-            display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255, 69, 0, 0.2);
+            width: 100%; border-radius: 20px; background: linear-gradient(135deg, #111116 0%, #1a1505 100%);
+            padding: 30px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(241, 196, 15, 0.05);
+            display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(241, 196, 15, 0.15);
         }
-        .hero-banner::after { content: '🐯'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.15; transform: rotate(-15deg); filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.8)); }
-        .hero-banner h1 { font-size: 28px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.5); }
-        .hero-banner p { font-size: 14px; color: #eee; margin-bottom: 20px; z-index: 2; max-width: 65%; font-weight: 500; }
-        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 25px; border-radius: 10px; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 14px; box-shadow: 0 5px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; letter-spacing: 1px; cursor: pointer;}
-        .btn-play-now:active { transform: translateY(5px); box-shadow: 0 0 0 #8a6508; }
+        .hero-banner::after { content: '👑'; position: absolute; right: -10px; bottom: -20px; font-size: 130px; opacity: 0.06; transform: rotate(-10deg); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 0.3)); }
+        .hero-banner h1 { font-size: 26px; color: var(--gold); margin-bottom: 6px; z-index: 2; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 8px rgba(241, 196, 15, 0.4); }
+        .hero-banner p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; z-index: 2; max-width: 70%; font-weight: 500; line-height: 1.4; }
+        .btn-play-now { background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; padding: 12px 24px; border-radius: 12px; font-weight: 900; z-index: 2; width: max-content; text-transform: uppercase; font-size: 13px; box-shadow: 0 4px 0 #8a6508, 0 10px 20px rgba(0,0,0,0.4); transition: 0.1s; letter-spacing: 0.5px; cursor: pointer;}
+        .btn-play-now:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a6508; }
 
         /* --- CATEGORIAS --- */
-        .categories { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; margin-bottom: 20px; }
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; margin-bottom: 15px; }
         .categories::-webkit-scrollbar { display: none; }
-        .cat-btn { text-decoration: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.3s; backdrop-filter: blur(5px); }
-        .cat-btn.active { background: rgba(241, 196, 15, 0.15); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2); }
+        .cat-btn { text-decoration: none; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 18px; border-radius: 25px; font-size: 12px; font-weight: 800; white-space: nowrap; display: flex; align-items: center; gap: 8px; transition: 0.2s; backdrop-filter: blur(5px); }
+        .cat-btn.active { background: rgba(241, 196, 15, 0.08); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15); }
 
-        /* --- GRID DE JOGOS --- */
-        .section-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .section-title i { color: var(--gold); font-size: 20px; }
+        /* --- GRID DE JOGOS PREMIUM (ESTILO ORIGINAL SPRIBE SPARK) --- */
+        .section-title { font-size: 15px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .section-title i { color: var(--gold); font-size: 16px; }
         
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 30px; }
         
-        .game-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; }
-        .game-card:active { transform: scale(0.92); border-color: var(--gold); }
-        .game-cover { width: 100%; height: 130px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; pointer-events: none; }
+        .game-card { background: var(--bg-card); border-radius: 14px; overflow: hidden; position: relative; border: 1px solid var(--border-color); transition: 0.2s; backdrop-filter: blur(10px); cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .game-card:active { transform: scale(0.94); border-color: var(--gold); }
         
-        .gc-tiger { background: radial-gradient(circle, #8b0000, #330000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-dragon { background: radial-gradient(circle, #d35400, #5a2400); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-aviator { background: radial-gradient(circle, #1e3c72, #0a1930); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-mines { background: radial-gradient(circle, #0f2027, #000); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-goal { background: radial-gradient(circle, #184b9e, #0d2b5e); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        .gc-ox { background: radial-gradient(circle, #8e44ad, #2c0b3d); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        /* Renderização das capas em formato Gradiente Espacial Premium com Emojis Centralizados */
+        .game-cover { width: 100%; height: 110px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 45px; position: relative; pointer-events: none; }
+        
+        .gc-mines { background: radial-gradient(circle, #2c0b3d, #0d0413); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-goal { background: radial-gradient(circle, #113a1a, #041408); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-roleta { background: radial-gradient(circle, #5c0000, #1f0000); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-plinko { background: radial-gradient(circle, #1c3c73, #07152b); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-hotline { background: radial-gradient(circle, #d35400, #4a1900); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-dice { background: radial-gradient(circle, #16a085, #05332a); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .gc-hilo { background: radial-gradient(circle, #1f4068, #0b132b); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
 
-        .game-info { padding: 10px; text-align: center; background: rgba(0,0,0,0.6); pointer-events: none; }
-        .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; }
-        .game-provider { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
+        .game-info { padding: 8px; text-align: center; background: rgba(7,7,9,0.7); border-top: 1px solid rgba(255,255,255,0.02); pointer-events: none; }
+        .game-name { font-size: 13px; font-weight: 900; color: #fff; margin-bottom: 2px; letter-spacing: -0.2px; }
+        .game-provider { font-size: 9px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .hot-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5); animation: softPulse 1.5s infinite; z-index: 10; pointer-events: none; }
+        .hot-badge { position: absolute; top: 6px; right: 6px; background: linear-gradient(45deg, #ff1744, #d50000); color: #fff; font-size: 8px; padding: 2px 6px; border-radius: 10px; font-weight: 900; box-shadow: 0 2px 6px rgba(0,0,0,0.4); animation: softPulse 1.5s infinite; z-index: 10; pointer-events: none; letter-spacing: 0.3px; }
+        .hot-badge.new { background: linear-gradient(45deg, #00e676, #00b359); color: #000; }
 
-        /* --- PROVA SOCIAL (POPUP DE GANHOS) --- */
+        /* --- PROVA SOCIAL (POPUP DE GANHOS REGULADO) --- */
         .live-win-popup {
-            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: rgba(10, 10, 12, 0.95); border: 1px solid var(--green); border-radius: 50px;
-            padding: 8px 20px; display: flex; align-items: center; gap: 12px; opacity: 0;
-            transition: all 0.5s; z-index: 999; box-shadow: 0 10px 25px rgba(0, 230, 118, 0.2); width: max-content; max-width: 90%;
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 12, 0.96); border: 1px solid var(--green); border-radius: 50px;
+            padding: 8px 18px; display: flex; align-items: center; gap: 10px; opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.15); width: max-content; max-width: 90%;
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .live-win-icon { background: var(--green); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .live-win-text { font-size: 12px; color: #ddd; line-height: 1.3; }
-        .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; }
+        .live-win-icon { background: var(--green); color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .live-win-text { font-size: 11px; color: #ddd; line-height: 1.4; }
+        .live-win-amount { color: var(--green); font-weight: 900; font-size: 12px; }
 
-        /* --- MENU INFERIOR --- */
+        /* --- MENU INFERIOR PADRONIZADO COM ABAS INTERNAS --- */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
-            backdrop-filter: blur(15px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
-            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(12, 12, 16, 0.95);
+            backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly;
+            padding: 10px 0; z-index: 1000; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
-        .nav-item i { font-size: 24px; transition: 0.2s; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 9px; font-weight: 800; gap: 5px; transition: 0.2s; width: 22%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+        .nav-item i { font-size: 20px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
-        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-2px); }
+        .nav-item.active i { filter: drop-shadow(0 0 8px rgba(241,196,15,0.4)); transform: translateY(-1px); }
 
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
-        @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes neonGlow { 0% { box-shadow: 0 0 5px var(--green), inset 0 0 2px var(--green); } 100% { box-shadow: 0 0 15px var(--green), inset 0 0 8px var(--green); } }
+        @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
     </style>
 </head>
 <body>
 
+    <!-- APP SHELL EXECUTION -->
     <div id="appShell">
         <iframe id="gameIframe"></iframe>
     </div>
 
+    <!-- TELA MANUTENÇÃO REATIVA -->
     <div id="telaManutencao">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <h2>SISTEMA EM MANUTENÇÃO</h2>
-        <p>Estamos realizando uma atualização programada em nossos servidores. Seu saldo e dados estão 100% seguros.</p>
+        <p>Estamos realizando uma atualização de rotina nos motores gráficos. Seus fundos estão completamente protegidos.</p>
     </div>
 
+    <!-- NAVBAR PREMIUM -->
     <nav class="navbar">
         <div class="brand-logo">
-            <span style="color: #fff;"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> SORTECERTA</span>
+            <span><i class="fa-solid fa-crown" style="color:var(--gold); margin-right: 5px;"></i> SORTECERTA</span>
         </div>
         <div id="userPanelContainer">
             <div class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</div>
@@ -178,48 +188,71 @@
     </nav>
 
     <div class="container">
+        <!-- RESOLVIDO: BANNER SUPERIOR VIP ELEVADO (TEMA DA PLATAFORMA) -->
         <div class="hero-banner">
-            <h1>Mines Crash</h1>
-            <p>Descubra os diamantes e faça seu saque antes da bomba estourar!</p>
-            <div class="game-link btn-play-now" data-game="mines.html">Jogar Agora</div>
+            <h1>Multiplicadores VIP</h1>
+            <p>Aposte com inteligência, controle os seus riscos e garanta os melhores lucros nos jogos originais.</p>
+            <button class="btn-skip btn-3d" style="width:max-content; margin-top:0;" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</button>
         </div>
 
+        <!-- CATEGORIAS -->
         <div class="categories">
-            <div class="cat-btn active"><i class="fa-solid fa-fire"></i> Em Alta</div>
-            <div class="cat-btn"><i class="fa-solid fa-rocket"></i> Crash Games</div>
-            <div class="cat-btn"><i class="fa-solid fa-dharmachakra"></i> Roleta VIP</div>
+            <div class="cat-btn active"><i class="fa-solid fa-fire"></i> Originals</div>
+            <div class="cat-btn"><i class="fa-solid fa-bolt"></i> Instantâneos</div>
+            <div class="cat-btn"><i class="fa-solid fa-trophy"></i> Alta Conversão</div>
         </div>
 
-        <h2 class="section-title"><i class="fa-solid fa-star"></i> Cassino Originals</h2>
+        <h2 class="section-title"><i class="fa-solid fa-gem"></i> Cassino Originals VIP</h2>
+        
+        <!-- GRID DE JOGOS ATUALIZADO 100% SPRIBE/ORIGINALS STYLE -->
         <div class="games-grid">
+            
             <div class="game-card game-link" data-game="mines.html">
                 <div class="hot-badge">99% RTP</div>
                 <div class="game-cover gc-mines">💣</div>
-                <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">Spribe</div></div>
+                <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">Original</div></div>
             </div>
             
-            <!-- NOVO JOGO INSERIDO NO LOBBY -->
             <div class="game-card game-link" data-game="goal.html">
-                <div class="hot-badge">NOVO</div>
+                <div class="hot-badge new">NOVO</div>
                 <div class="game-cover gc-goal">⚽</div>
-                <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">Spribe</div></div>
+                <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">Original</div></div>
             </div>
 
-            <div class="game-card game-link" data-game="dragon.html">
-                <div class="game-cover gc-dragon">🐉</div>
-                <div class="game-info"><div class="game-name">Fortune Dragon</div><div class="game-provider">PG Soft</div></div>
+            <div class="game-card game-link" data-game="roleta.html">
+                <div class="hot-badge">VIP</div>
+                <div class="game-cover gc-roleta">🎰</div>
+                <div class="game-info"><div class="game-name">Roleta Imperial</div><div class="game-provider">Original</div></div>
             </div>
-            <div class="game-card game-link" data-game="tiger.html">
-                <div class="game-cover gc-tiger">🐯</div>
-                <div class="game-info"><div class="game-name">Fortune Tiger</div><div class="game-provider">PG Soft</div></div>
+
+            <div class="game-card game-link" data-game="plinko.html">
+                <div class="hot-badge">HOT</div>
+                <div class="game-cover gc-plinko">🔺</div>
+                <div class="game-info"><div class="game-name">Plinko</div><div class="game-provider">Original</div></div>
             </div>
-            <div class="game-card game-link" data-game="aviator.html">
-                <div class="game-cover gc-aviator">✈️</div>
-                <div class="game-info"><div class="game-name">Aviator Pro</div><div class="game-provider">Spribe</div></div>
+
+            <div class="game-card game-link" data-game="hotline.html">
+                <div class="hot-badge new">NOVO</div>
+                <div class="game-cover gc-hotline">🔥</div>
+                <div class="game-info"><div class="game-name">Hotline</div><div class="game-provider">Original</div></div>
             </div>
+
+            <div class="game-card game-link" data-game="dice.html">
+                <div class="hot-badge">98% RTP</div>
+                <div class="game-cover gc-dice">🎲</div>
+                <div class="game-info"><div class="game-name">Dice</div><div class="game-provider">Original</div></div>
+            </div>
+
+            <div class="game-card game-link" data-game="hilo.html">
+                <div class="hot-badge">VIP</div>
+                <div class="game-cover gc-hilo">🃏</div>
+                <div class="game-info"><div class="game-name">Hilo</div><div class="game-provider">Original</div></div>
+            </div>
+
         </div>
     </div>
 
+    <!-- PROVA SOCIAL SINCRONIZADA APENAS COM OS NOVOS JOGOS DA SUA COLEÇÃO -->
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
@@ -228,9 +261,13 @@
         </div>
     </div>
 
+    <!-- BARRA DE STATUS INFERIOR TOTALMENTE ATUALIZADA -->
     <nav class="bottom-nav">
-        <div class="nav-item active"><i class="fa-solid fa-gamepad"></i><span>Cassino</span></div>
-        <div class="nav-item game-link" data-game="perfil.html"><i class="fa-solid fa-user-astronaut"></i><span>Minha Conta</span></div>
+        <div class="nav-item active" onclick="window.fecharJogo();"><i class="fa-solid fa-gamepad"></i><span>Lobby</span></div>
+        <div class="nav-item game-link" data-game="mines.html"><i class="fa-solid fa-bomb"></i><span>Mines</span></div>
+        <div class="nav-item game-link" data-game="roleta.html"><i class="fa-solid fa-circle-dot"></i><span>Roleta</span></div>
+        <div class="nav-item game-link" data-game="hilo.html"><i class="fa-solid fa-clone"></i><span>Hilo</span></div>
+        <div class="nav-item game-link" data-game="perfil.html"><i class="fa-solid fa-user-astronaut"></i><span>Conta</span></div>
     </nav>
 
     <script type="module">
@@ -249,9 +286,11 @@
         window.fecharJogo = function() {
             const shell = document.getElementById('appShell');
             const iframe = document.getElementById('gameIframe');
-            iframe.src = 'about:blank'; // Reseta o iframe eliminando áudios travados no iOS
+            iframe.src = 'about:blank'; 
             shell.style.display = 'none';
             document.body.style.overflow = 'auto'; 
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');
         };
 
         window.addEventListener("message", function(event) {
@@ -274,7 +313,17 @@
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const gameUrl = this.getAttribute('data-game');
-                    if(gameUrl === 'perfil.html') { window.location.href = gameUrl; return; }
+                    
+                    if(gameUrl === 'perfil.html' || gameUrl === 'saque.html' || gameUrl === 'saldo.html') { 
+                        window.location.href = gameUrl; 
+                        return; 
+                    }
+                    
+                    // Alinha estado ativo da barra inferior se o clique veio de lá
+                    document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+                    const navMatch = document.querySelector(`.bottom-nav .nav-item[data-game="${gameUrl}"]`);
+                    if(navMatch) { navMatch.classList.add('active'); }
+
                     document.getElementById('gameIframe').src = gameUrl;
                     document.getElementById('appShell').style.display = 'block';
                     document.body.style.overflow = 'hidden'; 
@@ -291,17 +340,19 @@
             else { tela.style.display = 'none'; document.body.style.overflow = 'auto'; }
         });
 
-        // Nomes Fake Adicionados para refletir tbm o "Goal"
-        const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***tiger", "***chef"];
-        const jogosFake = ["Tiger", "Dragon", "Goal", "Mines"];
+        // PROVA SOCIAL SINCRONIZADA APENAS COM OS SEUS JOGOS ORIGINAIS ATUAIS
+        const nomesFake = ["***joao", "***maria", "***vitor", "***pedro", "***lucas", "***ana77", "***chef", "***bruno", "***gabs", "***viga"];
+        const jogosFake = ["Mines", "Goal", "Roleta Imperial", "Plinko", "Hotline", "Dice", "Hilo"];
+        
         function mostrarGanhoFalso() {
             const popup = document.getElementById('liveWin');
             document.getElementById('winUser').innerText = nomesFake[Math.floor(Math.random() * nomesFake.length)];
             document.getElementById('winGame').innerText = jogosFake[Math.floor(Math.random() * jogosFake.length)];
-            document.getElementById('winAmount').innerText = "R$ " + (Math.random() * (2500 - 50) + 50).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            popup.classList.add('show'); setTimeout(() => { popup.classList.remove('show'); }, 4000);
+            document.getElementById('winAmount').innerText = "R$ " + (Math.random() * (1200 - 30) + 30).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            popup.classList.add('show'); 
+            setTimeout(() => { popup.classList.remove('show'); }, 4000);
         }
-        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (15000 - 7000 + 1) + 7000));
+        setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (14000 - 8000 + 1) + 8000));
     </script>
 </body>
 </html>
