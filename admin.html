@@ -234,6 +234,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // REMOVIDO "get" do import, agora só onValue e update/set/push
         import { getDatabase, ref, onValue, set, remove, push, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -293,11 +294,18 @@
 
         let isManutencao = false;
         let usersDataGlobal = {};
+        
+        // VARIÁVEIS GLOBAIS DE CAIXA
+        let totalDepositosGlobal = 0;
+        let caixaGlobal = 0;
 
         function carregarDados() {
+            // LÊ OS DADOS DO SISTEMA E GUARDA EM MEMÓRIA PARA NÃO PRECISAR USAR "get()"
             onValue(ref(db, 'sistema'), (snapshot) => {
                 const sys = snapshot.val() || {};
                 isManutencao = sys.manutencao === true;
+                totalDepositosGlobal = parseFloat(sys.total_depositos || 0);
+                caixaGlobal = parseFloat(sys.caixa_global || 0);
                 
                 const btnManu = document.getElementById('btnManutencao');
                 if(isManutencao) {
@@ -385,13 +393,11 @@
 
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
-        // --- NOVA FUNÇÃO COM SALDO_REAL INTEGRADO ---
+        // --- NOVA FUNÇÃO DE SALDO COM ATUALIZAÇÃO GLOBAL EMBUTIDA ---
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
             let u = usersDataGlobal[id] || {};
             let metaAntiga = parseFloat(u.rollover_meta || 0);
             let atualAntigo = parseFloat(u.rollover_atual || 0);
-            
-            // Pega o saldo real antigo (se for conta antiga, copia o saldo total atual)
             let saldoRealAtual = parseFloat(u.saldo_real !== undefined ? u.saldo_real : saldoAtual);
             
             let faltaApostar = metaAntiga - atualAntigo;
@@ -404,14 +410,14 @@
             if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
-            let novoSaldoReal = saldoRealAtual + valorNum; // SOMA NO SALDO REAL
+            let novoSaldoReal = saldoRealAtual + valorNum; 
             
             let novoRolloverGerado = valorNum + (valorNum * 0.20);
             let metaRolloverFinal = faltaApostar + novoRolloverGerado;
             
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
-                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), // SALVA O REAL
+                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), 
                 rollover_meta: metaRolloverFinal,
                 rollover_atual: 0
             }).then(() => {
@@ -421,18 +427,20 @@
                     data: new Date().toISOString() 
                 });
                 
+                // ATUALIZA O TOTAL DEPOSITADO E O CAIXA GLOBAL
+                set(ref(db, 'sistema/total_depositos'), parseFloat((totalDepositosGlobal + valorNum).toFixed(2)));
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaGlobal + valorNum).toFixed(2)));
+
                 alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque agora está bloqueado em R$ ${metaRolloverFinal.toFixed(2)}.`);
                 document.getElementById('searchInput').value = ''; 
             });
         };
 
-        // --- NOVA FUNÇÃO DE BÔNUS (BLINDADA) ---
+        // --- NOVA FUNÇÃO DE BÔNUS COM ATUALIZAÇÃO GLOBAL EMBUTIDA ---
         window.aplicarBonusPrompt = (id, saldoAtual) => {
             let u = usersDataGlobal[id] || {};
             let metaAntiga = parseFloat(u.rollover_meta || 0);
             let atualAntigo = parseFloat(u.rollover_atual || 0);
-            
-            // Pega o saldo real antigo
             let saldoRealAtual = parseFloat(u.saldo_real !== undefined ? u.saldo_real : saldoAtual);
             
             let faltaApostar = metaAntiga - atualAntigo;
@@ -446,19 +454,24 @@
 
             let bancaTotalRecebida = valorDepositado * 2;
             let novoSaldo = parseFloat(saldoAtual) + bancaTotalRecebida;
-            let novoSaldoReal = saldoRealAtual + valorDepositado; // APENAS O VALOR REAL É SOMADO AQUI
+            let novoSaldoReal = saldoRealAtual + valorDepositado; 
             
             let novoRolloverGerado = bancaTotalRecebida * 3;
             let metaRolloverFinal = faltaApostar + novoRolloverGerado;
 
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
-                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), // SALVA O REAL
+                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), 
                 rollover_meta: metaRolloverFinal,
                 rollover_atual: 0,
                 bonus_usado: false
             }).then(() => {
                 push(ref(db, `usuarios/${id}/transacoes`), { tipo: "BÔNUS VIP 100%", valor: bancaTotalRecebida.toFixed(2), data: new Date().toISOString() });
+                
+                // ATUALIZA O TOTAL DEPOSITADO E O CAIXA GLOBAL APENAS COM O VALOR LÍQUIDO
+                set(ref(db, 'sistema/total_depositos'), parseFloat((totalDepositosGlobal + valorDepositado).toFixed(2)));
+                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaGlobal + valorDepositado).toFixed(2)));
+
                 alert(`⚡ Bônus ativado com sucesso!\n\nEle recebeu R$ ${bancaTotalRecebida.toFixed(2)} na tela, mas o sistema sabe que só R$ ${valorDepositado.toFixed(2)} é dinheiro real.\nNova meta de saque total: R$ ${metaRolloverFinal.toFixed(2)}.`);
                 document.getElementById('searchInput').value = ''; 
             }).catch(e => alert("Erro ao conectar no banco de dados."));
