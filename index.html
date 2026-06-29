@@ -362,8 +362,17 @@
                     </div>
                 </div>`;
                 
-            onValue(ref(db, 'usuarios/' + idDispositivo + '/saldo'), (snapshot) => {
-                const saldo = snapshot.val() || 0;
+            onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
+                // A EXPULSÃO EM TEMPO REAL ACONTECE AQUI:
+                if (!snapshot.exists()) {
+                    alert("Acesso permanentemente bloqueado por violação dos Termos de Serviço.");
+                    localStorage.removeItem('usuario_tracker_id');
+                    window.location.href = 'login.html';
+                    return; 
+                }
+
+                const dados = snapshot.val();
+                const saldo = dados.saldo || 0;
                 const saldoDisplay = document.getElementById('displaySaldo');
                 if(saldoDisplay) saldoDisplay.innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             });
