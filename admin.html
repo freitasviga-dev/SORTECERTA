@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+    
     <title>SorteCerta | Gestão Automática</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -75,7 +81,7 @@
         .m-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .m-value { font-size: 32px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         
-        .btn-zerar { margin-top: 15px; width: 100%; background: #111; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-zerar { width: 100%; background: #111; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-zerar-gold { border: 1px solid var(--gold); color: var(--gold); box-shadow: 0 3px 0 rgba(241, 196, 15, 0.3); }
         .btn-zerar-gold:hover { background: var(--gold); color: #000; box-shadow: 0 3px 0 #b8950b; }
         .btn-zerar-green { border: 1px solid var(--green); color: var(--green); box-shadow: 0 3px 0 rgba(0, 230, 118, 0.3); }
@@ -132,6 +138,16 @@
 </head>
 <body>
 
+    <script>
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('navigator' in window && 'serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(r) { for (let reg of r) reg.unregister(); }); }
+        })();
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { window.location.reload(true); }
+        });
+    </script>
+
     <div id="loginScreen">
         <div class="login-box">
             <h2>Acesso Restrito</h2>
@@ -166,27 +182,24 @@
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="m-title"><i class="fa-solid fa-vault" style="color:var(--gold)"></i> Lucro da Casa (RTP)</div>
-                <div class="m-value" id="displayCaixaGlobal">R$ 0,00</div>
                 <button class="btn-zerar btn-zerar-gold" onclick="zerarMetrica('caixa_global', 'Lucro da Casa (RTP)')">
-                    <i class="fa-solid fa-rotate-left"></i> Zerar
+                    <i class="fa-solid fa-rotate-left"></i> Zerar Caixa
                 </button>
             </div>
             <div class="metric-card green">
                 <div class="m-title"><i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Total Depositado</div>
-                <div class="m-value" id="displayDepositos">R$ 0,00</div>
                 <button class="btn-zerar btn-zerar-green" onclick="zerarMetrica('total_depositos', 'Total Depositado')">
-                    <i class="fa-solid fa-rotate-left"></i> Zerar
+                    <i class="fa-solid fa-rotate-left"></i> Zerar Depósitos
                 </button>
             </div>
             <div class="metric-card red">
                 <div class="m-title"><i class="fa-solid fa-arrow-up" style="color:var(--red)"></i> Total Sacado</div>
-                <div class="m-value" id="displaySaques">R$ 0,00</div>
                 <button class="btn-zerar btn-zerar-red" onclick="zerarMetrica('total_saques', 'Total Sacado')">
-                    <i class="fa-solid fa-rotate-left"></i> Zerar
+                    <i class="fa-solid fa-rotate-left"></i> Zerar Saques
                 </button>
             </div>
             <div class="metric-card blue">
-                <div class="m-title"><i class="fa-solid fa-users" style="color:var(--blue)"></i> Jogadores</div>
+                <div class="m-title"><i class="fa-solid fa-users" style="color:var(--blue)"></i> Jogadores Cadastrados</div>
                 <div class="m-value" id="contadorUsers">0</div>
             </div>
         </div>
@@ -222,7 +235,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove, push, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        // IMPORTANDO A AUTENTICAÇÃO OFICIAL E SEGURA
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -232,17 +244,15 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const auth = getAuth(app); // Iniciando Autenticação
+        const auth = getAuth(app); 
 
-        // --- SISTEMA DE LOGIN BLINDADO ---
-        const ADMIN_UID = 'bVqxxsRVcYSS23OuE5zrG2d63rA2'; // O seu UID salvo nas regras (Ele é público, não há problema de estar aqui, a senha não está)
+        const ADMIN_UID = 'bVqxxsRVcYSS23OuE5zrG2d63rA2';
 
-        // Verifica automaticamente se você já está logado ao carregar a página
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === ADMIN_UID) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('adminDashboard').style.display = 'flex';
-                carregarDados(); // Só tenta ler o banco depois que confirmou quem é
+                carregarDados();
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('adminDashboard').style.display = 'none';
@@ -260,16 +270,14 @@
             btn.innerText = "Verificando...";
             msg.innerText = "";
 
-            // Envia para o servidor do Google (A Senha NUNCA fica no código)
             signInWithEmailAndPassword(auth, email, pwd)
                 .then((userCredential) => {
                     const user = userCredential.user;
                     if(user.uid !== ADMIN_UID) {
                         msg.innerText = "Este usuário não tem permissão de Administrador.";
                         btn.innerText = "Entrar no Sistema";
-                        signOut(auth); // Desloga o penetra
+                        signOut(auth); 
                     }
-                    // Se for o admin correto, o onAuthStateChanged fará a transição de tela
                 })
                 .catch((error) => {
                     msg.innerText = "E-mail ou Senha inválidos.";
@@ -286,21 +294,12 @@
         let isManutencao = false;
         let usersDataGlobal = {};
 
-        // SÓ CARREGA O BANCO DEPOIS DE LOGADO
         function carregarDados() {
-            // --- MÉTRICAS FINANCEIRAS AUTOMÁTICAS ---
+            // Apenas para verificar manutenção
             onValue(ref(db, 'sistema'), (snapshot) => {
                 const sys = snapshot.val() || {};
-                let caixa = parseFloat(sys.caixa_global || 0);
-                let deps = parseFloat(sys.total_depositos || 0);
-                let saqs = parseFloat(sys.total_saques || 0);
-                
                 isManutencao = sys.manutencao === true;
                 
-                document.getElementById('displayCaixaGlobal').innerText = "R$ " + caixa.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                document.getElementById('displayDepositos').innerText = "R$ " + deps.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                document.getElementById('displaySaques').innerText = "R$ " + saqs.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
                 const btnManu = document.getElementById('btnManutencao');
                 if(isManutencao) {
                     btnManu.classList.add('active');
@@ -311,7 +310,6 @@
                 }
             });
 
-            // --- LISTA DE USUÁRIOS ---
             onValue(ref(db, 'usuarios'), (snapshot) => {
                 usersDataGlobal = snapshot.val() || {};
                 renderizarTabela(usersDataGlobal);
