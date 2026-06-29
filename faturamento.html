@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+    
     <title>Faturamento | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -58,10 +63,19 @@
         }
         .dot { height: 8px; width: 8px; background-color: var(--green); border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; box-shadow: 0 0 8px var(--green); }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-
     </style>
 </head>
 <body>
+
+    <script>
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('navigator' in window && 'serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(r) { for (let reg of r) reg.unregister(); }); }
+        })();
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { window.location.reload(true); }
+        });
+    </script>
 
     <div id="dashboardEspelho">
         
@@ -98,7 +112,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Mude para as SUAS credenciais exatas caso essas não sejam as finais
         const firebaseConfig = {
             apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
             databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
@@ -107,7 +120,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- LEITURA AUTOMÁTICA DOS DADOS (SOMENTE LEITURA) ---
+        // LEITURA AUTOMÁTICA EM TEMPO REAL
         onValue(ref(db, 'sistema'), (snapshot) => {
             const sys = snapshot.val() || {};
             
