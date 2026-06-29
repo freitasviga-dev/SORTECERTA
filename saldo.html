@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- ANTI-CACHE STRICT -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -55,7 +54,7 @@
             background: radial-gradient(circle at top right, rgba(155, 81, 224, 0.15), #0a0a0c); 
             border: 1px solid rgba(155, 81, 224, 0.4); border-radius: 16px; padding: 20px; 
             position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
-            backdrop-filter: blur(10px); margin-bottom: 25px; display: none; /* Só exibe se não usou */
+            backdrop-filter: blur(10px); margin-bottom: 25px; display: none; 
         }
         .bonus-panel::before { content: '🎁'; position: absolute; right: -10px; top: -10px; font-size: 80px; opacity: 0.05; pointer-events: none; }
         .bonus-title { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -114,7 +113,6 @@
                 </div>
             </div>
             
-            <!-- PAINEL DE BÔNUS DIRETO NO DEPÓSITO -->
             <div class="bonus-panel" id="panelBonusDeposito">
                 <div class="bonus-title"><i class="fa-solid fa-bolt"></i> Bônus de Novo Usuário</div>
                 <div class="bonus-desc">Ative agora e dobre o valor do seu depósito instantaneamente! Sujeito a meta de apostas (Rollover) antes do primeiro saque.</div>
@@ -137,7 +135,6 @@
                 <input type="number" id="inputValor" class="input-custom" value="10" oninput="limparBotoes()">
             </div>
 
-            <!-- SIMULADOR DINÂMICO DE GANHO -->
             <div class="bonus-alert" id="avisoBonus">
                 <i class="fa-solid fa-circle-info" style="color:var(--gold);" id="iconeAviso"></i>
                 <div>
@@ -153,8 +150,9 @@
     </div>
 
     <script type="module">
+        /* IMPORT DO PUSH ADICIONADO AQUI */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // FIREBASE OFUSCADO
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
@@ -162,11 +160,9 @@
         const db = getDatabase(app);
 
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
-        let bancaAtual = 0.00;
         let missaoAtiva = null; 
         const phoneDestination = "5583996469538";
 
-        // VERIFICA DADOS E MUDA A TELA EM TEMPO REAL
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
             document.getElementById('displaySaldoTop').innerText = parseFloat(dados.saldo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -178,18 +174,15 @@
             const avisoBox = document.getElementById('avisoBonus');
             const iconeAviso = document.getElementById('iconeAviso');
 
-            // REGRA: SE JÁ USOU BÔNUS, A ABA DESAPARECE PARA SEMPRE
             if(dados.bonus_usado === true) {
                 if(panelBonus) panelBonus.style.display = 'none';
             } else {
                 if(panelBonus) panelBonus.style.display = 'block';
 
-                // Verifica se o Bônus 100% está ativo
                 if(missaoAtiva && missaoAtiva.tipo === '100porcento') {
                     btnToggle.innerText = 'CANCELAR BÔNUS';
                     btnToggle.classList.remove('btn-bonus-activate');
                     btnToggle.classList.add('btn-bonus-cancel');
-                    
                     avisoBox.style.background = 'rgba(155, 81, 224, 0.1)';
                     avisoBox.style.borderLeftColor = '#9b51e0';
                     iconeAviso.className = 'fa-solid fa-gift';
@@ -198,21 +191,17 @@
                     btnToggle.innerText = 'ATIVAR BÔNUS DE 100%';
                     btnToggle.classList.remove('btn-bonus-cancel');
                     btnToggle.classList.add('btn-bonus-activate');
-                    
                     avisoBox.style.background = 'rgba(241, 196, 15, 0.05)';
                     avisoBox.style.borderLeftColor = 'var(--gold)';
                     iconeAviso.className = 'fa-solid fa-circle-info';
                     iconeAviso.style.color = 'var(--gold)';
                 }
             }
-            
-            // Recalcula o simulador assim que o Firebase responde
             atualizarSimulador();
         });
 
         document.getElementById('linkSuporteDireto').href = `https://wa.me/${phoneDestination}?text=Olá,%20estou%20na%20página%20de%20depósito.%20Meu%20ID:%20${idDispositivo}`;
 
-        // FUNÇÕES DO SIMULADOR E BOTÕES DE VALOR
         window.atualizarSimulador = function() {
             let val = parseFloat(document.getElementById('inputValor').value) || 0;
             let multiplicador = (missaoAtiva && missaoAtiva.tipo === '100porcento') ? 2 : 1;
@@ -231,7 +220,6 @@
             atualizarSimulador();
         }
 
-        // TOGGLE: LIGA/DESLIGA NO BANCO DE DADOS
         window.toggleMissao = async function(deposito, bonus, tipo) {
             try {
                 if (missaoAtiva && missaoAtiva.tipo === tipo) {
@@ -244,7 +232,6 @@
             }
         }
 
-        // ORDEM DE DEPÓSITO
         window.enviarOrdemDeposito = async function() {
             let valorInput = parseFloat(document.getElementById('inputValor').value);
             
@@ -253,34 +240,26 @@
                 return; 
             }
             
-            // LÓGICA DE METAS DE APOSTAS (ROLLOVER) PARA O SAQUE
-            let novaMetaDeAposta = valorInput + (valorInput * 0.20); // Padrão sem bônus (Depósito + 20%)
+            let querBonus = false;
             let msgBonusZap = "NENHUM";
 
             if (missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                // REGRA DE 3X O VALOR TOTAL (Depósito + Bônus)
-                let bancaTotalComBonus = valorInput * 2; 
-                novaMetaDeAposta = bancaTotalComBonus * 3; 
+                querBonus = true;
                 msgBonusZap = "BÔNUS 100% SUPREMO (Rollover 3x)";
             }
 
             try {
-                // 1. Grava a meta de Rollover e zera o contador atual do jogador
-                await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_meta'), novaMetaDeAposta);
-                await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), 0);
-                
-                // 2. Trava o bônus para ele NUNCA MAIS APARECER no perfil/depósito deste usuário
-                await set(ref(db, 'usuarios/' + idDispositivo + '/bonus_usado'), true);
-
-                // 3. Limpa o gatilho visual de ativação
-                if(missaoAtiva) await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
-
-                // 4. Somador Geral do Cassino (Pro seu painel admin)
-                const refTotalDepositos = ref(db, 'sistema/total_depositos');
-                get(refTotalDepositos).then((snap) => {
-                    let totalAtual = parseFloat(snap.val() || 0);
-                    set(refTotalDepositos, totalAtual + valorInput);
+                // REGISTRA APENAS A INTENÇÃO NO BANCO DE DADOS (ADMIN VAI APROVAR E DEFINIR AS REGRAS)
+                await push(ref(db, 'pedidos_deposito'), {
+                    usuario_id: idDispositivo,
+                    valor_solicitado: valorInput,
+                    solicitou_bonus: querBonus,
+                    data_hora: new Date().toISOString(),
+                    status: 'pendente'
                 });
+
+                // Limpa o gatilho visual do bônus na tela
+                if(missaoAtiva) await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
 
                 let valorFormatado = valorInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 let mensagemComposta = `*⚠️ NOVA INTENÇÃO DE DEPÓSITO VIP*\n\n` +
