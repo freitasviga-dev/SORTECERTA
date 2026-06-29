@@ -361,10 +361,10 @@
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
         // ========================================================
-        // ADICIONAR SALDO (Mantido)
+        // ADICIONAR SALDO NORMAL (Agora com Bloqueio/Rollover)
         // ========================================================
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
-            let valorStr = prompt(`Adicionar Saldo para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor do DEPÓSITO a adicionar:`, "10.00");
+            let valorStr = prompt(`Adicionar Saldo Normal para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor do DEPÓSITO a adicionar:`, "10.00");
             if(valorStr === null || valorStr === "") return;
             
             let valorNum = parseFloat(valorStr.replace(',','.'));
@@ -372,9 +372,22 @@
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
             
-            set(ref(db, `usuarios/${id}/saldo`), parseFloat(novoSaldo.toFixed(2))).then(() => {
-                push(ref(db, `usuarios/${id}/transacoes`), { tipo: "DEPÓSITO", valor: valorNum.toFixed(2), data: new Date().toISOString() });
-                alert(`Sucesso! R$ ${valorNum.toFixed(2)} adicionados.`);
+            // Regra original do seu sistema: Depósito normal gera meta de (Valor + 20%)
+            let metaRolloverNormal = valorNum + (valorNum * 0.20);
+            
+            // Faz o update completo (atualiza saldo e aplica o bloqueio)
+            update(ref(db, `usuarios/${id}`), {
+                saldo: parseFloat(novoSaldo.toFixed(2)),
+                rollover_meta: metaRolloverNormal,
+                rollover_atual: 0
+            }).then(() => {
+                push(ref(db, `usuarios/${id}/transacoes`), { 
+                    tipo: "DEPÓSITO", 
+                    valor: valorNum.toFixed(2), 
+                    data: new Date().toISOString() 
+                });
+                
+                alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque deste jogador foi bloqueado até ele movimentar R$ ${metaRolloverNormal.toFixed(2)} (Regra Padrão).`);
                 document.getElementById('searchInput').value = ''; 
             });
         };
