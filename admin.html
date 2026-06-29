@@ -136,6 +136,7 @@
 
         @media (max-width: 768px) {
             .header-bar { flex-direction: column; gap: 15px; }
+            .header-actions { flex-wrap: wrap; justify-content: center; }
             .section-header { flex-direction: column; gap: 15px; align-items: stretch; }
             .search-bar { width: 100%; }
         }
@@ -291,7 +292,6 @@
 
         window.toggleManutencao = () => { set(ref(db, 'sistema/manutencao'), !isManutencao); };
 
-        // --- ZERAR MÉTIRCAS INDEPENDENTES ---
         window.zerarMetrica = (chaveNoFirebase, nomeDaMetrica) => {
             if(confirm(`⚠️ ATENÇÃO!\nTem certeza que deseja ZERAR a métrica de ${nomeDaMetrica}?`)) {
                 set(ref(db, `sistema/${chaveNoFirebase}`), 0).then(() => {
@@ -369,21 +369,32 @@
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
         // ========================================================
-        // ADICIONAR SALDO NORMAL (Com Bloqueio/Rollover)
+        // ADICIONAR SALDO NORMAL (Soma o Rollover Antigo ao Novo)
         // ========================================================
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
-            let valorStr = prompt(`Adicionar Saldo Normal para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor do DEPÓSITO a adicionar:`, "10.00");
+            let u = usersDataGlobal[id] || {};
+            let metaAntiga = parseFloat(u.rollover_meta || 0);
+            let atualAntigo = parseFloat(u.rollover_atual || 0);
+            let faltaApostar = metaAntiga - atualAntigo;
+            if(faltaApostar < 0) faltaApostar = 0;
+
+            let valorStr = prompt(`Adicionar Saldo Normal para ${id}\nSaldo Atual: R$ ${saldoAtual}\nRollover Pendente: R$ ${faltaApostar.toFixed(2)}\n\nDigite o valor do NOVO DEPÓSITO:`, "10.00");
             if(valorStr === null || valorStr === "") return;
             
             let valorNum = parseFloat(valorStr.replace(',','.'));
             if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
-            let metaRolloverNormal = valorNum + (valorNum * 0.20);
+            
+            // Regra original do seu sistema: Depósito normal gera meta de (Valor + 20%)
+            let novoRolloverGerado = valorNum + (valorNum * 0.20);
+            
+            // A MÁGICA DE SOMAR A DÍVIDA!
+            let metaRolloverFinal = faltaApostar + novoRolloverGerado;
             
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
-                rollover_meta: metaRolloverNormal,
+                rollover_meta: metaRolloverFinal,
                 rollover_atual: 0
             }).then(() => {
                 push(ref(db, `usuarios/${id}/transacoes`), { 
@@ -392,16 +403,22 @@
                     data: new Date().toISOString() 
                 });
                 
-                alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque deste jogador foi bloqueado até ele movimentar R$ ${metaRolloverNormal.toFixed(2)} (Regra Padrão).`);
+                alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque agora está bloqueado em R$ ${metaRolloverFinal.toFixed(2)}\n(Dívida antiga: R$ ${faltaApostar.toFixed(2)} + Nova meta: R$ ${novoRolloverGerado.toFixed(2)}).`);
                 document.getElementById('searchInput').value = ''; 
             });
         };
 
         // ========================================================
-        // APLICAR BÔNUS DE 100%
+        // APLICAR BÔNUS DE 100% (Soma o Rollover Antigo ao Novo)
         // ========================================================
         window.aplicarBonusPrompt = (id, saldoAtual) => {
-            let valorStr = prompt(`ATIVAR BÔNUS 100% PARA ${id}\n\nO bônus dobra o valor digitado e cria uma meta de 3x.\nDigite o valor que o jogador depositou:`, "20.00");
+            let u = usersDataGlobal[id] || {};
+            let metaAntiga = parseFloat(u.rollover_meta || 0);
+            let atualAntigo = parseFloat(u.rollover_atual || 0);
+            let faltaApostar = metaAntiga - atualAntigo;
+            if(faltaApostar < 0) faltaApostar = 0;
+
+            let valorStr = prompt(`ATIVAR BÔNUS 100% PARA ${id}\n\nO bônus dobra o valor digitado e cria uma meta de 3x.\nRollover Pendente: R$ ${faltaApostar.toFixed(2)}\n\nDigite o valor do NOVO DEPÓSITO:`, "20.00");
             if(valorStr === null || valorStr === "") return;
             
             let valorDepositado = parseFloat(valorStr.replace(',','.'));
@@ -409,16 +426,21 @@
 
             let bancaTotalRecebida = valorDepositado * 2;
             let novoSaldo = parseFloat(saldoAtual) + bancaTotalRecebida;
-            let metaRollover = bancaTotalRecebida * 3;
+            
+            // Regra do Bônus: Meta é 3x o valor total recebido
+            let novoRolloverGerado = bancaTotalRecebida * 3;
+            
+            // A MÁGICA DE SOMAR A DÍVIDA!
+            let metaRolloverFinal = faltaApostar + novoRolloverGerado;
 
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
-                rollover_meta: metaRollover,
+                rollover_meta: metaRolloverFinal,
                 rollover_atual: 0,
                 bonus_usado: false
             }).then(() => {
                 push(ref(db, `usuarios/${id}/transacoes`), { tipo: "BÔNUS VIP 100%", valor: bancaTotalRecebida.toFixed(2), data: new Date().toISOString() });
-                alert(`⚡ Bônus ativado com sucesso!\n\nFoi somado R$ ${bancaTotalRecebida.toFixed(2)} ao saldo.\nNova meta de saque: R$ ${metaRollover.toFixed(2)}.`);
+                alert(`⚡ Bônus ativado com sucesso!\n\nFoi somado R$ ${bancaTotalRecebida.toFixed(2)} ao saldo.\nNova meta de saque total: R$ ${metaRolloverFinal.toFixed(2)}.`);
                 document.getElementById('searchInput').value = ''; 
             }).catch(e => alert("Erro ao conectar no banco de dados."));
         };
