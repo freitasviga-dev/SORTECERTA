@@ -58,9 +58,14 @@
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--bg-card); backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
         .header-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .header-brand i { color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .header-actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; }
         
         .btn { padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; font-size: 13px; text-transform: uppercase; }
+        
+        /* NOVO BOTÃO DESBANIR */
+        .btn-desbanir { background: #111; border: 1px solid var(--green); color: var(--green); box-shadow: 0 4px 0 rgba(0, 230, 118, 0.3); }
+        .btn-desbanir:hover { background: var(--green); color: #000; box-shadow: 0 4px 0 #00b359; }
+
         .btn-logout { background: #111; border: 1px solid var(--red); color: var(--red); box-shadow: 0 4px 0 rgba(255, 23, 68, 0.3); }
         .btn-logout:hover { background: var(--red); color: #fff; box-shadow: 0 4px 0 #b7102f; }
         
@@ -154,6 +159,9 @@
                 <i class="fa-solid fa-crown"></i> Gestão SorteCerta
             </div>
             <div class="header-actions">
+                <button class="btn btn-desbanir" onclick="desbanirPrompt()">
+                    <i class="fa-solid fa-unlock"></i> Desbanir
+                </button>
                 <button class="btn btn-manu" id="btnManutencao" onclick="toggleManutencao()">
                     <i class="fa-solid fa-power-off"></i> Manutenção
                 </button>
@@ -223,7 +231,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove, push, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // --- SISTEMA DE LOGIN (Mantido Exatamente Igual) ---
+        // --- SISTEMA DE LOGIN ---
         const _0xkey = [91, 110, 121, 121, 116, 119, 55, 59, 55, 55, 53, 53];
         window.checkAcesso = function() {
             let input = document.getElementById('pwdInput').value;
@@ -361,7 +369,7 @@
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
         // ========================================================
-        // ADICIONAR SALDO NORMAL (Agora com Bloqueio/Rollover)
+        // ADICIONAR SALDO NORMAL (Com Bloqueio/Rollover)
         // ========================================================
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
             let valorStr = prompt(`Adicionar Saldo Normal para ${id}\nSaldo Atual: R$ ${saldoAtual}\n\nDigite o valor do DEPÓSITO a adicionar:`, "10.00");
@@ -371,11 +379,8 @@
             if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
-            
-            // Regra original do seu sistema: Depósito normal gera meta de (Valor + 20%)
             let metaRolloverNormal = valorNum + (valorNum * 0.20);
             
-            // Faz o update completo (atualiza saldo e aplica o bloqueio)
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
                 rollover_meta: metaRolloverNormal,
@@ -393,7 +398,7 @@
         };
 
         // ========================================================
-        // NOVO: APLICAR BÔNUS DE 100% (Libera abas novamente)
+        // APLICAR BÔNUS DE 100%
         // ========================================================
         window.aplicarBonusPrompt = (id, saldoAtual) => {
             let valorStr = prompt(`ATIVAR BÔNUS 100% PARA ${id}\n\nO bônus dobra o valor digitado e cria uma meta de 3x.\nDigite o valor que o jogador depositou:`, "20.00");
@@ -402,16 +407,15 @@
             let valorDepositado = parseFloat(valorStr.replace(',','.'));
             if(isNaN(valorDepositado) || valorDepositado <= 0) return alert("Valor inválido.");
 
-            // A lógica: Soma saldo atual + depósito em dobro (depositou 20, ganha 40)
             let bancaTotalRecebida = valorDepositado * 2;
             let novoSaldo = parseFloat(saldoAtual) + bancaTotalRecebida;
-            let metaRollover = bancaTotalRecebida * 3; // Regra 3x
+            let metaRollover = bancaTotalRecebida * 3;
 
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
                 rollover_meta: metaRollover,
                 rollover_atual: 0,
-                bonus_usado: false // Reseta o uso, liberando a aba de bônus para ele no futuro
+                bonus_usado: false
             }).then(() => {
                 push(ref(db, `usuarios/${id}/transacoes`), { tipo: "BÔNUS VIP 100%", valor: bancaTotalRecebida.toFixed(2), data: new Date().toISOString() });
                 alert(`⚡ Bônus ativado com sucesso!\n\nFoi somado R$ ${bancaTotalRecebida.toFixed(2)} ao saldo.\nNova meta de saque: R$ ${metaRollover.toFixed(2)}.`);
@@ -420,14 +424,11 @@
         };
 
         // ========================================================
-        // EXCLUIR CONTA (Agora apaga e bane de verdade)
+        // EXCLUIR E BANIR CONTA
         // ========================================================
         window.excluirContaPrompt = (id) => {
             if(confirm(`⚠️ ALERTA VERMELHO!\nTem certeza que deseja APAGAR PERMANENTEMENTE a conta de ${id} e bani-lo do sistema?`)) {
-                
-                // Primeiro remove
                 remove(ref(db, `usuarios/${id}`)).then(() => {
-                    // Depois salva o ID na lista negra
                     set(ref(db, `banidos/${id}`), true).then(() => {
                         alert("Conta apagada e ID bloqueado com sucesso.");
                         document.getElementById('searchInput').value = '';
@@ -437,7 +438,22 @@
         };
 
         // ========================================================
-        // MODO ADMIN / LIVE (Mantido)
+        // DESBANIR CONTA (Tirar da lista negra)
+        // ========================================================
+        window.desbanirPrompt = () => {
+            let idBanido = prompt("Digite o ID (Celular) do jogador que deseja DESBANIR:");
+            
+            if (idBanido === null || idBanido.trim() === "") return;
+
+            remove(ref(db, `banidos/${idBanido}`)).then(() => {
+                alert(`✅ SUCESSO!\nO número ${idBanido} foi removido da lista negra.\nEle já pode entrar e criar uma nova conta no sistema.`);
+            }).catch(() => {
+                alert("Erro ao tentar desbanir. Verifique a conexão.");
+            });
+        };
+
+        // ========================================================
+        // MODO ADMIN / LIVE
         // ========================================================
         window.toggleAdminMode = (id, isCurrentlyAdmin) => {
             let novoModo = isCurrentlyAdmin ? 'normal' : 'influenciador';
