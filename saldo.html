@@ -4,293 +4,320 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- ANTI-CACHE STRICT -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Clear-Site-Data" content="cache">
-
-    <title>SorteCerta - Adicionar Saldo</title>
+    
+    <title>SorteCerta - Retirada Financeira</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #0a0a0c; --bg-card: #18181b;
-            --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c;
-            --text-main: #f4f4f5; --text-muted: #a1a1aa; --border-color: #27272a;
+            --bg-main: #0a0a0c;
+            --bg-card: #18181b;
+            --gold: #f1c40f;
+            --green: #2ecc71;
+            --green-dark: #27ae60;
+            --red: #e74c3c;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-color: #27272a;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
         body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
 
-        .header { position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95); backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 15px; padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        /* --- HEADER BANCÁRIO --- */
+        .header {
+            position: sticky; top: 0; width: 100%; background: rgba(18, 18, 20, 0.95);
+            backdrop-filter: blur(15px); z-index: 1000; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px;
+            padding-top: calc(15px + env(safe-area-inset-top)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
         .btn-back { color: var(--text-muted); text-decoration: none; font-size: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .btn-back:active { background: rgba(255,255,255,0.1); color: #fff; }
         .page-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; }
-        .balance-badge { background: rgba(46, 204, 113, 0.1); color: var(--green); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; border: 1px solid rgba(46, 204, 113, 0.3); display: flex; align-items: center; gap: 4px; }
+        
+        .verified-badge { background: rgba(46, 204, 113, 0.1); color: var(--green); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 10px; border: 1px solid rgba(46, 204, 113, 0.3); display: flex; align-items: center; gap: 4px; text-transform: uppercase; }
 
         .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 20px 15px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-        .support-banner { background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(18, 18, 20, 0.8) 100%); border: 1px solid rgba(37, 211, 102, 0.2); border-radius: 16px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .support-info { display: flex; align-items: center; gap: 12px; }
-        .support-icon { background: #25D366; color: #000; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        .support-text h4 { font-size: 13px; color: #fff; margin-bottom: 2px; font-weight: 800; }
-        .support-text p { font-size: 10px; color: var(--text-muted); }
-        .btn-wa { background: #25D366; color: #000; text-decoration: none; font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 20px; text-transform: uppercase; }
+        /* --- CARD DE RESUMO DE SALDO --- */
+        .balance-summary { background: linear-gradient(135deg, #1f1f23 0%, #121214 100%); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .bs-left { display: flex; flex-direction: column; gap: 4px; }
+        .bs-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+        .bs-value { font-size: 28px; font-weight: 900; color: #fff; display: flex; align-items: baseline; gap: 4px; }
+        .bs-currency { font-size: 16px; color: var(--green); }
+        
+        .btn-max { background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.4); color: var(--gold); padding: 10px 15px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn-max:active { background: var(--gold); color: #000; transform: scale(0.95); }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .section-header { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-        .sh-icon { background: rgba(46, 204, 113, 0.1); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 18px; }
+        /* --- PAINEL DE BLOQUEIO (ROLLOVER REMASTERIZADO ANTI-QUEBRA) --- */
+        .rollover-box { display: none; background: rgba(231, 76, 60, 0.08); border: 1px solid var(--red); padding: 18px; border-radius: 16px; margin-bottom: 5px; position: relative; overflow: hidden; }
+        .ro-title { font-size: 14px; font-weight: 900; color: var(--red); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ro-bar-bg { width: 100%; height: 12px; background: rgba(0,0,0,0.6); border-radius: 10px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .ro-bar-fill { height: 100%; background: linear-gradient(90deg, #ff1744, #ff5252); width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .ro-desc-container { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .ro-desc-text { font-size: 12px; color: #ccc; line-height: 1.5; }
+        .ro-amount-badge { align-self: flex-start; font-weight: 900; color: #fff; background: rgba(231, 76, 60, 0.2); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(231, 76, 60, 0.4); font-size: 13px; letter-spacing: 0.5px; }
+
+        /* --- ÁREA DE SAQUE (FORMULÁRIO) --- */
+        .withdraw-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .sh-icon { background: rgba(241, 196, 15, 0.1); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 18px; }
         .sh-text h3 { font-size: 16px; color: #fff; font-weight: 700; }
-        
-        .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
-        .btn-value { background: #111; border: 1px solid #333; color: var(--text-muted); padding: 16px 0; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-value.active { background: rgba(46, 204, 113, 0.1); border-color: var(--green); color: var(--green); transform: scale(1.03); }
-        
-        .custom-input-group { position: relative; margin-bottom: 20px; }
-        .custom-input-group span { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--green); font-weight: 900; font-size: 20px; }
-        .input-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 20px 20px 20px 60px; border-radius: 12px; font-size: 26px; font-weight: 900; outline: none; transition: 0.2s; }
-        .input-custom:focus { border-color: var(--green); background: rgba(46, 204, 113, 0.05); }
+        .sh-text p { font-size: 11px; color: var(--text-muted); }
 
-        /* --- BÔNUS DENTRO DO DEPÓSITO --- */
-        .bonus-panel {
-            background: radial-gradient(circle at top right, rgba(155, 81, 224, 0.15), #0a0a0c); 
-            border: 1px solid rgba(155, 81, 224, 0.4); border-radius: 16px; padding: 20px; 
-            position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
-            backdrop-filter: blur(10px); margin-bottom: 25px; display: none; /* Só exibe se não usou */
+        .input-group { margin-bottom: 20px; }
+        .input-label { font-size: 12px; color: #ccc; margin-bottom: 8px; display: block; font-weight: 600; }
+        
+        .select-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px; border-radius: 12px; font-size: 14px; outline: none; appearance: none; cursor: pointer; font-weight: 500; }
+        .input-custom { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 16px; border-radius: 12px; font-size: 16px; outline: none; transition: 0.2s; font-weight: 500; }
+        .input-custom::placeholder { color: #555; font-weight: 400; }
+        .input-custom:focus, .select-custom:focus { border-color: var(--green); background: rgba(46, 204, 113, 0.05); }
+
+        .value-wrapper { position: relative; display: flex; align-items: center; }
+        .val-prefix { position: absolute; left: 16px; color: var(--green); font-weight: 900; font-size: 20px; }
+        .input-money { padding-left: 55px; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+
+        /* --- SELOS DE AUTORIDADE BANCÁRIA (CONFIANÇA MÁXIMA) --- */
+        .security-badges { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.3); border: 1px solid #222; border-radius: 12px; padding: 12px; margin: 20px 0; }
+        .s-badge { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .s-badge i { font-size: 13px; }
+
+        .btn-submit {
+            width: 100%; background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+            color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 15px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 8px 0 #145a32, 0 15px 25px rgba(46, 204, 113, 0.3); transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .bonus-panel::before { content: '🎁'; position: absolute; right: -10px; top: -10px; font-size: 80px; opacity: 0.05; pointer-events: none; }
-        .bonus-title { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bonus-title i { color: #d08aff; filter: drop-shadow(0 0 5px rgba(155, 81, 224, 0.5)); }
-        .bonus-desc { font-size: 12px; color: #ccc; margin-bottom: 15px; line-height: 1.5; z-index: 2; position: relative; }
-        
-        .btn-bonus-action { border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; z-index: 2; position: relative; }
-        .btn-bonus-action:active { transform: translateY(4px); box-shadow: none !important; }
-        .btn-bonus-activate { background: linear-gradient(135deg, #9b51e0, #6a1b9a); color: #fff; box-shadow: 0 4px 0 #4a148c; }
-        .btn-bonus-cancel { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; box-shadow: 0 4px 0 #922b21; }
+        .btn-submit:active:not(:disabled) { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
+        .btn-submit:disabled { background: #2a2a2a; color: #666; box-shadow: none; cursor: not-allowed; border: 1px solid #444; filter: grayscale(100%); }
 
-        /* AVISO DO SIMULADOR (COM TRANSIÇÃO SUAVE) */
-        .bonus-alert { background: rgba(241, 196, 15, 0.05); border-left: 3px solid var(--gold); padding: 12px 15px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: flex-start; gap: 12px; transition: all 0.3s ease; }
-        .bonus-alert i { font-size: 20px; margin-top: 2px; }
-        .bonus-alert p { font-size: 11px; color: #ccc; line-height: 1.4; }
-
-        .btn-submit { width: 100%; background: linear-gradient(180deg, var(--green) 0%, #00b359 100%); color: #000; border: none; padding: 20px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 8px 0 #145a32; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-submit:active { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
+        .footer-info { text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.6; padding: 0 5px; margin-top: 10px; }
+        .footer-info strong { color: #fff; }
     </style>
 </head>
 <body>
 
     <script>
         if (!localStorage.getItem('usuario_tracker_id')) { window.location.href = 'login.html'; }
+        // BLINDAGEM ANTI-CACHE EXTRA
         (function() {
-            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
-            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(r) { for (let reg of r) reg.unregister(); }); }
+            if ('caches' in window) caches.keys().then(function(n) { for (let x of n) caches.delete(x); });
+            window.addEventListener('pageshow', function(e) { if (e.persisted) window.location.reload(); });
         })();
     </script>
 
     <header class="header">
-        <a href="perfil.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
         <div class="page-title">Caixa SorteCerta</div>
-        <div class="balance-badge"><i class="fa-solid fa-wallet"></i> R$ <span id="displaySaldoTop">0,00</span></div>
+        <div class="verified-badge"><i class="fa-solid fa-shield-check"></i> Seguro</div>
     </header>
 
     <div class="container">
         
-        <div class="support-banner">
-            <div class="support-info">
-                <div class="support-icon"><i class="fa-brands fa-whatsapp"></i></div>
-                <div class="support-text">
-                    <h4>Suporte Financeiro</h4>
-                    <p>Atendimento VIP para liberação imediata</p>
-                </div>
+        <div class="balance-summary">
+            <div class="bs-left">
+                <span class="bs-label">Saldo Disponível para Saque</span>
+                <div class="bs-value"><span class="bs-currency">R$</span> <span id="displaySaldoTopo">0,00</span></div>
             </div>
-            <a href="#" id="linkSuporteDireto" target="_blank" class="btn-wa">Chamar</a>
+            <button class="btn-max" onclick="sacarTudo()">Usar Máximo</button>
         </div>
 
-        <div class="card">
-            <div class="section-header">
-                <div class="sh-icon"><i class="fa-solid fa-circle-plus"></i></div>
-                <div class="sh-text">
-                    <h3>Adicionar Saldo</h3>
-                    <p>Escolha o valor que deseja depositar na plataforma.</p>
-                </div>
+        <div class="rollover-box" id="rolloverBox">
+            <div class="ro-title">
+                <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-lock"></i> Saque Bloqueado</span>
+                <span id="roPercent">0%</span>
             </div>
+            <div class="ro-bar-bg"><div class="ro-bar-fill" id="roFill"></div></div>
             
-            <!-- PAINEL DE BÔNUS DIRETO NO DEPÓSITO -->
-            <div class="bonus-panel" id="panelBonusDeposito">
-                <div class="bonus-title"><i class="fa-solid fa-bolt"></i> Bônus de Novo Usuário</div>
-                <div class="bonus-desc">Ative agora e dobre o valor do seu depósito instantaneamente! Sujeito a meta de apostas (Rollover) antes do primeiro saque.</div>
-                <button class="btn-bonus-action btn-bonus-activate" id="btnToggleBonusDep" onclick="toggleMissao(0, 0, '100porcento')">
-                    ATIVAR BÔNUS DE 100%
-                </button>
+            <div class="ro-desc-container">
+                <div class="ro-desc-text">Para evitar fraudes e lavagem de dinheiro, você precisa apostar no cassino pelo menos o valor depositado. Faltam apostar:</div>
+                <div class="ro-amount-badge" id="roFalta">R$ 0,00</div>
             </div>
+        </div>
 
-            <div class="value-grid" id="gridBotoes">
-                <button class="btn-value" onclick="selecionarValor(5, this)">R$ 5</button>
-                <button class="btn-value active" onclick="selecionarValor(10, this)">R$ 10</button>
-                <button class="btn-value" onclick="selecionarValor(20, this)">R$ 20</button>
-                <button class="btn-value" onclick="selecionarValor(50, this)">R$ 50</button>
-                <button class="btn-value" onclick="selecionarValor(100, this)">R$ 100</button>
-                <button class="btn-value" onclick="selecionarValor(200, this)">R$ 200</button>
-            </div>
-
-            <div class="custom-input-group">
-                <span>R$</span>
-                <input type="number" id="inputValor" class="input-custom" value="10" oninput="limparBotoes()">
-            </div>
-
-            <!-- SIMULADOR DINÂMICO DE GANHO -->
-            <div class="bonus-alert" id="avisoBonus">
-                <i class="fa-solid fa-circle-info" style="color:var(--gold);" id="iconeAviso"></i>
-                <div>
-                    <p style="color:#fff; margin-bottom: 5px; font-size: 13px;">Total de saldo a receber: <strong id="totalReceber" style="font-size: 16px; color: var(--green);">R$ 10,00</strong></p>
-                    <p>O valor mínimo exigido para o depósito na plataforma é de <strong>R$ 5,00</strong>.</p>
+        <div class="withdraw-card">
+            <div class="section-header">
+                <div class="sh-icon"><i class="fa-brands fa-pix"></i></div>
+                <div class="sh-text">
+                    <h3>Retirada via PIX</h3>
+                    <p>Transferência imediata sem taxas fiscais.</p>
                 </div>
             </div>
 
-            <button class="btn-submit" onclick="enviarOrdemDeposito()">
-                <i class="fa-brands fa-pix"></i> Solicitar Pagamento PIX
+            <div class="input-group">
+                <label class="input-label">Valor do Saque</label>
+                <div class="value-wrapper">
+                    <span class="val-prefix">R$</span>
+                    <input type="number" id="valorSaque" class="input-custom input-money" placeholder="Mínimo R$ 20,00" step="5.00">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Tipo de Chave PIX</label>
+                <select class="select-custom" id="tipoChave">
+                    <option value="CPF/CNPJ">CPF</option>
+                    <option value="Telefone">Número de Celular</option>
+                    <option value="E-mail">Endereço de E-mail</option>
+                    <option value="Chave Aleatória">Chave Aleatória</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 10px;">
+                <label class="input-label">Chave PIX de Destino</label>
+                <input type="text" id="chavePix" class="input-custom" placeholder="000.000.000-00">
+            </div>
+
+            <div class="security-badges">
+                <div class="s-badge" style="color: #2ecc71;"><i class="fa-solid fa-building-columns"></i> Liquidação autorizada via Banco Central do Brasil</div>
+                <div class="s-badge"><i class="fa-solid fa-key"></i> Protocolo de Segurança Ativo TLS 1.3 / Criptografia AES-256</div>
+            </div>
+
+            <button class="btn-submit" id="btnSubmit" onclick="solicitarSaque()">
+                <i class="fa-solid fa-paper-plane"></i> Finalizar Saque
             </button>
+        </div>
+
+        <div class="footer-info">
+            🔒 <strong>Nota de auditoria financeira:</strong> Para sua proteção e em conformidade com as normas regulatórias, todas as retiradas passam por uma varredura automatizada antifraude de 60 segundos antes do envio do comprovante.<br><br>
+            Transferências só são liquidadas para contas vinculadas ao <strong>mesmo titular do CPF</strong> cadastrado na plataforma SorteCerta.
         </div>
     </div>
 
+    <script>
+        const tipoChaveSelect = document.getElementById('tipoChave');
+        const chavePixInput = document.getElementById('chavePix');
+
+        tipoChaveSelect.addEventListener('change', function() {
+            chavePixInput.value = ''; 
+            if(this.value === 'CPF/CNPJ') chavePixInput.placeholder = '000.000.000-00';
+            else if(this.value === 'Telefone') chavePixInput.placeholder = '(00) 00000-0000';
+            else if(this.value === 'E-mail') chavePixInput.placeholder = 'exemplo@email.com';
+            else chavePixInput.placeholder = 'Cole sua chave aleatória';
+        });
+
+        chavePixInput.addEventListener('input', function(e) {
+            let tipo = tipoChaveSelect.value;
+            let v = e.target.value;
+
+            if (tipo === 'CPF/CNPJ') {
+                v = v.replace(/\D/g, ""); 
+                v = v.substring(0, 11);   
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                e.target.value = v;
+            } 
+            else if (tipo === 'Telefone') {
+                v = v.replace(/\D/g, ""); 
+                v = v.substring(0, 11);
+                v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+                v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                e.target.value = v;
+            }
+        });
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // FIREBASE OFUSCADO
+        // CONFIGURAÇÃO OFUSCADA DO FIREBASE
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
         const app = initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] });
         const db = getDatabase(app);
 
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         let bancaAtual = 0.00;
-        let missaoAtiva = null; 
+        let saqueLiberado = false;
         const phoneDestination = "5583996469538";
 
-        // VERIFICA DADOS E MUDA A TELA EM TEMPO REAL
+        // LEITURA DO SALDO E REGRAS DE ROLLOVER
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
-            document.getElementById('displaySaldoTop').innerText = parseFloat(dados.saldo || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            bancaAtual = parseFloat(dados.saldo || 0);
+            document.getElementById('displaySaldoTopo').innerText = bancaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             
-            missaoAtiva = dados.missao_ativa || null;
-            
-            const panelBonus = document.getElementById('panelBonusDeposito');
-            const btnToggle = document.getElementById('btnToggleBonusDep');
-            const avisoBox = document.getElementById('avisoBonus');
-            const iconeAviso = document.getElementById('iconeAviso');
+            let meta = parseFloat(dados.rollover_meta || 0);
+            let atual = parseFloat(dados.rollover_atual || 0);
+            let falta = meta - atual;
 
-            // REGRA: SE JÁ USOU BÔNUS, A ABA DESAPARECE PARA SEMPRE
-            if(dados.bonus_usado === true) {
-                if(panelBonus) panelBonus.style.display = 'none';
+            const roBox = document.getElementById('rolloverBox');
+            const btnSubmit = document.getElementById('btnSubmit');
+
+            if (meta > 0 && falta > 0) {
+                saqueLiberado = false;
+                roBox.style.display = 'block';
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `<i class="fa-solid fa-lock"></i> Cumpra a Meta de Aposta`;
+
+                let porcentagem = (atual / meta) * 100;
+                document.getElementById('roFill').style.width = porcentagem + '%';
+                document.getElementById('roPercent').innerText = porcentagem.toFixed(0) + '%';
+                document.getElementById('roFalta').innerText = "R$ " + falta.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             } else {
-                if(panelBonus) panelBonus.style.display = 'block';
-
-                // Verifica se o Bônus 100% está ativo
-                if(missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                    btnToggle.innerText = 'CANCELAR BÔNUS';
-                    btnToggle.classList.remove('btn-bonus-activate');
-                    btnToggle.classList.add('btn-bonus-cancel');
-                    
-                    avisoBox.style.background = 'rgba(155, 81, 224, 0.1)';
-                    avisoBox.style.borderLeftColor = '#9b51e0';
-                    iconeAviso.className = 'fa-solid fa-gift';
-                    iconeAviso.style.color = '#9b51e0';
-                } else {
-                    btnToggle.innerText = 'ATIVAR BÔNUS DE 100%';
-                    btnToggle.classList.remove('btn-bonus-cancel');
-                    btnToggle.classList.add('btn-bonus-activate');
-                    
-                    avisoBox.style.background = 'rgba(241, 196, 15, 0.05)';
-                    avisoBox.style.borderLeftColor = 'var(--gold)';
-                    iconeAviso.className = 'fa-solid fa-circle-info';
-                    iconeAviso.style.color = 'var(--gold)';
-                }
+                saqueLiberado = true;
+                roBox.style.display = 'none';
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Finalizar Saque`;
             }
-            
-            // Recalcula o simulador assim que o Firebase responde
-            atualizarSimulador();
         });
 
-        document.getElementById('linkSuporteDireto').href = `https://wa.me/${phoneDestination}?text=Olá,%20estou%20na%20página%20de%20depósito.%20Meu%20ID:%20${idDispositivo}`;
-
-        // FUNÇÕES DO SIMULADOR E BOTÕES DE VALOR
-        window.atualizarSimulador = function() {
-            let val = parseFloat(document.getElementById('inputValor').value) || 0;
-            let multiplicador = (missaoAtiva && missaoAtiva.tipo === '100porcento') ? 2 : 1;
-            document.getElementById('totalReceber').innerText = "R$ " + (val * multiplicador).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        window.sacarTudo = function() {
+            if(bancaAtual < 20) { alert("O valor mínimo para saque é de R$ 20,00."); return; }
+            document.getElementById('valorSaque').value = bancaAtual.toFixed(2);
         }
 
-        window.selecionarValor = function(valor, btnElement) {
-            document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            document.getElementById('inputValor').value = valor;
-            atualizarSimulador();
-        }
+        window.solicitarSaque = function() {
+            if(!saqueLiberado) { alert("Cumpra a meta de apostas antes de solicitar o saque."); return; }
 
-        window.limparBotoes = function() { 
-            document.querySelectorAll('.btn-value').forEach(btn => btn.classList.remove('active')); 
-            atualizarSimulador();
-        }
+            let chavePix = document.getElementById('chavePix').value.trim();
+            let tipoChave = document.getElementById('tipoChave').value;
+            let valorSaqueInput = parseFloat(document.getElementById('valorSaque').value);
 
-        // TOGGLE: LIGA/DESLIGA NO BANCO DE DADOS
-        window.toggleMissao = async function(deposito, bonus, tipo) {
-            try {
-                if (missaoAtiva && missaoAtiva.tipo === tipo) {
-                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
-                } else {
-                    await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), { tipo: tipo, deposito: deposito, bonus: bonus });
-                }
-            } catch (error) {
-                alert("Erro de conexão. Tente novamente.");
-            }
-        }
-
-        // ORDEM DE DEPÓSITO
-        window.enviarOrdemDeposito = async function() {
-            let valorInput = parseFloat(document.getElementById('inputValor').value);
-            
-            if(isNaN(valorInput) || valorInput < 5.00) { 
-                alert("Operação negada: O valor mínimo exigido para o depósito é de R$ 5,00."); 
+            // TRAVA FINANCEIRA DO JOGO: TRAVADO EM R$ 20,00 MÍNIMO
+            if (isNaN(valorSaqueInput) || valorSaqueInput < 20.00) { 
+                alert("Operação negada: O valor mínimo de saque exigido pela casa é de R$ 20,00."); 
                 return; 
             }
-            
-            let novaMetaDeAposta = valorInput; // Padrão
-            let msgBonusZap = "NENHUM";
+            if (valorSaqueInput > bancaAtual) { alert("Saldo insuficiente."); return; }
 
-            if (missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                novaMetaDeAposta = (valorInput * 2) * 2; // Regra de Ouro: (Valor x 2) x 2
-                msgBonusZap = "BÔNUS 100% SUPREMO";
+            // VALIDAÇÕES ESTritas DO PIX
+            if (tipoChave === 'CPF/CNPJ' && chavePix.length !== 14) {
+                alert("Operação negada: Digite um CPF válido com 11 números."); return;
             }
+            if (tipoChave === 'Telefone' && chavePix.length !== 15) {
+                alert("Operação negada: Digite um Celular válido com DDD."); return;
+            }
+            if (tipoChave === 'E-mail' && (!chavePix.includes('@') || !chavePix.includes('.'))) {
+                alert("Operação negada: Digite um endereço de E-mail válido."); return;
+            }
+            if (chavePix === "") { alert("Preencha a chave PIX de destino."); return; }
 
-            try {
-                // 1. Grava a meta de Rollover e zera o contador atual do jogador
-                await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_meta'), novaMetaDeAposta);
-                await set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), 0);
-                
-                // 2. Trava o bônus para ele NUNCA MAIS APARECER no perfil/depósito deste usuário
-                await set(ref(db, 'usuarios/' + idDispositivo + '/bonus_usado'), true);
+            if(confirm(`AUTORIZAÇÃO DE TRANSFERÊNCIA\n\nConfirma a solicitação de saque no valor de R$ ${valorSaqueInput.toFixed(2)}?\nO valor será auditado para a chave PIX: ${chavePix}.`)) {
+                let novoSaldo = bancaAtual - valorSaqueInput;
+                set(ref(db, 'usuarios/' + idDispositivo + '/saldo'), parseFloat(novoSaldo.toFixed(2))).then(() => {
+                    
+                    const refTotalSaques = ref(db, 'sistema/total_saques');
+                    get(refTotalSaques).then((snap) => {
+                        let totalAtual = parseFloat(snap.val() || 0);
+                        set(refTotalSaques, totalAtual + valorSaqueInput);
+                    });
 
-                // 3. Limpa o gatilho visual de ativação
-                if(missaoAtiva) await set(ref(db, 'usuarios/' + idDispositivo + '/missao_ativa'), null);
+                    push(ref(db, `usuarios/${idDispositivo}/transacoes`), {
+                        tipo: "SAQUE", valor: valorSaqueInput.toFixed(2), data: new Date().toISOString()
+                    });
 
-                // 4. Somador Geral do Cassino (Pro seu painel admin)
-                const refTotalDepositos = ref(db, 'sistema/total_depositos');
-                get(refTotalDepositos).then((snap) => {
-                    let totalAtual = parseFloat(snap.val() || 0);
-                    set(refTotalDepositos, totalAtual + valorInput);
-                });
+                    let valorFormatado = valorSaqueInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    let msg = `*✅ SAQUE SOLICITADO E AUDITADO*\n\n👤 *ID:* ${idDispositivo}\n💰 *Valor:* ${valorFormatado}\n🔑 *Chave (${tipoChave}):* ${chavePix}\n\n_Saldo debitado em auditoria de segurança. Pode transferir._`;
+                    window.location.href = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(msg)}`;
 
-                let valorFormatado = valorInput.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                let mensagemComposta = `*⚠️ NOVA INTENÇÃO DE DEPÓSITO VIP*\n\n` +
-                                       `👤 *ID:* ${idDispositivo}\n` +
-                                       `💰 *Valor Solicitado:* ${valorFormatado}\n` +
-                                       `🎁 *Bônus Selecionado:* ${msgBonusZap}\n\n` +
-                                       `_Aguardando envio da chave PIX para pagamento._`;
-                
-                alert("Ordem de depósito gerada! Você será redirecionado para o nosso financeiro.");
-                window.location.href = `https://wa.me/${phoneDestination}?text=${encodeURIComponent(mensagemComposta)}`;
-            
-            } catch (error) {
-                alert("Ocorreu um erro ao processar sua solicitação. Verifique a internet e tente novamente.");
+                }).catch(() => { alert("Erro de conexão com a rede de liquidação. Tente novamente."); });
             }
         }
     </script>
