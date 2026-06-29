@@ -295,7 +295,6 @@
         let usersDataGlobal = {};
 
         function carregarDados() {
-            // Apenas para verificar manutenção
             onValue(ref(db, 'sistema'), (snapshot) => {
                 const sys = snapshot.val() || {};
                 isManutencao = sys.manutencao === true;
@@ -386,10 +385,15 @@
 
         window.filtrarTabela = () => { renderizarTabela(usersDataGlobal); };
 
+        // --- NOVA FUNÇÃO COM SALDO_REAL INTEGRADO ---
         window.adicionarSaldoPrompt = (id, saldoAtual) => {
             let u = usersDataGlobal[id] || {};
             let metaAntiga = parseFloat(u.rollover_meta || 0);
             let atualAntigo = parseFloat(u.rollover_atual || 0);
+            
+            // Pega o saldo real antigo (se for conta antiga, copia o saldo total atual)
+            let saldoRealAtual = parseFloat(u.saldo_real !== undefined ? u.saldo_real : saldoAtual);
+            
             let faltaApostar = metaAntiga - atualAntigo;
             if(faltaApostar < 0) faltaApostar = 0;
 
@@ -400,11 +404,14 @@
             if(isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido.");
 
             let novoSaldo = parseFloat(saldoAtual) + valorNum;
+            let novoSaldoReal = saldoRealAtual + valorNum; // SOMA NO SALDO REAL
+            
             let novoRolloverGerado = valorNum + (valorNum * 0.20);
             let metaRolloverFinal = faltaApostar + novoRolloverGerado;
             
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
+                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), // SALVA O REAL
                 rollover_meta: metaRolloverFinal,
                 rollover_atual: 0
             }).then(() => {
@@ -414,19 +421,24 @@
                     data: new Date().toISOString() 
                 });
                 
-                alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque agora está bloqueado em R$ ${metaRolloverFinal.toFixed(2)}\n(Dívida antiga: R$ ${faltaApostar.toFixed(2)} + Nova meta: R$ ${novoRolloverGerado.toFixed(2)}).`);
+                alert(`✅ Sucesso! R$ ${valorNum.toFixed(2)} adicionados.\n\n⚠️ O saque agora está bloqueado em R$ ${metaRolloverFinal.toFixed(2)}.`);
                 document.getElementById('searchInput').value = ''; 
             });
         };
 
+        // --- NOVA FUNÇÃO DE BÔNUS (BLINDADA) ---
         window.aplicarBonusPrompt = (id, saldoAtual) => {
             let u = usersDataGlobal[id] || {};
             let metaAntiga = parseFloat(u.rollover_meta || 0);
             let atualAntigo = parseFloat(u.rollover_atual || 0);
+            
+            // Pega o saldo real antigo
+            let saldoRealAtual = parseFloat(u.saldo_real !== undefined ? u.saldo_real : saldoAtual);
+            
             let faltaApostar = metaAntiga - atualAntigo;
             if(faltaApostar < 0) faltaApostar = 0;
 
-            let valorStr = prompt(`ATIVAR BÔNUS 100% PARA ${id}\n\nO bônus dobra o valor digitado e cria uma meta de 3x.\nRollover Pendente: R$ ${faltaApostar.toFixed(2)}\n\nDigite o valor do NOVO DEPÓSITO:`, "20.00");
+            let valorStr = prompt(`ATIVAR BÔNUS 100% PARA ${id}\n\nO bônus dobra o valor digitado e cria uma meta de 3x.\nRollover Pendente: R$ ${faltaApostar.toFixed(2)}\n\nDigite o valor do DEPÓSITO REAL:`, "20.00");
             if(valorStr === null || valorStr === "") return;
             
             let valorDepositado = parseFloat(valorStr.replace(',','.'));
@@ -434,17 +446,20 @@
 
             let bancaTotalRecebida = valorDepositado * 2;
             let novoSaldo = parseFloat(saldoAtual) + bancaTotalRecebida;
+            let novoSaldoReal = saldoRealAtual + valorDepositado; // APENAS O VALOR REAL É SOMADO AQUI
+            
             let novoRolloverGerado = bancaTotalRecebida * 3;
             let metaRolloverFinal = faltaApostar + novoRolloverGerado;
 
             update(ref(db, `usuarios/${id}`), {
                 saldo: parseFloat(novoSaldo.toFixed(2)),
+                saldo_real: parseFloat(novoSaldoReal.toFixed(2)), // SALVA O REAL
                 rollover_meta: metaRolloverFinal,
                 rollover_atual: 0,
                 bonus_usado: false
             }).then(() => {
                 push(ref(db, `usuarios/${id}/transacoes`), { tipo: "BÔNUS VIP 100%", valor: bancaTotalRecebida.toFixed(2), data: new Date().toISOString() });
-                alert(`⚡ Bônus ativado com sucesso!\n\nFoi somado R$ ${bancaTotalRecebida.toFixed(2)} ao saldo.\nNova meta de saque total: R$ ${metaRolloverFinal.toFixed(2)}.`);
+                alert(`⚡ Bônus ativado com sucesso!\n\nEle recebeu R$ ${bancaTotalRecebida.toFixed(2)} na tela, mas o sistema sabe que só R$ ${valorDepositado.toFixed(2)} é dinheiro real.\nNova meta de saque total: R$ ${metaRolloverFinal.toFixed(2)}.`);
                 document.getElementById('searchInput').value = ''; 
             }).catch(e => alert("Erro ao conectar no banco de dados."));
         };
