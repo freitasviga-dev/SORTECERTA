@@ -253,12 +253,15 @@
                 return; 
             }
             
-            let novaMetaDeAposta = valorInput; // Padrão
+            // LÓGICA DE METAS DE APOSTAS (ROLLOVER) PARA O SAQUE
+            let novaMetaDeAposta = valorInput + (valorInput * 0.20); // Padrão sem bônus (Depósito + 20%)
             let msgBonusZap = "NENHUM";
 
             if (missaoAtiva && missaoAtiva.tipo === '100porcento') {
-                novaMetaDeAposta = (valorInput * 2) * 2; // Regra de Ouro: (Valor x 2) x 2
-                msgBonusZap = "BÔNUS 100% SUPREMO";
+                // REGRA DE 3X O VALOR TOTAL (Depósito + Bônus)
+                let bancaTotalComBonus = valorInput * 2; 
+                novaMetaDeAposta = bancaTotalComBonus * 3; 
+                msgBonusZap = "BÔNUS 100% SUPREMO (Rollover 3x)";
             }
 
             try {
