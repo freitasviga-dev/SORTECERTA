@@ -82,6 +82,7 @@
         .stats-value.gold { color: var(--btn-yellow); }
 
         .payout-input-wrapper { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        /* Trocado para text para controlar a mascara via JS */
         .payout-input-wrapper input { background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; width: 60px; outline: none; text-align: right; }
         .payout-input-wrapper span { color: rgba(255,255,255,0.5); font-weight: bold; margin-left: 5px; }
 
@@ -160,7 +161,7 @@
                 <div class="stats-col">
                     <span class="stats-label">Multiplicador</span>
                     <div class="payout-input-wrapper">
-                        <input type="number" id="payout-input" value="2.00" step="0.01" min="1.10" max="970.00">
+                        <input type="text" id="payout-input" value="2.00" inputmode="decimal">
                         <span>x</span>
                     </div>
                 </div>
@@ -328,11 +329,19 @@
             syncUI(chance, payout);
         }
 
-        function updateFromPayout() {
-            iniciarAudio();
-            let payout = parseFloat(payoutInput.value);
-            if(payout < 1.10) payout = 1.10; 
-            if(payout > 970.00) payout = 970.00; 
+        // MÁSCARA INTELIGENTE DO INPUT DO MULTIPLICADOR
+        function formatarEValidarMultiplicador() {
+            let valorCru = payoutInput.value.replace(/[^0-9.,]/g, ''); // Limpa letras e caracteres especiais
+            valorCru = valorCru.replace(',', '.'); // Aceita vírgula mas transforma em ponto pro cálculo
+
+            let payout = parseFloat(valorCru);
+            
+            if (isNaN(payout)) { payout = 2.00; }
+            if (payout < 1.10) payout = 1.10; 
+            if (payout > 970.00) payout = 970.00; 
+
+            payoutInput.value = payout.toFixed(2);
+            
             let chance = RTP / payout; 
             slider.value = chance.toFixed(2); 
             syncUI(chance, payout);
@@ -340,7 +349,20 @@
 
         slider.addEventListener('input', () => { iniciarAudio(); updateStats(); }); // Atualiza na mesma hora
         slider.addEventListener('change', () => { tocarSom('sfxClick'); });
-        payoutInput.addEventListener('input', updateFromPayout);
+        
+        // Bloqueia letras na digitação ao vivo (apenas números e pontos)
+        payoutInput.addEventListener('input', (e) => {
+            payoutInput.value = payoutInput.value.replace(/[^0-9.,]/g, '');
+        });
+        // Valida as decimais e o valor minimo quando ele tira o dedo do input (blur)
+        payoutInput.addEventListener('blur', formatarEValidarMultiplicador);
+        // Valida quando ele aperta Enter
+        payoutInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                payoutInput.blur();
+            }
+        });
 
         function syncUI(chance, payout) {
             let winAmount = apostaAtual * payout;
