@@ -82,7 +82,6 @@
         .stats-value.gold { color: var(--btn-yellow); }
 
         .payout-input-wrapper { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        /* Trocado para text para controlar a mascara via JS */
         .payout-input-wrapper input { background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; width: 60px; outline: none; text-align: right; }
         .payout-input-wrapper span { color: rgba(255,255,255,0.5); font-weight: bold; margin-left: 5px; }
 
@@ -369,7 +368,7 @@
             let winAmount = parseFloat((apostaAtual * payout).toFixed(2));
             
             chanceDisplay.innerText = chance.toFixed(2) + ' %';
-            potentialWin.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            potentialWin.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             let tUnder = chance; let tOver = 100 - chance;
             targetUnder.innerText = "Abaixo de " + tUnder.toFixed(2); targetOver.innerText = "Acima de " + tOver.toFixed(2);
             trackTop.style.background = `linear-gradient(to right, #e74c3c ${tOver}%, #3498db ${tOver}%)`;
@@ -378,6 +377,10 @@
 
         async function rollDice(type) {
             if (isRolling) return; iniciarAudio(); tocarSom('sfxClick');
+            
+            // LIMPA O TOAST ANTES DA NOVA JOGADA
+            winToast.classList.remove('show');
+            
             if (apostaAtual > bancaAtual) { mostrarToast("Saldo insuficiente."); return; }
 
             proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
@@ -460,8 +463,10 @@
                     });
                 }
 
-                winAmountDisplay.innerText = "R$ " + winTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                winToast.classList.add('show'); setTimeout(() => winToast.classList.remove('show'), 2500);
+                winAmountDisplay.innerText = "R$ " + winTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                winToast.classList.add('show');
+                // Adiciona timeout limpo pro Toast sumir caso ele nao jogue em 2.5s
+                setTimeout(() => { if(!isRolling) winToast.classList.remove('show'); }, 2500);
             } else {
                 resultDisplay.classList.add('lose'); tocarSom('sfxLose');
             }
