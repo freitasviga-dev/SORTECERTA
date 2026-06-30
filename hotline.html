@@ -59,7 +59,7 @@
         /* GAME AREA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; position: relative; }
 
-        /* NOVO PAINEL DE HISTÓRICO */
+        /* PAINEL DE HISTÓRICO DE BOLINHAS */
         .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 15px; }
         .history-bar::-webkit-scrollbar { display: none; }
         .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
@@ -73,7 +73,6 @@
         .board-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         
-        /* O MULTIPLICADOR AGORA TEM TRANSIÇÃO DE COR DINÂMICA */
         .next-multiplier { 
             background: linear-gradient(135deg, #e74c3c, #961d12); color: #fff; 
             padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 900; 
@@ -135,7 +134,7 @@
 
     <div id="startScreen">
         <h2><i class="fa-solid fa-bolt"></i> HOTLINE VIP</h2>
-        <div class="btn-start btn-start btn-3d">Jogar Agora</div>
+        <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
@@ -149,8 +148,7 @@
     <div class="game-area">
         
         <div class="history-bar" id="historyBar">
-            <span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Histórico:</span>
-            <!-- Bolinhas de histórico entrarão aqui -->
+            <span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>
         </div>
 
         <div class="board-header">
@@ -232,11 +230,19 @@
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
-        
-        // FORÇA O RESUMO DO AUDIO
+
+        // ACORDADOR DE ÁUDIO FORÇADO
+        function forceAudioResume() {
+            if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+        }
+        document.addEventListener('click', forceAudioResume);
+        document.addEventListener('touchstart', forceAudioResume);
+
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
-            if (audioCtx.state === 'suspended') audioCtx.resume().catch(e => {}); 
+            forceAudioResume();
         }
 
         const tocarSom = (tipo) => {
@@ -272,12 +278,15 @@
             resultHistory.forEach(color => { bar.innerHTML += `<div class="history-dot ${color}"></div>`; });
         }
 
-        // Histórico Falso Inicial
+        // Histórico Inicial Perfeitamente Intercalado
+        let rbCounter = 0;
         for (let i = 0; i < 10; i++) {
-            let rand = Math.random();
-            if (rand < 0.05) resultHistory.push('fire');
-            else if (rand < 0.525) resultHistory.push('red');
-            else resultHistory.push('black');
+            if (i === 4) {
+                resultHistory.push('fire');
+            } else {
+                resultHistory.push(rbCounter % 2 === 0 ? 'red' : 'black');
+                rbCounter++;
+            }
         }
         updateHistoryBar();
 
@@ -295,7 +304,7 @@
             if (document.hidden) {
                 if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
             } else {
-                if (audioLigado && audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(e=>{});
+                forceAudioResume();
             }
         });
 
@@ -320,11 +329,9 @@
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
-        // MUDANÇA DINÂMICA DO PRÊMIO ALVO E RESUMO DE AUDIO FORÇADO
+        // MUDANÇA DINÂMICA DO PRÊMIO ALVO
         window.selectColor = function(color) {
-            if(isSpinning) return; 
-            iniciarAudio(); // Força o religamento do som se o navegador pausar
-            tocarSom('sfxClick'); selectedColor = color;
+            if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
             ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
             document.getElementById(`btn-${color}`).classList.add('active');
             
@@ -357,27 +364,30 @@
         });
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // ROLETA INICIAL INFINITA: O truque está no `translateX(-880px)`
+        // ROLETA INICIAL INFINITA: TRANSLATEX(-980px) COM ALTERNÂNCIA RIGOROSA
         function initIdleReel() {
             reel.style.transition = 'none'; reel.innerHTML = '';
+            let counter = 0;
             for(let i=0; i<80; i++) {
-                let type = (i % 2 === 0) ? 'red' : 'black';
+                let type;
+                if (i === 15) { 
+                    type = 'fire'; 
+                } else { 
+                    type = (counter % 2 === 0) ? 'red' : 'black'; 
+                    counter++; 
+                }
                 const slot = document.createElement('div'); slot.className = `slot ${type}`;
-                slot.innerHTML = '<div class="inner-circle"></div>';
+                if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            // Largura do bloco 98px. Começa no índice 10.
-            reel.style.transform = `translateX(-980px)`; 
+            reel.style.transform = `translateX(-980px)`; // Índice 10 centralizado
         }
 
         window.cliqueBotaoApostar = async function() {
-            if(isSpinning) return; 
-            iniciarAudio(); // Força o religamento do som
-            tocarSom('sfxClick');
-            
+            if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick');
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return; }
 
-            document.getElementById('winToast').classList.remove('show'); // Limpa vitória anterior imediatamente
+            document.getElementById('winToast').classList.remove('show'); 
 
             proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
             if(proporcaoRealNaMesa > 1.0) proporcaoRealNaMesa = 1.0;
@@ -421,48 +431,47 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            // O targetIndex fica mais pro final para girar bastante
-            let targetIndex = resultColor === 'black' ? 65 : 64; 
-            if (resultColor === 'fire') targetIndex = 60; 
+            let targetIndex = 65; 
+            
+            let colors = [];
+            let rbCounter = Math.floor(Math.random() * 2); // Começa com vermelho ou preto aleatório
 
-            // NEAR MISS (Sensação de Quase)
-            let nearMissIndex = -1; let randomOffset = Math.floor(Math.random() * 40) - 20; 
-            if (!isWin) {
-                if (selectedColor === 'fire' || Math.random() < 0.4) {
-                    const side = Math.random() > 0.5 ? 1 : -1; 
-                    nearMissIndex = targetIndex + side; 
-                    randomOffset = side === 1 ? (40 + Math.floor(Math.random() * 5)) : (-40 - Math.floor(Math.random() * 5)); 
+            // Gera uma matriz matematicamente inquebrável
+            for(let i=0; i<TOTAL_SLOTS; i++) {
+                if (i === 15 || i === 45 || i === 75) {
+                    colors.push('fire');
+                } else {
+                    colors.push(rbCounter % 2 === 0 ? 'red' : 'black');
+                    rbCounter++;
                 }
             }
 
-            // MÁGICA DA INTEGRAÇÃO CIRÚRGICA: O Amarelo inverte a fase! 👑
-            let phase = 0;
+            // Encontra a cor desejada perto do final
+            while(colors[targetIndex] !== resultColor && targetIndex < TOTAL_SLOTS - 2) {
+                targetIndex++;
+            }
+
+            let randomOffset = Math.floor(Math.random() * 20) - 10; 
+            if (!isWin) {
+                const side = Math.random() > 0.5 ? 1 : -1; 
+                // Empurra a parada pra borda do slot criando a ilusão de "QUASE DEU"
+                randomOffset = side === 1 ? (35 + Math.floor(Math.random() * 10)) : (-35 - Math.floor(Math.random() * 10)); 
+            }
+
+            // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
-                let type;
-                if (i === targetIndex) { type = resultColor; } 
-                else if (i === nearMissIndex) { type = selectedColor; } 
-                else if (i === 30 && targetIndex !== 30 && nearMissIndex !== 30) { type = 'fire'; } 
-                else {
-                    type = ((i + phase) % 2 === 0) ? 'red' : 'black';
-                }
-                
-                // GATILHO DE FLIP: Toda vez que passar por um amarelo, invertemos o grid
-                if (type === 'fire') {
-                    phase = (phase === 0) ? 1 : 0;
-                }
-                
-                const slot = document.createElement('div'); slot.className = `slot ${type}`;
-                if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
+                const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
+                if (colors[i] !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
 
             reel.style.transition = 'none'; 
-            // Inicia do slot 10 para o jogador ver que tem esteira infinita pra trás
+            // Começa no slot 10 para criar a esteira que vem lá de trás!
             reel.style.transform = `translateX(-980px)`; 
             reel.offsetHeight; 
 
             // LARGURA SLOT = 90 + GAP 8 = 98px
-            const moveDistance = -(targetIndex * 98 + 45) + randomOffset;
+            const moveDistance = -(targetIndex * 98) + randomOffset;
 
             let lastTileIndex = -1;
             function trackTicks() {
@@ -470,7 +479,7 @@
                 const style = window.getComputedStyle(reel);
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
-                // Acompanha a movimentação para bater o som do Tick perfeitamente
+                // Monitora o distanciamento físico em relação à origem do giro para bater o som na hora certa
                 const distancePassed = Math.abs(currentX - (-980));
                 const currentTileIndex = Math.floor(distancePassed / 98);
                 if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) { tocarSom('sfxTick'); lastTileIndex = currentTileIndex; }
