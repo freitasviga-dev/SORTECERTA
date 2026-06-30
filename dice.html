@@ -365,7 +365,9 @@
         });
 
         function syncUI(chance, payout) {
-            let winAmount = apostaAtual * payout;
+            // CORREÇÃO AQUI: Força o toFixed para remover dizimas quebradas antes de jogar no display
+            let winAmount = parseFloat((apostaAtual * payout).toFixed(2));
+            
             chanceDisplay.innerText = chance.toFixed(2) + ' %';
             potentialWin.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
             let tUnder = chance; let tOver = 100 - chance;
