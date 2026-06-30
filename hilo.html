@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -283,12 +284,14 @@
 </head>
 <body>
 
+    <!-- TELA INICIAL -->
     <div id="startScreen">
         <h2><i class="fa-solid fa-layer-group"></i> HILO VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div id="mobile-container">
+        <!-- HEADER PADRONIZADO -->
         <div class="header-bar">
             <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
             <div class="logo-text"><i class="fa-solid fa-layer-group"></i> HILO VIP</div>
@@ -297,6 +300,7 @@
             </div>
         </div>
 
+        <!-- GAME AREA -->
         <div class="game-area">
             
             <div class="win-toast" id="winToast">
@@ -304,27 +308,33 @@
                 <div id="winAmount">R$ 0,00</div>
             </div>
 
+            <!-- TOAST DE DERROTA -->
             <div class="lose-toast" id="loseToast">
                 Você Perdeu a Sequência!
             </div>
 
+            <!-- DISPLAY DAS CARTAS -->
             <div class="cards-display">
                 <div class="hint-icon"><span>A</span><span>v</span><span>2</span></div>
                 <div class="card red" id="currentCard"></div>
+                <!-- BARALHO 3D -->
                 <div class="deck-back"></div>
             </div>
             
             <button class="btn-skip btn-3d" id="btnSkip" onclick="skipCard()"><i class="fa-solid fa-arrows-rotate"></i> Pular Carta</button>
 
+            <!-- PAINEL DE STATUS -->
             <div class="history-wrapper" id="historyWrapper">
                 <div class="history-row" id="historyRow">
-                    </div>
+                    <!-- Mini-cartas inseridas via JS -->
+                </div>
                 <div class="history-stats">
                     <div class="stat-count"><i class="fa-solid fa-layer-group"></i> <span id="cardCount">0</span></div>
                     <div class="stat-mult" id="currentMultValue">1.00x</div>
                 </div>
             </div>
 
+            <!-- BOTÕES HIGH LOW (COM SÍMBOLO DE IGUAL) -->
             <div class="hilo-options" id="hiloOptions">
                 <div class="btn-guess low btn-3d" onclick="makeGuess('low')">
                     <span><i class="fa-solid fa-caret-down"></i><i class="fa-solid fa-equals" style="font-size: 14px; margin-right: 5px;"></i> LOW</span>
@@ -337,6 +347,7 @@
             </div>
         </div>
 
+        <!-- CONTROLES ESTILO VIP -->
         <div class="controls-wrapper">
             <div class="bet-input-row">
                 <div class="bet-label">Aposta</div>
@@ -582,6 +593,7 @@
             uiCard.style.opacity = '1';
         }
 
+        // ADICIONA INDICADOR VISUAL CLARO SE FOI HIGH OU LOW
         function addCardToHistory(cardData, guessType = null) {
             const container = document.createElement('div');
             container.className = 'mini-card-container';
@@ -813,7 +825,9 @@
             }
 
             tocarSom('sfxWin');
-            winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            
+            // EXIBIÇÃO NO TOAST ESTÁ AQUI - REPARADA!
+            winAmountDisplay.innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             winToast.classList.add('show');
             
             hiloOptions.style.display = 'none';
