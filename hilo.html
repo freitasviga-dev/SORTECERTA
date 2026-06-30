@@ -507,14 +507,10 @@
         // CORREÇÃO BUG DO ÁUDIO PARANDO NA MINIMIZAÇÃO
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
         document.addEventListener('visibilitychange', function() { 
-            if (document.hidden) {
-                if (audioCtx && audioCtx.state === 'running') {
-                    audioCtx.suspend();
-                }
-            } else {
-                if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+            // BUG CORRIGIDO: Não cancelamos mais a partida ao minimizar a tela.
+            // Tratamento seguro do Áudio
+            if (!document.hidden && audioLigado && audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(e => console.log('Aguardando clique para som'));
             }
         });
 
@@ -737,7 +733,7 @@
             currentMultValue.innerText = currentMultiplier.toFixed(2) + "x"; 
             
             let winAmount = apostaAtual * currentMultiplier;
-            btnCashout.innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2)}`;
+            btnCashout.innerHTML = `<i class="fa-solid fa-sack-dollar"></i> CASHOUT R$ ${winAmount.toFixed(2).replace('.', ',')}`;
         }
 
         window.makeGuess = function(type) {
