@@ -7,164 +7,122 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
+    <meta http-equiv="Clear-Site-Data" content="cache">
+    
+    <script>
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
+            window.addEventListener('pageshow', function(event) { if (event.persisted) { window.location.reload(true); } });
+        })();
+    </script>
     
     <title>Hotline VIP | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
+        :root {
+            /* TEMA PREMIUM DARK INDIGO VIP 👑 */
+            --bg-top: #2a0a3a; 
+            --bg-bottom: #0a0210;
+            --panel-bg: #14051c;
+            --btn-green: #00e676; --btn-green-dark: #00b359;
+            --btn-yellow: #f1c40f; --btn-yellow-dark: #b8860b;
+            --btn-red: #e74c3c; --btn-red-dark: #c0392b;
+            --text-light: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; user-select: none; touch-action: manipulation; }
         html { height: -webkit-fill-available; overscroll-behavior: none; }
         
         body { 
-            background: linear-gradient(180deg, #184b9e 0%, #0d2b5e 100%);
-            color: #ffffff; min-height: 100vh; min-height: 100dvh;
+            background: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--text-light); min-height: 100vh; min-height: 100dvh;
             display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: none;
         }
 
         .btn-3d { transition: transform 0.1s ease, box-shadow 0.1s ease, border-bottom 0.1s ease; cursor: pointer; }
         .btn-3d:active { transform: translateY(4px) !important; box-shadow: none !important; border-bottom-width: 0px !important; margin-top: 4px; }
 
-        /* HEADER PADRÃO SORTECERTA */
-        .header-bar {
-            padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        /* TELA INICIAL */
+        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05020a; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; }
+        #startScreen h2 { color: var(--btn-yellow); text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; font-size: 26px; text-shadow: 0 0 15px rgba(241,196,15,0.5); }
+        .btn-start { background: linear-gradient(180deg, var(--btn-green), var(--btn-green-dark)); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 8px 20px rgba(0, 230, 118, 0.4); font-size: 16px; }
+
+        /* HEADER VIP */
+        .header-bar { padding: 10px 15px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; padding-top: calc(10px + env(safe-area-inset-top)); z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
-        .logo-text { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 6px; }
+        .logo-text i { color: var(--btn-yellow); }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
         /* GAME AREA */
-        .game-area {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 15px; width: 100%; max-width: 450px; margin: 0 auto;
-        }
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; position: relative; }
 
-        .board-header {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .board-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+        .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .next-multiplier { background: linear-gradient(135deg, #f1c40f, #b8860b); color: #000; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 900; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4), inset 0 2px 2px rgba(255,255,255,0.4); display: flex; align-items: center; gap: 5px; }
+
+        /* ROLETA (HOTLINE) ESTILO 3D */
+        .reel-container { width: 100%; height: 140px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; display: flex; align-items: center; box-shadow: inset 0 10px 40px rgba(0,0,0,0.8), 0 15px 30px rgba(0,0,0,0.5); }
+        .pointer-top, .pointer-bottom { position: absolute; left: 50%; transform: translateX(-50%); width: 6px; height: 20px; background: #f1c40f; z-index: 10; border-radius: 4px; box-shadow: 0 0 15px rgba(241, 196, 15, 1); border: 1px solid #fff; }
+        .pointer-top { top: -2px; } .pointer-bottom { bottom: -2px; }
+
+        .reel { display: flex; gap: 8px; padding-left: 50%; transition: transform 3.5s cubic-bezier(0.1, 0.9, 0.2, 1); }
+
+        .slot { width: 90px; height: 90px; border-radius: 12px; flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 2px rgba(255,255,255,0.2), inset 0 -4px 0 rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.6); border-bottom: 5px solid rgba(0,0,0,0.5); }
+        .slot .inner-circle { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.4); box-shadow: inset 0 4px 10px rgba(0,0,0,0.6); }
+
+        .slot.red { background: linear-gradient(180deg, #e74c3c, #961d12); border-bottom-color: #5c1818; }
+        .slot.black { background: linear-gradient(180deg, #2c3e50, #111); border-bottom-color: #000; }
+        .slot.fire { background: linear-gradient(180deg, #f1c40f, #d68910); border-bottom-color: #7a5805; box-shadow: inset 0 2px 2px rgba(255,255,255,0.6), inset 0 -4px 0 rgba(0,0,0,0.4), 0 0 20px rgba(241,196,15,0.5); }
+        .slot.fire::after { content: '32X'; font-size: 28px; font-weight: 900; color: #000; position: absolute; text-shadow: 0 2px 2px rgba(255,255,255,0.5); }
+
+        /* CONTROLES ESTILO VIP */
+        .controls-wrapper { width: 100%; background: var(--panel-bg); border-top: 2px solid #230833; padding: 15px; display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+
+        .action-row { display: flex; gap: 8px; }
+        .btn-choice { flex: 1; padding: 14px; border-radius: 12px; font-size: 12px; font-weight: 900; text-transform: uppercase; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.15), 0 5px 0 rgba(0,0,0,0.4); border-bottom: 4px solid rgba(0,0,0,0.5); opacity: 0.5; transition: 0.2s; position: relative; border-top: 2px solid transparent; }
+        .btn-choice span { font-size: 10px; opacity: 0.9; font-weight: bold; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; }
         
-        .board-badge {
-            background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 3px solid rgba(0,0,0,0.8);
-            padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;
-        }
-        
-        .next-multiplier {
-            background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000;
-            padding: 6px 15px; border-radius: 20px; font-size: 13px; font-weight: 900;
-            box-shadow: 0 2px 10px rgba(241, 196, 15, 0.3); transition: 0.3s;
-        }
+        .btn-choice.red { background: linear-gradient(180deg, #e74c3c, #961d12); color: #fff; }
+        .btn-choice.black { background: linear-gradient(180deg, #444, #111); color: #fff; }
+        .btn-choice.fire { background: linear-gradient(180deg, #f1c40f, #d4ac0d); color: #000; }
+        .btn-choice.active { opacity: 1; border-top-color: #fff; transform: scale(1.03); box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.4), 0 0 20px rgba(241, 196, 15, 0.3); }
 
-        /* ROLETA (HOTLINE) ESTILO PADRÃO DA CASA */
-        .reel-container {
-            width: 100%; height: 130px; background: rgba(0,0,0,0.2); border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; 
-            display: flex; align-items: center; box-shadow: inset 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .pointer-top, .pointer-bottom {
-            position: absolute; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 15px; background: #f1c40f; z-index: 10; border-radius: 4px;
-            box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
-        }
-        .pointer-top { top: 0; }
-        .pointer-bottom { bottom: 0; }
-
-        .reel {
-            display: flex; gap: 8px; padding-left: 50%; /* Faz o slot index 0 ficar no centro exato no translateX 0 */
-            transition: transform 3.5s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
-
-        .slot {
-            width: 80px; height: 80px; border-radius: 10px; flex-shrink: 0;
-            position: relative; display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 4px 5px rgba(0,0,0,0.4);
-            border-bottom: 4px solid rgba(0,0,0,0.5);
-        }
-
-        .slot .inner-circle { width: 35px; height: 35px; border-radius: 50%; background: rgba(0,0,0,0.3); }
-
-        .slot.red { background: #e74c3c; border-bottom-color: #c0392b; }
-        .slot.black { background: #2c3e50; border-bottom-color: #1a252f; }
-        
-        /* BLOCO AMARELO 32X NA ROLETA */
-        .slot.fire { background: #f1c40f; border-bottom-color: #d68910; }
-        .slot.fire::after { content: '32X'; font-size: 26px; font-weight: 900; color: #000; position: absolute; }
-
-        /* CONTROLES E BOTÕES PADRÃO */
-        .controls-wrapper {
-            width: 100%; background: #0c1f45; border-top: 2px solid #143570;
-            padding: 15px; display: flex; flex-direction: column; gap: 12px;
-            padding-bottom: calc(15px + env(safe-area-inset-bottom)); position: relative;
-        }
-
-        .action-row { display: flex; gap: 6px; }
-        
-        .btn-choice {
-            flex: 1; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: 900;
-            text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 4px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.5); border: 2px solid transparent; opacity: 0.5; transition: 0.2s;
-        }
-        .btn-choice.red { background: #e74c3c; color: #fff; box-shadow: 0 4px 0 #c0392b; }
-        .btn-choice.black { background: #2c3e50; color: #fff; box-shadow: 0 4px 0 #1a252f; }
-        .btn-choice.fire { background: #f1c40f; color: #000; box-shadow: 0 4px 0 #d68910; }
-        .btn-choice.active { opacity: 1; border-color: #fff; transform: scale(1.02); }
-
-        .bet-input-row {
-            display: flex; background: rgba(0,0,0,0.4); border-radius: 50px; padding: 4px;
-            border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between;
-        }
-        .bet-label { font-size: 10px; color: #888; font-weight: 700; padding-left: 15px; text-transform: uppercase; pointer-events: none; }
-        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; }
+        .bet-input-row { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+        .bet-label { font-size: 11px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 5px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: #1c3a76; border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 0 #0d214a; border-bottom: 2px solid #0a1835; }
+        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 15px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; border-bottom: none; transition: 0.1s; }
+        .bet-adjust:active { transform: translateY(4px); box-shadow: none; }
 
-        .bet-button {
-            width: 100%; background: linear-gradient(180deg, #00e676, #00b359); border: none; border-radius: 12px; padding: 16px; color: #000;
-            font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.3); border-bottom: 2px solid #004d26;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .bet-button.disabled { background: #555; box-shadow: 0 6px 0 #222; border-bottom: 2px solid #111; color: #888; pointer-events: none; }
+        .bet-button { width: 100%; background: linear-gradient(180deg, #00e676, #00b359); border: none; border-radius: 12px; padding: 18px; color: #000; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 6px 0 #006633, 0 10px 20px rgba(0, 230, 118, 0.4); border-bottom: none; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.1s; }
+        .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding: 0 5px; }
         .game-name { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; }
-        .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
-        .balance-info i { color: #00e676; font-size: 12px; }
+        .balance-info { font-size: 14px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .balance-info i { color: var(--btn-yellow); font-size: 12px; }
 
-        .win-toast {
-            position: fixed; top: 100px; left: 50%; transform: translate(-50%, -20px) scale(0.9);
-            background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.4); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; text-transform: uppercase; border: 2px solid #fff;
-        }
+        .win-toast { position: fixed; top: 100px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; text-transform: uppercase; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
-        .win-toast span { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: -2px; }
+        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; }
 
         .system-toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 100px; }
-
-        #startScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0000; z-index: 9999999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease;
-        }
-        #startScreen h2 { color: #00e676; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; font-size: 24px; text-shadow: 0 0 10px rgba(0,230,118,0.5); }
-        .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4); font-size: 14px; }
-
     </style>
 </head>
 <body>
 
     <div id="startScreen">
-        <h2>Hotline Simulator</h2>
+        <h2><i class="fa-solid fa-crown"></i> HOTLINE VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text">HOTLINE VIP</div>
+        <div class="logo-text"><i class="fa-solid fa-crown"></i> HOTLINE VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -179,22 +137,20 @@
         <div class="reel-container">
             <div class="pointer-top"></div>
             <div class="pointer-bottom"></div>
-            <div class="reel" id="reel">
-                </div>
+            <div class="reel" id="reel"></div>
         </div>
     </div>
 
     <div class="controls-wrapper">
-        
         <div class="action-row">
             <div class="btn-choice red btn-3d active" id="btn-red" onclick="selectColor('red')">
-                VERMELHO
+                VERMELHO <span>2.00x</span>
             </div>
             <div class="btn-choice fire btn-3d" id="btn-fire" onclick="selectColor('fire')">
-                AMARELO
+                AMARELO <span>32.00x</span>
             </div>
             <div class="btn-choice black btn-3d" id="btn-black" onclick="selectColor('black')">
-                PRETO
+                PRETO <span>2.00x</span>
             </div>
         </div>
 
@@ -210,7 +166,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">HOTLINE <i class="fa-solid fa-bolt" style="margin-left: 5px; opacity: 0.5;"></i></div>
+            <div class="game-name">ORIGINAL <i class="fa-solid fa-crown" style="margin-left: 5px; opacity: 0.5; color: var(--btn-yellow);"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -226,230 +182,174 @@
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
-        // ANTI-CACHE FORTE DE NAVEGADOR E HISTÓRICO
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                window.location.reload(true);
-            }
-        });
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOP7TfHjA2jjwJvWab72Zk0jfw5U9oHio",
-            databaseURL: "https://sortecerta-75b77-default-rtdb.firebaseio.com",
-            projectId: "sortecerta-75b77"
-        };
-        const db = getDatabase(initializeApp(firebaseConfig));
+        const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
+        const db = getDatabase(initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] }));
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
-
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
-        // Variáveis de Estado
-        let bancaAtual = 0; 
+        // MÁQUINA DE DINHEIRO & ANTI-QUEBRA
+        const CONFIG_RTP = 0.95; 
+        let bancaAtual = 0.00;
+        let saldoRealAtual = 0.00;
+        let caixaDaCasa = 0.00;
+        let modoJogo = "normal";
         let audioLigado = false;
         let isSpinning = false;
         let selectedColor = 'red'; 
+        let proporcaoRealNaMesa = 1.0;
 
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
-
         const reel = document.getElementById('reel');
 
-        // -------------------------------------------------------------------------------- //
-        // 🎵 MOTOR DE ÁUDIO NATIVO PROFISSIONAL (SINTETIZADOR)
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
-
-        function iniciarAudio() {
-            if (!audioCtx) { audioCtx = new AudioContext(); }
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-        }
+        function iniciarAudio() { if (!audioCtx) audioCtx = new AudioContext(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 
         const tocarSom = (tipo) => {
-            if(!audioLigado) return;
-            if (!audioCtx) return;
+            if(!audioLigado || !audioCtx) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
 
             if (tipo === 'sfxClick') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (tipo === 'sfxTick') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.03);
             } else if (tipo === 'sfxWin') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
-                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); 
-                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
-                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3); osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); 
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.8);
             } else if (tipo === 'sfxLose') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
-                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.5);
             }
         };
-        // -------------------------------------------------------------------------------- //
 
-        function mostrarToast(msg) {
-            const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+        function mostrarToast(msg) { const t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 
-        // DESBLOQUEIO DE TELA E ÁUDIOS
         document.getElementById('startScreen').addEventListener('click', function() {
-            this.style.opacity = '0';
-            setTimeout(() => { this.style.display = 'none'; }, 300);
-            
-            audioLigado = true;
-            document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-            document.getElementById('btnAudio').style.color = '#fff';
-
-            iniciarAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.01);
+            this.style.opacity = '0'; setTimeout(() => { this.style.display = 'none'; }, 300);
+            audioLigado = true; document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('btnAudio').style.color = '#fff';
+            iniciarAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
-        // FUNÇÃO DE VOLTAR PLUGADA CORRETAMENTE
-        function voltarParaLobby() {
-            iniciarAudio(); tocarSom('sfxClick'); lidarComSaidaAbrupta();
-            if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
-            else { window.location.href = 'index.html'; }
-        }
-
-        // FUNÇÃO DE ÁUDIO PLUGADA CORRETAMENTE
-        function toggleAudio() {
-            iniciarAudio();
-            audioLigado = !audioLigado; 
-            const btn = document.getElementById('btnAudio');
-            if(audioLigado) { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
-            } else { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
+        // REEMBOLSO (ANTI-FUGA)
+        async function lidarComSaidaAbrupta() {
+            if (isSpinning) {
+                isSpinning = false;
+                let apostaReal = apostaAtual * proporcaoRealNaMesa;
+                bancaAtual += apostaAtual;
+                saldoRealAtual += apostaReal;
+                await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
+                if (modoJogo !== 'admin' && modoJogo !== 'live') {
+                    const snap = await get(ref(db, 'sistema/caixa_global'));
+                    await set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) - apostaReal).toFixed(2)));
+                }
             }
         }
+        window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
+        document.addEventListener('visibilitychange', function() { if (document.hidden) lidarComSaidaAbrupta(); });
+
+        document.getElementById('btnBack').addEventListener('click', async () => {
+            iniciarAudio(); tocarSom('sfxClick'); await lidarComSaidaAbrupta();
+            if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } else { window.location.href = 'index.html'; }
+        });
+
+        document.getElementById('btnAudio').addEventListener('click', () => {
+            iniciarAudio(); audioLigado = !audioLigado; 
+            const btn = document.getElementById('btnAudio');
+            if(audioLigado) { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick'); } else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
+        });
 
         window.abrirInputAposta = function() {
-            if(isSpinning) return;
-            iniciarAudio();
-            let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
-            if(novoValor !== null) {
-                let parsed = parseFloat(novoValor.replace(',', '.'));
-                if(!isNaN(parsed) && parsed >= 0.10) {
-                    apostaAtual = Math.min(parsed, 500.00);
-                    document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                    tocarSom('sfxClick');
-                } else { mostrarToast("Valor inválido."); }
-            }
+            if(isSpinning) return; iniciarAudio(); let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
+            if(novoValor !== null) { let parsed = parseFloat(novoValor.replace(',', '.')); if(!isNaN(parsed) && parsed >= 0.10) { apostaAtual = Math.min(parsed, 500.00); document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); tocarSom('sfxClick'); } else { mostrarToast("Valor inválido."); } }
         }
 
         window.mudarAposta = function(direcao) {
-            if(isSpinning) return;
-            iniciarAudio(); tocarSom('sfxClick');
-            let novoIndex = indexAposta + direcao;
-            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
-                indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
-                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            }
+            if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); let novoIndex = indexAposta + direcao;
+            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
         window.selectColor = function(color) {
-            if(isSpinning) return;
-            iniciarAudio(); tocarSom('sfxClick');
-            selectedColor = color;
-            document.getElementById('btn-red').classList.remove('active');
-            document.getElementById('btn-black').classList.remove('active');
-            document.getElementById('btn-fire').classList.remove('active');
+            if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
+            ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
             document.getElementById(`btn-${color}`).classList.add('active');
-
             document.getElementById('mult-view').innerText = color === 'fire' ? '32.00x' : '2.00x';
         }
 
-        function lidarComSaidaAbrupta() {
-            isSpinning = false;
-        }
+        function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-        window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
-        document.addEventListener('visibilitychange', function() { if (document.hidden) { lidarComSaidaAbrupta(); } });
-
-        function updateSaldoDisplay(valor) { 
-            document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); 
-        }
-
-        // FIREBASE SYNC REALTIME
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; 
-            bancaAtual = parseFloat(dados.saldo || 0); 
-            updateSaldoDisplay(bancaAtual);
+            if (!isSpinning) {
+                bancaAtual = parseFloat(dados.saldo || 0); 
+                saldoRealAtual = parseFloat(dados.saldo_real !== undefined ? dados.saldo_real : bancaAtual);
+                updateSaldoDisplay(bancaAtual);
+                modoJogo = String(dados.modo || "normal").toLowerCase();
+            }
         });
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // Inicializa a Roleta Parada intercalada perfeitamente com 1 amarelo
+        // ROLETA INTERCALADA PERFEITA
         function initIdleReel() {
-            reel.style.transition = 'none';
-            reel.innerHTML = '';
-            
+            reel.style.transition = 'none'; reel.innerHTML = '';
             for(let i=0; i<20; i++) {
                 let type = (i % 2 === 0) ? 'red' : 'black';
-                if (i === 6) type = 'fire'; // Único amarelo ocioso
-                const slot = document.createElement('div');
-                slot.className = `slot ${type}`;
+                if (i === 6) type = 'fire'; 
+                const slot = document.createElement('div'); slot.className = `slot ${type}`;
                 if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            reel.style.transform = `translateX(-40px)`; 
+            reel.style.transform = `translateX(-45px)`; 
         }
 
         window.cliqueBotaoApostar = async function() {
-            if(isSpinning) return;
-            iniciarAudio(); tocarSom('sfxClick');
+            if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick');
+            if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return; }
 
-            if(bancaAtual < apostaAtual) { 
-                mostrarToast("Saldo insuficiente."); 
-                return; 
+            proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
+            if(proporcaoRealNaMesa > 1.0) proporcaoRealNaMesa = 1.0;
+            let apostaReal = apostaAtual * proporcaoRealNaMesa;
+
+            isSpinning = true; document.getElementById('btnAction').classList.add('disabled');
+
+            bancaAtual -= apostaAtual; saldoRealAtual -= apostaReal;
+            updateSaldoDisplay(bancaAtual);
+            await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
+
+            if (modoJogo !== 'admin' && modoJogo !== 'live') {
+                get(ref(db, `usuarios/${idDispositivo}/rollover_atual`)).then(snap => {
+                    set(ref(db, `usuarios/${idDispositivo}/rollover_atual`), parseFloat((snap.val() || 0)) + apostaAtual);
+                });
+                get(ref(db, 'sistema/caixa_global')).then(snap => {
+                    let caixaAtual = parseFloat(snap.val() || 0);
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual + apostaReal).toFixed(2)));
+                });
             }
 
-            isSpinning = true;
-            document.getElementById('btnAction').classList.add('disabled');
-
-            // 1. DESCONTA A APOSTA DO JOGADOR NO FIREBASE E ATUALIZA A TELA IMEDIATAMENTE
-            let saldoReduzido = bancaAtual - apostaAtual;
-            updateSaldoDisplay(saldoReduzido);
-            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(saldoReduzido.toFixed(2)));
-
-            // 2. ADICIONA O VALOR APOSTADO NO CAIXA DA CASA
-            get(ref(db, 'sistema/caixa_global')).then(snap => {
-                let caixaAtual = parseFloat(snap.val() || 0);
-                set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual + apostaAtual).toFixed(2)));
-            });
-
-            // 3. RNG MATEMÁTICO REAL DA ROLETA (3% Amarelo, 48.5% Vermelho, 48.5% Preto) -> Mantém margem da casa.
-            let fireProb = 0.03; 
-            let colorProb = (1 - fireProb) / 2; 
+            // ANTI-QUEBRA
+            let availableFunds = caixaDaCasa * CONFIG_RTP;
+            let fireProb = 0.03; let colorProb = (1 - fireProb) / 2; 
+            let rand = Math.random(); let resultColor;
             
-            let rand = Math.random();
-            let resultColor;
-            
-            if (rand < fireProb) {
-                resultColor = 'fire';
-            } else if (rand < fireProb + colorProb) {
-                resultColor = 'red';
+            if (modoJogo === 'admin' || modoJogo === 'live') {
+                resultColor = selectedColor === 'fire' ? (Math.random() > 0.5 ? 'fire' : 'red') : selectedColor;
             } else {
-                resultColor = 'black';
+                if (rand < fireProb) { resultColor = 'fire'; } else if (rand < fireProb + colorProb) { resultColor = 'red'; } else { resultColor = 'black'; }
+                let potentialWin = apostaAtual * (resultColor === 'fire' ? 32 : 2);
+                if (potentialWin * proporcaoRealNaMesa > availableFunds) {
+                    resultColor = (selectedColor === 'red' || selectedColor === 'fire') ? 'black' : 'red';
+                }
             }
 
             const isWin = (selectedColor === resultColor);
@@ -457,87 +357,57 @@
         }
 
         function spinReel(resultColor, isWin) {
-            reel.innerHTML = '';
-            const TOTAL_SLOTS = 80; 
+            reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            // Define o índice exato de parada para manter a intercalação perfeita
-            let targetIndex = 64; // Par (Sempre Vermelho)
-            if (resultColor === 'black') {
-                targetIndex = 65; // Ímpar (Sempre Preto)
-            } else if (resultColor === 'fire') {
-                targetIndex = 60; // Ponto fixo onde o ÚNICO Amarelo vai ser inserido
-            }
+            let targetIndex = resultColor === 'black' ? 65 : 64; 
+            if (resultColor === 'fire') targetIndex = 60; 
 
-            // --- LÓGICA DE SENSAÇÃO "QUASE GANHEI" (NEAR MISS) ---
-            let nearMissIndex = -1;
-            let randomOffset = Math.floor(Math.random() * 40) - 20; // Padrão de folga no bloco alvo [-20, 20]
-
+            // NEAR MISS (Sensação de Quase)
+            let nearMissIndex = -1; let randomOffset = Math.floor(Math.random() * 40) - 20; 
             if (!isWin) {
                 if (selectedColor === 'fire' || Math.random() < 0.3) {
-                    const side = Math.random() > 0.5 ? 1 : -1; 
-                    nearMissIndex = targetIndex + side;
-                    
-                    if (side === 1) {
-                        randomOffset = 38 + Math.floor(Math.random() * 5); 
-                    } else {
-                        randomOffset = -38 - Math.floor(Math.random() * 5); 
-                    }
+                    const side = Math.random() > 0.5 ? 1 : -1; nearMissIndex = targetIndex + side;
+                    randomOffset = side === 1 ? (40 + Math.floor(Math.random() * 5)) : (-40 - Math.floor(Math.random() * 5)); 
                 }
             }
-            // -----------------------------------------------------
 
-            // Constrói a esteira intercalada cirurgicamente com a cor alvo e o falso Quase Ganhei
+            // GERAÇÃO DE ESTEIRA COM INTERCALAÇÃO PERFEITA (Resolve o bug do amarelo entre 2 cores iguais)
+            let lastColor = 'black';
             for(let i=0; i<TOTAL_SLOTS; i++) {
-                let type = (i % 2 === 0) ? 'red' : 'black'; 
+                let type;
+                if (i === targetIndex) { type = resultColor; } 
+                else if (i === nearMissIndex) { type = selectedColor; lastColor = selectedColor === 'red' ? 'red' : 'black'; } 
+                else if (resultColor !== 'fire' && i === 30 && nearMissIndex !== 30) { type = 'fire'; } 
+                else { type = lastColor === 'red' ? 'black' : 'red'; lastColor = type; }
                 
-                if (i === targetIndex) {
-                    type = resultColor; 
-                } else if (i === nearMissIndex) {
-                    type = selectedColor; 
-                } else if (resultColor !== 'fire' && i === 30 && nearMissIndex !== 30) {
-                    type = 'fire'; 
-                }
-                
-                const slot = document.createElement('div');
-                slot.className = `slot ${type}`;
+                const slot = document.createElement('div'); slot.className = `slot ${type}`;
                 if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
 
-            reel.style.transition = 'none';
-            reel.style.transform = `translateX(-40px)`;
-            reel.offsetHeight; 
+            reel.style.transition = 'none'; reel.style.transform = `translateX(-45px)`; reel.offsetHeight; 
 
-            // Largura do Bloco (80px) + Espaçamento (8px) = 88px total por slot
-            const moveDistance = -(targetIndex * 88 + 40) + randomOffset;
+            // LARGURA SLOT = 90 + GAP 8 = 98px
+            const moveDistance = -(targetIndex * 98 + 45) + randomOffset;
 
-            // RASTREADOR DE ÁUDIO SINCRONIZADO POR FRAME (ACOMPANHA A DESACELERAÇÃO)
             let lastTileIndex = -1;
             function trackTicks() {
                 if (!isSpinning) return;
-                
                 const style = window.getComputedStyle(reel);
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
-                
-                const distancePassed = Math.abs(currentX - (-40));
-                const currentTileIndex = Math.floor(distancePassed / 88);
-                
-                if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) {
-                    tocarSom('sfxClick'); 
-                    lastTileIndex = currentTileIndex;
-                }
+                const distancePassed = Math.abs(currentX - (-45));
+                const currentTileIndex = Math.floor(distancePassed / 98);
+                if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) { tocarSom('sfxTick'); lastTileIndex = currentTileIndex; }
                 requestAnimationFrame(trackTicks);
             }
             
-            // Dispara a rolagem mecânica e o loop de som
             setTimeout(() => {
                 requestAnimationFrame(trackTicks);
                 reel.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
                 reel.style.transform = `translateX(${moveDistance}px)`;
             }, 50);
 
-            // Resolução financeira
             setTimeout(async () => {
                 isSpinning = false;
                 document.getElementById('btnAction').classList.remove('disabled');
@@ -545,34 +415,34 @@
                 if (isWin) {
                     const multiplier = selectedColor === 'fire' ? 32.00 : 2.00;
                     const winAmount = apostaAtual * multiplier;
+                    const winReal = winAmount * proporcaoRealNaMesa;
                     
-                    let novoSaldo = bancaAtual + winAmount;
-                    await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
+                    bancaAtual += winAmount; saldoRealAtual += winReal;
+
+                    let snapshot = await get(ref(db, `usuarios/${idDispositivo}`));
+                    let u = snapshot.val() || {};
+                    let metaRo = parseFloat(u.rollover_meta || 0); let atualRo = parseFloat(u.rollover_atual || 0);
+                    if (metaRo > 0 && atualRo >= metaRo) { saldoRealAtual = bancaAtual; }
                     
-                    get(ref(db, 'sistema/caixa_global')).then(snap => {
+                    await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
+                    
+                    if (modoJogo !== 'admin' && modoJogo !== 'live') {
+                        let snap = await get(ref(db, 'sistema/caixa_global'));
                         let caixaAtual = parseFloat(snap.val() || 0);
-                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - winAmount).toFixed(2)));
-                    });
+                        await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - winReal).toFixed(2)));
+                    }
 
                     tocarSom('sfxWin');
-
                     const toast = document.getElementById('winToast');
                     document.getElementById('winTitle').innerText = selectedColor === 'fire' ? "32X SUPER WIN!" : "VENCEU!";
                     document.getElementById('winAmount').innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                    toast.classList.add('show'); 
-                    setTimeout(() => toast.classList.remove('show'), 2500);
-
-                } else {
-                    tocarSom('sfxLose');
-                }
+                    toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500);
+                    updateSaldoDisplay(bancaAtual);
+                } else { tocarSom('sfxLose'); }
             }, 3600);
         }
 
         initIdleReel();
-        
-        // ATIVAÇÃO DIRETA DOS EVENT LISTENERS DO NAVEGADOR
-        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
-        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
     </script>
 </body>
 </html>
