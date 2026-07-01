@@ -13,20 +13,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        :root {
-            /* DEEP PURPLE LUXURY THEME - PADRÃO IMPERIAL DA CASA 👑 */
-            --bg-top: #2a0a3a; 
-            --bg-bottom: #0a0210;
-            --panel-bg: #14051c;
-            --btn-green: #00e676; --btn-green-dark: #00b359;
-            --btn-yellow: #f1c40f; --btn-yellow-dark: #b8860b;
-            --text-light: #ffffff;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
         
         body { 
-            background: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 0%, #1e3c72 0%, #0a1930 100%);
             color: #ffffff; display: flex; flex-direction: column; overflow: hidden;
         }
 
@@ -37,7 +28,7 @@
         .header-bar { height: 50px; flex-shrink: 0; padding: 0 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; padding-top: env(safe-area-inset-top); z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
         .logo-text { font-size: 15px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-        .logo-text i { color: var(--btn-yellow); font-size: 14px; }
+        .logo-text i { color: #f1c40f; font-size: 13px; }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
         /* GAME AREA RESPONSIVA */
@@ -54,15 +45,15 @@
 
         /* TILES 3D PROFUNDIDADE */
         .tile {
-            background: linear-gradient(180deg, #3d1455 0%, #1d072b 100%); border-radius: 10px; position: relative;
+            background: linear-gradient(180deg, #1e458a 0%, #112a5e 100%); border-radius: 10px; position: relative;
             box-shadow: inset 0 2px 2px rgba(255,255,255,0.15), inset 0 -4px 0 rgba(0,0,0,0.4), 0 5px 8px rgba(0,0,0,0.5);
-            border-bottom: 4px solid #0d0214; display: flex; justify-content: center; align-items: center; 
+            border-bottom: 4px solid #081533; display: flex; justify-content: center; align-items: center; 
             transition: all 0.15s ease; opacity: 0.4; pointer-events: none; aspect-ratio: 1/1;
         }
         
         .tile.active-col {
             opacity: 1; pointer-events: auto; cursor: pointer;
-            border-color: var(--btn-yellow-dark); 
+            border-color: #b8860b; 
             box-shadow: inset 0 2px 2px rgba(255,255,255,0.3), inset 0 -4px 0 rgba(0,0,0,0.4), 0 0 15px rgba(241, 196, 15, 0.6);
             animation: pulseTile 1.5s infinite;
         }
@@ -71,7 +62,7 @@
         .tile.active-col:active { transform: translateY(4px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); border-bottom-width: 0px; }
 
         .tile.opened {
-            background: #14051c; box-shadow: inset 0 4px 10px rgba(0,0,0,0.7); 
+            background: #0b1a3a; box-shadow: inset 0 4px 10px rgba(0,0,0,0.7); 
             transform: translateY(4px); border-bottom-width: 0px; cursor: default; opacity: 1; animation: none; pointer-events: none;
         }
         
@@ -85,19 +76,19 @@
         .tile.bomb-reveal::before { content: '💣'; font-size: min(5vw, 24px); opacity: 0.9; }
 
         /* PAINEL DE CONTROLE COMPACTO E FIXO */
-        .controls-wrapper { flex-shrink: 0; width: 100%; background: var(--panel-bg); border-top: 2px solid #230833; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; padding-bottom: calc(10px + env(safe-area-inset-top)); position: relative; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        .controls-wrapper { flex-shrink: 0; width: 100%; background: #071226; border-top: 2px solid #143570; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         .action-row { display: flex; gap: 10px; }
-        .btn-secondary { flex: 1; background: linear-gradient(180deg, #2b0e40, #13041c); color: #ccc; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 0 rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-bottom: none; }
+        .btn-secondary { flex: 1; background: linear-gradient(180deg, #1c2b4a, #0d162b); color: #ccc; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 0 rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-bottom: none; }
         .btn-secondary.auto-active { color: #000; background: linear-gradient(180deg, #f1c40f, #b8860b); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #7a5805; border: none; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         .bet-label { font-size: 10px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
         .bet-display { font-size: 15px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; }
+        .bet-adjust { background: linear-gradient(180deg, #1c3a76, #0d214a); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #071229; cursor: pointer; transition: 0.1s; }
         .bet-adjust:active { transform: translateY(4px); box-shadow: none; }
 
-        .bet-button { width: 100%; background: linear-gradient(180deg, #00e676, #00b359) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 6px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; }
+        .bet-button { width: 100%; background: linear-gradient(180deg, #00e676, #00b359) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; }
         .bet-button:active:not(.disabled) { transform: translateY(5px); box-shadow: none !important; }
         .bet-button.cashout { background: linear-gradient(180deg, #f1c40f, #d35400) !important; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.4) !important; color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important; }
         .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; }
@@ -119,7 +110,7 @@
         .system-toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 90px; }
 
-        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05020a; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; }
+        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050a14; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; }
         #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; font-size: 26px; text-shadow: 0 0 20px rgba(241,196,15,0.5); display: flex; align-items: center; gap: 10px; }
         .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.5), 0 8px 20px rgba(0, 230, 118, 0.4); font-size: 14px; letter-spacing: 1px; }
 
@@ -137,13 +128,13 @@
     </script>
 
     <div id="startScreen">
-        <h2><i class="fa-solid fa-crown"></i> GOAL VIP</h2>
+        <h2><i class="fa-solid fa-futbol"></i> GOAL VIP</h2>
         <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text"><i class="fa-solid fa-crown"></i> GOAL VIP</div>
+        <div class="logo-text"><i class="fa-solid fa-futbol" style="color: #f1c40f;"></i> GOAL VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -160,7 +151,8 @@
         </div>
 
         <div class="grid-container">
-            <div class="grid" id="grid"></div>
+            <div class="grid" id="grid">
+                </div>
         </div>
     </div>
 
@@ -182,7 +174,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">ORIGINAL <i class="fa-solid fa-crown" style="margin-left: 5px; opacity: 0.5; color: #f1c40f;"></i></div>
+            <div class="game-name">ORIGINAL <i class="fa-solid fa-futbol" style="margin-left: 5px; opacity: 0.5; color: #f1c40f;"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -206,19 +198,26 @@
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { window.location.reload(true); }
+        });
 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // FIREBASE OFUSCADO
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
-        const db = getDatabase(initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] }));
+        const app = initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] });
+        const db = getDatabase(app);
 
         const idDispositivo = localStorage.getItem('usuario_tracker_id');
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
-        // REGRAS RTP E MATEMÁTICA REAL
-        const CONFIG_RTP = 0.95; 
-        let bancaAtual = 0; let saldoRealAtual = 0; let caixaDaCasa = 0; let proporcaoRealNaMesa = 1.0;
-        let modoJogador = 'normal'; let audioLigado = false;
+        // VARIÁVEIS GLOBAIS E RTP ISOLADO
+        const CONFIG_RTP = 0.97; // RTP fácil de ajustar (97%)
+        let bancaAtual = 0; 
+        let modoJogador = 'normal'; 
+        let audioLigado = false;
         let isGaming = false;
         
         let isAutoModeActive = false;
@@ -227,12 +226,14 @@
 
         const BOARDS = { 'small': { rows: 3, cols: 4 }, 'medium': { rows: 4, cols: 7 }, 'big': { rows: 5, cols: 10 } };
         let currentRowCount = 3; let currentColCount = 4;
-        let currentActiveCol = 0; let bombsPositions = []; let currentMultiplier = 1.00;
+        let currentActiveCol = 0; 
+        let bombsPositions = []; 
+        let currentMultiplier = 1.00;
 
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
-        // ÁUDIO NATIVO
+        // 🎵 MOTOR DE ÁUDIO NATIVO
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
 
@@ -240,7 +241,8 @@
             if(!audioLigado) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const t = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
             osc.connect(gainNode); gainNode.connect(audioCtx.destination);
 
             if (tipo === 'sfxClick') {
@@ -256,34 +258,88 @@
                 gainNode.gain.setValueAtTime(0, t); gainNode.gain.linearRampToValueAtTime(0.4, t + 0.02); gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
                 osc.start(t); osc.stop(t + 0.4);
             } else if (tipo === 'sfxWin') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, t); osc.frequency.setValueAtTime(659.25, t + 0.1); osc.frequency.setValueAtTime(783.99, t + 0.2); osc.frequency.setValueAtTime(1046.50, t + 0.3); 
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, t); osc.frequency.setValueAtTime(659.25, t + 0.1); 
+                osc.frequency.setValueAtTime(783.99, t + 0.2); osc.frequency.setValueAtTime(1046.50, t + 0.3); 
                 gainNode.gain.setValueAtTime(0, t); gainNode.gain.linearRampToValueAtTime(0.3, t + 0.05); gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
                 osc.start(t); osc.stop(t + 0.6);
             }
         };
 
-        function mostrarToast(msg) { const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
         document.getElementById('startScreen').addEventListener('click', function() {
-            this.style.opacity = '0'; setTimeout(() => { this.style.display = 'none'; }, 300);
-            audioLigado = true; document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>'; document.getElementById('btnAudio').style.color = '#fff';
-            let docEl = document.documentElement; if (docEl.requestFullscreen) docEl.requestFullscreen().catch(e => {});
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+            this.style.opacity = '0';
+            setTimeout(() => { this.style.display = 'none'; }, 300);
+            audioLigado = true;
+            document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+            document.getElementById('btnAudio').style.color = '#fff';
+
+            let docEl = document.documentElement;
+            if (docEl.requestFullscreen) { docEl.requestFullscreen().catch(e => {}); }
+            else if (docEl.webkitRequestFullscreen) { docEl.webkitRequestFullscreen().catch(e => {}); }
+
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             tocarSom('sfxClick');
         });
 
-        // REEMBOLSO EM QUEDA SE VOLTAR COM 0 COLUNAS JOGADAS
-        async function lidarComSaidaAbrupta() {
-            if (isGaming && currentActiveCol === 0) {
+        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
+        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
+        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
+        document.getElementById('board-size').addEventListener('change', () => { tocarSom('sfxClick'); window.resetGameUI(); });
+        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
+        document.getElementById('btnRandom').addEventListener('click', selectRandomTile);
+        
+        document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
+        document.querySelectorAll('.auto-btn-option').forEach(btn => {
+            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
+        });
+
+        window.abrirInputAposta = function() {
+            if(isGaming || isAutoModeActive) return;
+            let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
+            if(novoValor !== null) {
+                let parsed = parseFloat(novoValor.replace(',', '.'));
+                if(!isNaN(parsed) && parsed >= 0.10) {
+                    apostaAtual = Math.min(parsed, 500.00);
+                    document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    tocarSom('sfxClick');
+                } else { mostrarToast("Valor inválido."); }
+            }
+        };
+
+        function toggleAudio() {
+            audioLigado = !audioLigado; 
+            const btn = document.getElementById('btnAudio');
+            if(audioLigado) { 
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
+            } else { 
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
+            }
+        }
+
+        function voltarParaLobby() {
+            tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
+            if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
+            else { window.location.href = 'index.html'; }
+        }
+
+        function lidarComSaidaAbrupta() {
+            if (isGaming) {
                 isGaming = false;
-                let apostaReal = apostaAtual * proporcaoRealNaMesa;
-                bancaAtual += apostaAtual; saldoRealAtual += apostaReal;
-                await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
+                let valorRetorno = currentActiveCol > 0 ? (apostaAtual * currentMultiplier) : apostaAtual;
+                set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual + valorRetorno).toFixed(2)));
+                
                 if (modoJogador !== 'admin' && modoJogador !== 'live') {
-                    let snap = await get(ref(db, 'sistema/caixa_global'));
-                    await set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) - apostaReal).toFixed(2)));
+                    get(ref(db, 'sistema/caixa_global')).then(snap => {
+                        let caixaAtual = parseFloat(snap.val() || 0);
+                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - valorRetorno).toFixed(2)));
+                    });
                 }
-            } else if (isGaming && currentActiveCol > 0) { isGaming = false; }
+            }
         }
 
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); pararAutoJogo(); });
@@ -293,132 +349,230 @@
 
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; 
-            if(!isGaming) {
-                bancaAtual = parseFloat(dados.saldo || 0); 
-                saldoRealAtual = parseFloat(dados.saldo_real !== undefined ? dados.saldo_real : bancaAtual);
-                modoJogador = dados.modo || 'normal';
-                updateSaldoDisplay(bancaAtual);
-            }
+            bancaAtual = parseFloat(dados.saldo || 0); 
+            modoJogador = dados.modo || 'normal'; 
+            if(!isGaming) updateSaldoDisplay(bancaAtual);
         });
-        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
         function mudarAposta(direcao) {
             if(isGaming || isAutoModeActive) return;
             let novoIndex = indexAposta + direcao;
-            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); tocarSom('sfxClick'); }
+            if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
+                indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
+                document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                tocarSom('sfxClick');
+            }
         }
 
-        // AUTO JOGO 
-        document.getElementById('btnAuto').addEventListener('click', () => { document.getElementById('menuAuto').classList.toggle('show'); tocarSom('sfxClick'); });
-        document.querySelectorAll('.auto-btn-option').forEach(btn => { btn.addEventListener('click', function() { document.getElementById('menuAuto').classList.remove('show'); girosAutoRestantes = parseInt(this.dataset.spins); isAutoModeActive = true; document.getElementById('btnAuto').classList.add('auto-active'); processarAutoJogo(); }); });
+        // AUTO JOGO
+        function toggleMenuAuto() {
+            if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
+            tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
+        }
 
-        function pararAutoJogo() { isAutoModeActive = false; girosAutoRestantes = 0; document.getElementById('btnAuto').classList.remove('auto-active'); document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo'; clearTimeout(autoTimeoutId); if (!isGaming) { const btn = document.getElementById('btnAction'); btn.classList.remove('disabled', 'cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`; } }
+        function iniciarAutoJogo(qtd) {
+            document.getElementById('menuAuto').classList.remove('show');
+            girosAutoRestantes = qtd; isAutoModeActive = true;
+            document.getElementById('btnAuto').classList.add('auto-active');
+            processarAutoJogo();
+        }
 
-        async function processarAutoJogo() {
-            if (!isAutoModeActive) return; if (girosAutoRestantes <= 0) { pararAutoJogo(); return; }
+        function pararAutoJogo() {
+            isAutoModeActive = false; girosAutoRestantes = 0;
+            document.getElementById('btnAuto').classList.remove('auto-active');
+            document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo';
+            clearTimeout(autoTimeoutId);
+            
+            const btn = document.getElementById('btnAction');
+            btn.classList.remove('disabled'); 
+            
+            if (!isGaming) {
+                btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            } else {
+                if(currentActiveCol > 0) {
+                    btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
+                }
+            }
+        }
+
+        function processarAutoJogo() {
+            if (!isAutoModeActive) return;
+            if (girosAutoRestantes <= 0) { pararAutoJogo(); return; }
             document.getElementById('btnAuto').innerHTML = `<i class="fa-solid fa-rotate"></i> AUTO (${girosAutoRestantes})`;
-            if (!isGaming) { if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); pararAutoJogo(); return; } const ok = await iniciarApostaBackend(); if (ok) { autoTimeoutId = setTimeout(fazerJogadaAuto, 1000); } else { pararAutoJogo(); } }
+
+            if (!isGaming) {
+                if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); pararAutoJogo(); return; }
+                const apostaIniciada = iniciarApostaBackend();
+                if (apostaIniciada) { autoTimeoutId = setTimeout(fazerJogadaAuto, 1000); } else { pararAutoJogo(); }
+            }
         }
 
         function fazerJogadaAuto() {
             if (!isGaming || !isAutoModeActive) return;
             const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
+            
             if (activeTiles.length > 0) {
-                const rndRow = Math.floor(Math.random() * currentRowCount); const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
-                if (tile) { handleTileClick(rndRow, currentActiveCol, tile); if (isGaming) { autoTimeoutId = setTimeout(fazerJogadaAuto, 800); } else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 2500); } }
+                const rndRow = Math.floor(Math.random() * currentRowCount);
+                const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
+                
+                if (tile) {
+                    handleTileClick(rndRow, currentActiveCol, tile);
+                    if (isGaming) { autoTimeoutId = setTimeout(fazerJogadaAuto, 800); } 
+                    else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 2500); }
+                }
             }
         }
 
-        function _0xMath(rows, steps) { if (steps === 0) return 1.00; return parseFloat((Math.pow(rows / (rows - 1), steps) * CONFIG_RTP).toFixed(2)); }
-        function atualizarMultiplicadorPreview(steps = 1) { document.getElementById('nextMultDisplay').innerText = `${_0xMath(currentRowCount, steps).toFixed(2)}x`; }
+        // OFUSCAÇÃO MATEMÁTICA E MULTIPLICADOR (RTP Isolado)
+        function _0xMath(rows, steps) {
+            if (steps === 0) return 1.00;
+            const probSafe = (rows - 1) / rows;
+            const cumulativeProb = Math.pow(probSafe, steps);
+            return parseFloat(((1 / cumulativeProb) * CONFIG_RTP).toFixed(2));
+        }
 
-        function updateActiveColumnUI() { document.querySelectorAll('.tile').forEach(tile => { if (isGaming && parseInt(tile.dataset.col) === currentActiveCol) { tile.classList.add('active-col'); } else { tile.classList.remove('active-col'); } }); }
+        function atualizarMultiplicadorPreview(steps = 1) {
+            document.getElementById('nextMultDisplay').innerText = `${_0xMath(currentRowCount, steps).toFixed(2)}x`;
+        }
+
+        function updateActiveColumnUI() {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                const c = parseInt(tile.dataset.col);
+                if (isGaming && c === currentActiveCol) { tile.classList.add('active-col'); } 
+                else { tile.classList.remove('active-col'); }
+            });
+        }
 
         window.resetGameUI = function() {
             if(isGaming) return;
             const sizeConfig = BOARDS[document.getElementById('board-size').value];
             currentRowCount = sizeConfig.rows; currentColCount = sizeConfig.cols;
-            const grid = document.getElementById('grid'); grid.style.gridTemplateColumns = `repeat(${currentColCount}, 1fr)`; grid.style.gridTemplateRows = `repeat(${currentRowCount}, 1fr)`; grid.innerHTML = '';
-            for (let r = 0; r < currentRowCount; r++) { for (let c = 0; c < currentColCount; c++) { const tile = document.createElement('div'); tile.className = 'tile'; tile.dataset.row = r; tile.dataset.col = c; tile.onclick = () => handleTileClick(r, c, tile); grid.appendChild(tile); } }
-            currentMultiplier = 1.00; atualizarMultiplicadorPreview(1);
-            document.getElementById('btnAction').classList.remove('cashout'); document.getElementById('btnAction').innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            
+            const grid = document.getElementById('grid');
+            grid.style.gridTemplateColumns = `repeat(${currentColCount}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${currentRowCount}, 1fr)`;
+            grid.innerHTML = '';
+
+            for (let r = 0; r < currentRowCount; r++) {
+                for (let c = 0; c < currentColCount; c++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile'; tile.dataset.row = r; tile.dataset.col = c;
+                    tile.onclick = () => handleTileClick(r, c, tile);
+                    grid.appendChild(tile);
+                }
+            }
+            currentMultiplier = 1.00;
+            atualizarMultiplicadorPreview(1); // CORREÇÃO MULTIPLICADOR RESET
+            const btn = document.getElementById('btnAction');
+            btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
         }
 
-        async function cliqueBotaoApostar() { if(isAutoModeActive) return; tocarSom('sfxClick'); if (isGaming) { if (currentActiveCol === 0) return; cashOut(); } else { await iniciarApostaBackend(); } }
+        function cliqueBotaoApostar() {
+            if(isAutoModeActive) return;
+            tocarSom('sfxClick');
+            if (isGaming) {
+                if (currentActiveCol === 0) return;
+                cashOut();
+            } else {
+                iniciarApostaBackend();
+            }
+        }
 
-        async function iniciarApostaBackend() {
+        function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
-            proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
-            if(proporcaoRealNaMesa > 1.0) proporcaoRealNaMesa = 1.0;
-            let apostaReal = apostaAtual * proporcaoRealNaMesa;
 
             isGaming = true; currentActiveCol = 0; currentMultiplier = 1.00;
             document.getElementById('board-size').disabled = true;
             document.getElementById('btnMinus').style.opacity = '0.5'; document.getElementById('btnPlus').style.opacity = '0.5';
+            const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
 
-            const btn = document.getElementById('btnAction'); btn.classList.add('cashout'); btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
+            const btn = document.getElementById('btnAction');
+            btn.classList.remove('disabled'); 
+            btn.classList.add('cashout'); 
+            btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
 
-            bancaAtual -= apostaAtual; saldoRealAtual -= apostaReal; updateSaldoDisplay(bancaAtual);
-            await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
-
+            updateSaldoDisplay(bancaAtual - apostaAtual);
+            
+            set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual - apostaAtual).toFixed(2)));
+            
+            // TRAVA ADMIN E ROLLOVER
             if (modoJogador !== 'admin' && modoJogador !== 'live') {
-                get(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual')).then(snap => { set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), parseFloat((snap.val() || 0)) + apostaAtual); });
-                let snapC = await get(ref(db, 'sistema/caixa_global'));
-                await set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snapC.val() || 0) + apostaReal).toFixed(2)));
+                get(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual')).then(snap => {
+                    set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), parseFloat((snap.val() || 0)) + apostaAtual);
+                });
+                
+                get(ref(db, 'sistema/caixa_global')).then(snap => {
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2)));
+                });
             }
 
-            bombsPositions = []; for (let c = 0; c < currentColCount; c++) { bombsPositions.push(Math.floor(Math.random() * currentRowCount)); }
-            document.querySelectorAll('.tile').forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
-            updateActiveColumnUI(); atualizarMultiplicadorPreview(1);
+            bombsPositions = [];
+            for (let c = 0; c < currentColCount; c++) { bombsPositions.push(Math.floor(Math.random() * currentRowCount)); }
+
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
+
+            updateActiveColumnUI(); 
+            atualizarMultiplicadorPreview(1); // FIXO: 1º PASSO
             return true;
         }
 
-        async function handleTileClick(r, c, tileElement) {
-            if (!isGaming || c !== currentActiveCol) return;
-            let isBomb = bombsPositions[c] === r;
-
-            if (modoJogador === 'influenciador' && isBomb) {
-                let livres = []; for(let i = 0; i < currentRowCount; i++) { if(i !== r) livres.push(i); }
-                bombsPositions[c] = livres[Math.floor(Math.random() * livres.length)]; isBomb = false;
+        function selectRandomTile() {
+            if (!isGaming || isAutoModeActive) return; tocarSom('sfxClick');
+            const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
+            if (activeTiles.length > 0) {
+                const rndRow = Math.floor(Math.random() * currentRowCount);
+                const tile = activeTiles.find(t => parseInt(t.dataset.row) === rndRow);
+                if (tile) handleTileClick(rndRow, currentActiveCol, tile);
             }
+        }
 
-            // ANTI-QUEBRA
-            if (!isBomb && modoJogador !== 'admin' && modoJogador !== 'live') {
-                let futureMultiplier = _0xMath(currentRowCount, currentActiveCol + 1);
-                let potentialWinReal = (apostaAtual * futureMultiplier) * proporcaoRealNaMesa;
-                if (potentialWinReal > caixaDaCasa) { bombsPositions[c] = r; isBomb = true; }
+        function handleTileClick(r, c, tileElement) {
+            if (!isGaming || c !== currentActiveCol) return;
+
+            if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
+                let linhasLivres = [];
+                for(let i = 0; i < currentRowCount; i++) { if(i !== r) linhasLivres.push(i); }
+                bombsPositions[c] = linhasLivres[Math.floor(Math.random() * linhasLivres.length)];
             }
 
             tileElement.classList.add('opened');
 
-            if (isBomb) {
-                isGaming = false; tocarSom('sfxBomb'); tileElement.classList.add('bomb'); endGame(false);
+            if (bombsPositions[c] === r) {
+                isGaming = false;
+                tocarSom('sfxBomb'); tileElement.classList.add('bomb'); 
+                endGame(false);
             } else {
                 tocarSom('sfxGem'); tileElement.classList.add('safe');
-                currentActiveCol++; currentMultiplier = _0xMath(currentRowCount, currentActiveCol);
+                currentActiveCol++;
+                currentMultiplier = _0xMath(currentRowCount, currentActiveCol);
                 
-                if (currentActiveCol >= currentColCount) { isGaming = false; await cashOut(true); } 
-                else {
-                    document.getElementById('btnAction').innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
-                    updateActiveColumnUI(); atualizarMultiplicadorPreview(currentActiveCol + 1);
+                if (currentActiveCol >= currentColCount) {
+                    isGaming = false;
+                    cashOut(true); 
+                } else {
+                    const btn = document.getElementById('btnAction');
+                    btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
+                    updateActiveColumnUI(); 
+                    atualizarMultiplicadorPreview(currentActiveCol + 1); // ATUALIZA PRÓXIMO
                 }
             }
         }
 
         async function cashOut(isGoal = false) {
-            isGaming = false; const lucro = apostaAtual * currentMultiplier; const lucroReal = lucro * proporcaoRealNaMesa;
-            bancaAtual += lucro; saldoRealAtual += lucroReal;
-
-            let snapshot = await get(ref(db, `usuarios/${idDispositivo}`));
-            let u = snapshot.val() || {};
-            let metaRo = parseFloat(u.rollover_meta || 0); let atualRo = parseFloat(u.rollover_atual || 0);
-            if (metaRo > 0 && atualRo >= metaRo) { saldoRealAtual = bancaAtual; }
-
-            await update(ref(db, `usuarios/${idDispositivo}`), { saldo: parseFloat(bancaAtual.toFixed(2)), saldo_real: parseFloat(saldoRealAtual.toFixed(2)) });
+            isGaming = false; 
+            const lucro = apostaAtual * currentMultiplier;
+            const novoSaldo = bancaAtual + lucro;
+            
+            updateSaldoDisplay(novoSaldo);
+            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
             
             if (modoJogador !== 'admin' && modoJogador !== 'live') {
-                let snap = await get(ref(db, 'sistema/caixa_global'));
-                await set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) - lucroReal).toFixed(2)));
+                get(ref(db, 'sistema/caixa_global')).then(snap => {
+                    let caixaAtual = parseFloat(snap.val() || 0);
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucro).toFixed(2)));
+                });
             }
 
             tocarSom('sfxWin');
@@ -426,20 +580,34 @@
             document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL DA RODADA";
             document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
             toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500);
+
             endGame(true, true);
         }
 
         function endGame(won, cashedOut = false) {
             document.getElementById('board-size').disabled = false;
             document.getElementById('btnMinus').style.opacity = '1'; document.getElementById('btnPlus').style.opacity = '1';
-            document.querySelectorAll('.tile').forEach(tile => {
-                tile.classList.remove('active-col'); const r = parseInt(tile.dataset.row); const c = parseInt(tile.dataset.col);
-                if (bombsPositions[c] === r && !tile.classList.contains('bomb')) { tile.classList.add('opened', 'bomb-reveal'); }
+            const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '0.5'; btnRnd.style.pointerEvents = 'none';
+
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                tile.classList.remove('active-col');
+                const r = parseInt(tile.dataset.row); const c = parseInt(tile.dataset.col);
+                if (bombsPositions[c] === r && !tile.classList.contains('bomb')) {
+                    tile.classList.add('opened', 'bomb-reveal');
+                }
             });
+
+            // CORREÇÃO DO MULTIPLICADOR AO FINALIZAR (Sempre volta para o passo 1)
             atualizarMultiplicadorPreview(1);
+
             const btn = document.getElementById('btnAction');
-            if(!isAutoModeActive) { btn.className = 'bet-button btn-3d'; btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`; } else { btn.classList.add('disabled'); }
-            updateSaldoDisplay(bancaAtual);
+            if(!isAutoModeActive) {
+                btn.classList.remove('cashout', 'disabled'); 
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            } else {
+                btn.classList.add('disabled');
+            }
         }
 
         window.resetGameUI();
