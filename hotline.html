@@ -85,7 +85,7 @@
         .pointer-top, .pointer-bottom { position: absolute; left: 50%; transform: translateX(-50%); width: 6px; height: 20px; background: #f1c40f; z-index: 10; border-radius: 4px; box-shadow: 0 0 15px rgba(241, 196, 15, 1); border: 1px solid #fff; }
         .pointer-top { top: -2px; } .pointer-bottom { bottom: -2px; }
 
-        .reel { display: flex; gap: 8px; padding-left: 50%; transition: transform 3.5s cubic-bezier(0.1, 0.9, 0.2, 1); }
+        .reel { display: flex; gap: 8px; /* padding removido do CSS para podermos controlar via JS dinamicamente */ transition: transform 3.5s cubic-bezier(0.1, 0.9, 0.2, 1); }
 
         .slot { width: 90px; height: 90px; border-radius: 12px; flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 2px rgba(255,255,255,0.2), inset 0 -4px 0 rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.6); border-bottom: 5px solid rgba(0,0,0,0.5); }
         .slot .inner-circle { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.4); box-shadow: inset 0 4px 10px rgba(0,0,0,0.6); }
@@ -157,7 +157,7 @@
             <div class="next-multiplier" id="mult-view">Prêmio Alvo: <span>2.00x</span></div>
         </div>
 
-        <div class="reel-container">
+        <div class="reel-container" id="reelContainer">
             <div class="pointer-top"></div>
             <div class="pointer-bottom"></div>
             <div class="reel" id="reel"></div>
@@ -228,6 +228,7 @@
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
         const reel = document.getElementById('reel');
+        const reelContainer = document.getElementById('reelContainer');
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
@@ -236,7 +237,6 @@
         function forceAudioResume() {
             if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume().then(() => {
-                    // Bipe mudo para destrancar a placa de som no iOS/Android
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     gain.gain.value = 0;
@@ -248,7 +248,7 @@
             }
         }
         
-        // Sensor Global de Toque para Acordar o Áudio (Se o navegador mutar ao minimizar)
+        // Sensor Global de Toque para Acordar o Áudio
         ['click', 'touchstart', 'touchend', 'mousedown'].forEach(evt => {
             window.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
         });
@@ -326,9 +326,7 @@
         
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
         window.addEventListener('visibilitychange', function() { 
-            if (document.hidden) {
-                if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
-            } else {
+            if (!document.hidden) {
                 forceAudioResume();
             }
         });
@@ -344,17 +342,18 @@
             if(audioLigado) { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick'); } else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
         });
 
-        function abrirInputAposta() {
+        // VINCULANDO FUNÇÕES NO WINDOW PARA BOTÕES FUNCIONAREM DENTRO DO MÓDULO
+        window.abrirInputAposta = function() {
             if(isSpinning) return; iniciarAudio(); let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
             if(novoValor !== null) { let parsed = parseFloat(novoValor.replace(',', '.')); if(!isNaN(parsed) && parsed >= 0.10) { apostaAtual = Math.min(parsed, 500.00); document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); tocarSom('sfxClick'); } else { mostrarToast("Valor inválido."); } }
         }
 
-        function mudarAposta(direcao) {
+        window.mudarAposta = function(direcao) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
-        function selectColor(color) {
+        window.selectColor = function(color) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
             ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
             document.getElementById(`btn-${color}`).classList.add('active');
@@ -375,14 +374,14 @@
             }
         }
 
-        // VINCULANDO OS BOTÕES DE FORMA SEGURA DENTRO DO MODULE
-        document.getElementById('btn-red').addEventListener('click', () => selectColor('red'));
-        document.getElementById('btn-fire').addEventListener('click', () => selectColor('fire'));
-        document.getElementById('btn-black').addEventListener('click', () => selectColor('black'));
-        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
-        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
-        document.getElementById('displayAposta').addEventListener('click', abrirInputAposta);
-        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
+        // LIGAÇÃO DIRETA DOS BOTOES HTML
+        document.getElementById('btn-red').addEventListener('click', () => window.selectColor('red'));
+        document.getElementById('btn-fire').addEventListener('click', () => window.selectColor('fire'));
+        document.getElementById('btn-black').addEventListener('click', () => window.selectColor('black'));
+        document.getElementById('btnMinus').addEventListener('click', () => window.mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => window.mudarAposta(1));
+        document.getElementById('displayAposta').addEventListener('click', window.abrirInputAposta);
+        document.getElementById('btnAction').addEventListener('click', () => window.cliqueBotaoApostar());
 
         function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
@@ -397,7 +396,13 @@
         });
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // ESTEIRA INICIAL CENTRADA NO ÍNDICE 10 (Finge ser Infinita)
+        // CÁLCULO DE ALINHAMENTO DINÂMICO
+        function getCenterOffset() {
+            const containerWidth = reelContainer.offsetWidth;
+            return containerWidth / 2;
+        }
+
+        // ESTEIRA INICIAL CENTRADA DINAMICAMENTE
         function initIdleReel() {
             reel.style.transition = 'none'; reel.innerHTML = '';
             let colors = generateReelColors(80);
@@ -406,11 +411,15 @@
                 if (colors[i] !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            // ALINHAMENTO MATEMÁTICO: LARGURA (98px) x INDICE (10) + MEIO BLOCO (45px) = 1025px
-            reel.style.transform = `translateX(-1025px)`; 
+            // ALINHAMENTO MATEMÁTICO: O centro da tela puxa pro meio do bloco 10
+            let startPosition = -(10 * 98) + getCenterOffset() - 45; // 45 é metade do slot de 90px
+            reel.style.transform = `translateX(${startPosition}px)`; 
         }
 
-        async function cliqueBotaoApostar() {
+        // Dispara o init dinâmico assim que a tela monta pra pegar o tamanho exato da div
+        setTimeout(initIdleReel, 100);
+
+        window.cliqueBotaoApostar = async function() {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick');
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return; }
 
@@ -457,29 +466,18 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            let colors = [];
-            let rbCounter = Math.floor(Math.random() * 2); 
+            let colors = generateReelColors(TOTAL_SLOTS);
 
-            // GERA A ESTEIRA INQUEBRÁVEL (V,P,V,P) COM AMARELOS EMBUTIDOS NO MEIO
-            for(let i=0; i<TOTAL_SLOTS; i++) {
-                if (i === 15 || i === 45 || i === 75) {
-                    colors.push('fire');
-                } else {
-                    colors.push(rbCounter % 2 === 0 ? 'red' : 'black');
-                    rbCounter++;
-                }
-            }
-
-            // Acha o índice do resultado certo mais pro final da esteira
-            let targetIndex = 60;
-            while(colors[targetIndex] !== resultColor && targetIndex < 75) {
+            let startIndex = 10;
+            let targetIndex = 60 + Math.floor(Math.random() * 10); // Varia de 60 a 69
+            
+            while(colors[targetIndex] !== resultColor && targetIndex < 78) {
                 targetIndex++;
             }
 
-            // O PINO FICA TRAVADO EXATAMENTE NO MEIO DO BLOCO SEMPRE (OFFSET ZERO)
-            let randomOffset = 0; 
+            // O pino para ZERADO e travado no meio da cor.
+            let randomOffset = 0;
             
-            // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
                 if (colors[i] !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
@@ -487,12 +485,12 @@
             }
 
             reel.style.transition = 'none'; 
-            // Inicia no slot 10 perfeitamente alinhado (10 * 98 + 45 = 1025)
-            reel.style.transform = `translateX(-1025px)`; 
+            let startPosition = -(startIndex * 98) + getCenterOffset() - 45;
+            reel.style.transform = `translateX(${startPosition}px)`; 
             reel.offsetHeight; 
 
-            // CÁLCULO CIRÚRGICO DE DISTÂNCIA: SOMA +45 PARA CENTRALIZAR O BLOCO NO PONTEIRO!
-            const moveDistance = -(targetIndex * 98 + 45) + randomOffset;
+            // CÁLCULO CIRÚRGICO DE DISTÂNCIA DINÂMICO
+            const moveDistance = -(targetIndex * 98) + getCenterOffset() - 45 + randomOffset;
 
             let lastTileIndex = -1;
             function trackTicks() {
@@ -501,7 +499,7 @@
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
                 
-                const distancePassed = Math.abs(currentX - (-1025));
+                const distancePassed = Math.abs(currentX - startPosition);
                 const currentTileIndex = Math.floor(distancePassed / 98);
                 if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) { tocarSom('sfxTick'); lastTileIndex = currentTileIndex; }
                 requestAnimationFrame(trackTicks);
@@ -551,8 +549,6 @@
                 } else { tocarSom('sfxLose'); }
             }, 3600);
         }
-
-        initIdleReel();
     </script>
 </body>
 </html>
