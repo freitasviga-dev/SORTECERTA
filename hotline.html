@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- FORÇAR CARREGAMENTO (ANTI-CACHE EXTREMO) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, post-check=0, pre-check=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Clear-Site-Data" content="cache">
     
     <script>
-        // BLINDAGEM ANTI-CACHE GRAU MILITAR
         (function() {
             if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
             if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
@@ -61,21 +59,26 @@
         /* GAME AREA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; position: relative; }
 
-        /* HISTÓRICO SPRIBE STYLE (PEQUENO E ESTRATÉGICO) */
-        .history-panel { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .history-dots { display: flex; gap: 4px; overflow-x: auto; padding: 2px; }
-        .history-dots::-webkit-scrollbar { display: none; }
-        .history-dot { width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.8); flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* PAINEL DE HISTÓRICO DE BOLINHAS */
+        .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 15px; }
+        .history-bar::-webkit-scrollbar { display: none; }
+        .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
+        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .history-dot.red { background: linear-gradient(135deg, var(--btn-red), var(--btn-red-dark)); }
-        .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #555; }
-        .history-dot.fire { background: linear-gradient(135deg, var(--btn-yellow), var(--btn-yellow-dark)); }
+        .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #777; }
+        .history-dot.fire { background: linear-gradient(135deg, var(--btn-yellow), var(--btn-yellow-dark)); border-color: #fff; }
 
         @keyframes popIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 
-        .board-header { width: 100%; display: flex; justify-content: flex-end; align-items: center; margin-bottom: 12px; }
+        .board-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+        .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         
-        .next-multiplier { background: linear-gradient(135deg, #e74c3c, #961d12); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: inset 0 2px 2px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .next-multiplier { 
+            background: linear-gradient(135deg, #e74c3c, #961d12); color: #fff; 
+            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 900; 
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.3); 
+            display: flex; align-items: center; gap: 5px; transition: 0.3s;
+        }
 
         /* ROLETA (HOTLINE) ESTILO 3D */
         .reel-container { width: 100%; height: 140px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; display: flex; align-items: center; box-shadow: inset 0 10px 40px rgba(0,0,0,0.8), 0 15px 30px rgba(0,0,0,0.5); }
@@ -131,7 +134,7 @@
 
     <div id="startScreen">
         <h2><i class="fa-solid fa-bolt"></i> HOTLINE VIP</h2>
-        <div class="btn-start btn-start btn-3d">Jogar Agora</div>
+        <div class="btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
@@ -144,16 +147,13 @@
 
     <div class="game-area">
         
-        <div class="history-panel">
-            <div class="board-badge">Padrão Premium</div>
-            <div class="history-dots" id="historyBar">
-                <!-- Bolinhas entram aqui -->
-            </div>
+        <div class="history-bar" id="historyBar">
+            <span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>
         </div>
 
         <div class="board-header">
-            <div></div> <!-- Espaçador para manter o botão à direita -->
-            <div class="next-multiplier" id="mult-view">Alvo: <span>2.00x</span></div>
+            <div class="board-badge">Padrão Premium</div>
+            <div class="next-multiplier" id="mult-view">Prêmio Alvo: <span>2.00x</span></div>
         </div>
 
         <div class="reel-container">
@@ -231,14 +231,14 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
-        // ACORDADOR DE ÁUDIO FORÇADO PARA CELULAR
+        // ACORDADOR DE ÁUDIO FORÇADO
         function forceAudioResume() {
             if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume().catch(() => {});
             }
         }
-        document.body.addEventListener('click', forceAudioResume, true);
-        document.body.addEventListener('touchstart', forceAudioResume, true);
+        document.addEventListener('click', forceAudioResume);
+        document.addEventListener('touchstart', forceAudioResume);
 
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
@@ -274,16 +274,19 @@
 
         function updateHistoryBar() {
             const bar = document.getElementById('historyBar');
-            bar.innerHTML = '';
+            bar.innerHTML = '<span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>';
             resultHistory.forEach(color => { bar.innerHTML += `<div class="history-dot ${color}"></div>`; });
         }
 
-        // Histórico Falso Inicial (Preenche a barrinha)
-        for (let i = 0; i < 9; i++) {
-            let rand = Math.random();
-            if (rand < 0.05) resultHistory.push('fire');
-            else if (rand < 0.525) resultHistory.push('red');
-            else resultHistory.push('black');
+        // Histórico Inicial Perfeitamente Intercalado
+        let rbCounter = 0;
+        for (let i = 0; i < 10; i++) {
+            if (i === 4) {
+                resultHistory.push('fire');
+            } else {
+                resultHistory.push(rbCounter % 2 === 0 ? 'red' : 'black');
+                rbCounter++;
+            }
         }
         updateHistoryBar();
 
@@ -293,11 +296,11 @@
             iniciarAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
-        // O JOGO NÃO REEMBOLSA EM SAÍDA (CASINO REAL)
+        // REEMBOLSO CORTADO - BATEU APOSTAR, O DINHEIRO É DA CASA!
         async function lidarComSaidaAbrupta() { if (isSpinning) { isSpinning = false; } }
         
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
-        window.addEventListener('visibilitychange', function() { 
+        document.addEventListener('visibilitychange', function() { 
             if (document.hidden) {
                 if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
             } else {
@@ -326,6 +329,7 @@
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
+        // MUDANÇA DINÂMICA DO PRÊMIO ALVO
         window.selectColor = function(color) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
             ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
@@ -333,15 +337,15 @@
             
             const multView = document.getElementById('mult-view');
             if (color === 'fire') {
-                multView.innerHTML = 'Alvo: <span>32.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>32.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #f1c40f, #b8860b)';
                 multView.style.color = '#000';
             } else if (color === 'red') {
-                multView.innerHTML = 'Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #e74c3c, #961d12)';
                 multView.style.color = '#fff';
             } else if (color === 'black') {
-                multView.innerHTML = 'Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #2c3e50, #111)';
                 multView.style.color = '#fff';
             }
@@ -360,16 +364,23 @@
         });
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // ESTEIRA INICIAL CENTRADA NO ÍNDICE 10 (Finge ser Infinita)
+        // ROLETA INICIAL INFINITA: TRANSLATEX(-980px) COM ALTERNÂNCIA RIGOROSA
         function initIdleReel() {
             reel.style.transition = 'none'; reel.innerHTML = '';
+            let counter = 0;
             for(let i=0; i<80; i++) {
-                let type = (i % 2 === 0) ? 'red' : 'black';
+                let type;
+                if (i === 15) { 
+                    type = 'fire'; 
+                } else { 
+                    type = (counter % 2 === 0) ? 'red' : 'black'; 
+                    counter++; 
+                }
                 const slot = document.createElement('div'); slot.className = `slot ${type}`;
-                slot.innerHTML = '<div class="inner-circle"></div>';
+                if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            reel.style.transform = `translateX(-1025px)`; // (10 * 98) + 45 -> Para o bloco 10 EXATAMENTE NO MEIO
+            reel.style.transform = `translateX(-980px)`; // Índice 10 centralizado
         }
 
         window.cliqueBotaoApostar = async function() {
@@ -398,6 +409,7 @@
                 });
             }
 
+            // ANTI-QUEBRA
             let availableFunds = caixaDaCasa * CONFIG_RTP;
             let fireProb = 0.03; let colorProb = (1 - fireProb) / 2; 
             let rand = Math.random(); let resultColor;
@@ -419,33 +431,34 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            let colors = [];
-            // Monta o array da roleta perfeitamente intercalado
-            for(let i=0; i<TOTAL_SLOTS; i++) {
-                colors.push(i % 2 === 0 ? 'red' : 'black');
-            }
-
-            let targetIndex;
-            if (resultColor === 'fire') {
-                targetIndex = 65; 
-                colors[65] = 'fire';
-            } else {
-                // Se vermelho for desejado, ele DEVE parar no índice par. Se preto, ímpar.
-                targetIndex = (resultColor === 'red') ? 64 : 65;
-            }
-
-            let randomOffset = Math.floor(Math.random() * 20) - 10; // Fica confortavelmente DENTRO do bloco
+            let targetIndex = 65; 
             
-            if (!isWin) {
-                // Empurra a parada pra um bloco vizinho
-                let offset = Math.random() > 0.5 ? 1 : -1;
-                targetIndex += offset;
-                
-                // Pra garantir a emoção do near miss sem bater na linha preta!
-                const side = Math.random() > 0.5 ? 1 : -1; 
-                randomOffset = side === 1 ? (25 + Math.floor(Math.random() * 10)) : (-25 - Math.floor(Math.random() * 10)); 
+            let colors = [];
+            let rbCounter = Math.floor(Math.random() * 2); // Começa com vermelho ou preto aleatório
+
+            // Gera uma matriz matematicamente inquebrável
+            for(let i=0; i<TOTAL_SLOTS; i++) {
+                if (i === 15 || i === 45 || i === 75) {
+                    colors.push('fire');
+                } else {
+                    colors.push(rbCounter % 2 === 0 ? 'red' : 'black');
+                    rbCounter++;
+                }
             }
 
+            // Encontra a cor desejada perto do final
+            while(colors[targetIndex] !== resultColor && targetIndex < TOTAL_SLOTS - 2) {
+                targetIndex++;
+            }
+
+            let randomOffset = Math.floor(Math.random() * 20) - 10; 
+            if (!isWin) {
+                const side = Math.random() > 0.5 ? 1 : -1; 
+                // Empurra a parada pra borda do slot criando a ilusão de "QUASE DEU"
+                randomOffset = side === 1 ? (35 + Math.floor(Math.random() * 10)) : (-35 - Math.floor(Math.random() * 10)); 
+            }
+
+            // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
                 if (colors[i] !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
@@ -453,12 +466,12 @@
             }
 
             reel.style.transition = 'none'; 
-            // Inicia no slot 10 perfeitamente alinhado (980 + 45 = 1025)
-            reel.style.transform = `translateX(-1025px)`; 
+            // Começa no slot 10 para criar a esteira que vem lá de trás!
+            reel.style.transform = `translateX(-980px)`; 
             reel.offsetHeight; 
 
-            // ALINHAMENTO CORRIGIDO: Multiplica pela largura (98) e SOMA 45px para bater no MEIO da cor!
-            const moveDistance = -(targetIndex * 98 + 45) + randomOffset;
+            // LARGURA SLOT = 90 + GAP 8 = 98px
+            const moveDistance = -(targetIndex * 98) + randomOffset;
 
             let lastTileIndex = -1;
             function trackTicks() {
@@ -466,8 +479,8 @@
                 const style = window.getComputedStyle(reel);
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
-                
-                const distancePassed = Math.abs(currentX - (-1025));
+                // Monitora o distanciamento físico em relação à origem do giro para bater o som na hora certa
+                const distancePassed = Math.abs(currentX - (-980));
                 const currentTileIndex = Math.floor(distancePassed / 98);
                 if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) { tocarSom('sfxTick'); lastTileIndex = currentTileIndex; }
                 requestAnimationFrame(trackTicks);
@@ -483,9 +496,8 @@
                 isSpinning = false;
                 document.getElementById('btnAction').classList.remove('disabled');
                 
-                // ATUALIZA O PAINEL SPRIBE
-                resultHistory.push(resultColor);
-                if (resultHistory.length > 10) resultHistory.shift();
+                resultHistory.unshift(resultColor);
+                if (resultHistory.length > 10) resultHistory.pop();
                 updateHistoryBar();
 
                 if (isWin) {
