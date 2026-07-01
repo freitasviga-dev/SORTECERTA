@@ -60,18 +60,18 @@
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; position: relative; }
 
         /* PAINEL DE HISTÓRICO DE BOLINHAS */
-        .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 15px; }
-        .history-bar::-webkit-scrollbar { display: none; }
-        .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
-        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .history-panel { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .history-dots { display: flex; gap: 4px; overflow-x: auto; padding: 2px; }
+        .history-dots::-webkit-scrollbar { display: none; }
+        .history-dot { width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.8); flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .history-dot.red { background: linear-gradient(135deg, var(--btn-red), var(--btn-red-dark)); }
-        .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #777; }
-        .history-dot.fire { background: linear-gradient(135deg, var(--btn-yellow), var(--btn-yellow-dark)); border-color: #fff; }
+        .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #555; }
+        .history-dot.fire { background: linear-gradient(135deg, var(--btn-yellow), var(--btn-yellow-dark)); }
 
         @keyframes popIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 
-        .board-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-        .board-badge { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .board-header { width: 100%; display: flex; justify-content: flex-end; align-items: center; margin-bottom: 12px; }
         
         .next-multiplier { 
             background: linear-gradient(135deg, #e74c3c, #961d12); color: #fff; 
@@ -134,7 +134,7 @@
 
     <div id="startScreen">
         <h2><i class="fa-solid fa-bolt"></i> HOTLINE VIP</h2>
-        <div class="btn-start btn-3d">Jogar Agora</div>
+        <div class="btn-start btn-start btn-3d">Jogar Agora</div>
     </div>
 
     <div class="header-bar">
@@ -147,13 +147,16 @@
 
     <div class="game-area">
         
-        <div class="history-bar" id="historyBar">
-            <span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>
+        <div class="history-panel">
+            <div class="board-badge">Padrão Premium</div>
+            <div class="history-dots" id="historyBar">
+                <!-- Bolinhas entram aqui -->
+            </div>
         </div>
 
         <div class="board-header">
-            <div class="board-badge">Padrão Premium</div>
-            <div class="next-multiplier" id="mult-view">Prêmio Alvo: <span>2.00x</span></div>
+            <div></div>
+            <div class="next-multiplier" id="mult-view">Alvo: <span>2.00x</span></div>
         </div>
 
         <div class="reel-container">
@@ -231,14 +234,17 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
-        // ACORDADOR DE ÁUDIO FORÇADO
+        // ACORDADOR DE ÁUDIO FORÇADO PARA CELULAR
         function forceAudioResume() {
             if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume().catch(() => {});
             }
         }
-        document.addEventListener('click', forceAudioResume);
-        document.addEventListener('touchstart', forceAudioResume);
+        
+        // Dispara em qualquer toque na tela se o áudio estiver desligado pelo celular
+        ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(evt => {
+            window.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        });
 
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
@@ -274,19 +280,15 @@
 
         function updateHistoryBar() {
             const bar = document.getElementById('historyBar');
-            bar.innerHTML = '<span class="history-label"><i class="fa-solid fa-clock-rotate-left"></i> Últimos:</span>';
+            bar.innerHTML = '';
             resultHistory.forEach(color => { bar.innerHTML += `<div class="history-dot ${color}"></div>`; });
         }
 
-        // Histórico Inicial Perfeitamente Intercalado
-        let rbCounter = 0;
-        for (let i = 0; i < 10; i++) {
-            if (i === 4) {
-                resultHistory.push('fire');
-            } else {
-                resultHistory.push(rbCounter % 2 === 0 ? 'red' : 'black');
-                rbCounter++;
-            }
+        // Histórico Falso Inicial (Preenche a barrinha)
+        let hc = 0;
+        for (let i = 0; i < 9; i++) {
+            if (i === 6) { resultHistory.push('fire'); } 
+            else { resultHistory.push(hc % 2 === 0 ? 'red' : 'black'); hc++; }
         }
         updateHistoryBar();
 
@@ -296,11 +298,11 @@
             iniciarAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); gain.gain.value = 0; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.01);
         });
 
-        // REEMBOLSO CORTADO - BATEU APOSTAR, O DINHEIRO É DA CASA!
+        // O JOGO NÃO REEMBOLSA EM SAÍDA (CASINO REAL)
         async function lidarComSaidaAbrupta() { if (isSpinning) { isSpinning = false; } }
         
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
-        document.addEventListener('visibilitychange', function() { 
+        window.addEventListener('visibilitychange', function() { 
             if (document.hidden) {
                 if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
             } else {
@@ -329,7 +331,6 @@
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
-        // MUDANÇA DINÂMICA DO PRÊMIO ALVO
         window.selectColor = function(color) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
             ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
@@ -337,15 +338,15 @@
             
             const multView = document.getElementById('mult-view');
             if (color === 'fire') {
-                multView.innerHTML = 'Prêmio Alvo: <span>32.00x</span>';
+                multView.innerHTML = 'Alvo: <span>32.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #f1c40f, #b8860b)';
                 multView.style.color = '#000';
             } else if (color === 'red') {
-                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #e74c3c, #961d12)';
                 multView.style.color = '#fff';
             } else if (color === 'black') {
-                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #2c3e50, #111)';
                 multView.style.color = '#fff';
             }
@@ -364,23 +365,24 @@
         });
         onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
-        // ROLETA INICIAL INFINITA: TRANSLATEX(-980px) COM ALTERNÂNCIA RIGOROSA
+        // ESTEIRA INICIAL CENTRADA NO ÍNDICE 10 (Finge ser Infinita)
         function initIdleReel() {
             reel.style.transition = 'none'; reel.innerHTML = '';
-            let counter = 0;
+            let rbCounter = 0;
             for(let i=0; i<80; i++) {
                 let type;
-                if (i === 15) { 
+                if (i === 15 || i === 45 || i === 75) { 
                     type = 'fire'; 
                 } else { 
-                    type = (counter % 2 === 0) ? 'red' : 'black'; 
-                    counter++; 
+                    type = (rbCounter % 2 === 0) ? 'red' : 'black'; 
+                    rbCounter++; 
                 }
                 const slot = document.createElement('div'); slot.className = `slot ${type}`;
                 if (type !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
                 reel.appendChild(slot);
             }
-            reel.style.transform = `translateX(-980px)`; // Índice 10 centralizado
+            // ALINHAMENTO MATEMÁTICO: LARGURA (98px) x INDICE (10) + MEIO BLOCO (45px) = 1025px
+            reel.style.transform = `translateX(-1025px)`; 
         }
 
         window.cliqueBotaoApostar = async function() {
@@ -409,7 +411,6 @@
                 });
             }
 
-            // ANTI-QUEBRA
             let availableFunds = caixaDaCasa * CONFIG_RTP;
             let fireProb = 0.03; let colorProb = (1 - fireProb) / 2; 
             let rand = Math.random(); let resultColor;
@@ -431,12 +432,10 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            let targetIndex = 65; 
-            
             let colors = [];
-            let rbCounter = Math.floor(Math.random() * 2); // Começa com vermelho ou preto aleatório
+            let rbCounter = Math.floor(Math.random() * 2); 
 
-            // Gera uma matriz matematicamente inquebrável
+            // GERA A ESTEIRA INQUEBRÁVEL (V,P,V,P) COM AMARELOS EMBUTIDOS NO MEIO
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 if (i === 15 || i === 45 || i === 75) {
                     colors.push('fire');
@@ -446,19 +445,16 @@
                 }
             }
 
-            // Encontra a cor desejada perto do final
+            // Acha o índice do resultado certo mais pro final da esteira
+            let targetIndex = 60;
             while(colors[targetIndex] !== resultColor && targetIndex < TOTAL_SLOTS - 2) {
                 targetIndex++;
             }
 
-            let randomOffset = Math.floor(Math.random() * 20) - 10; 
-            if (!isWin) {
-                const side = Math.random() > 0.5 ? 1 : -1; 
-                // Empurra a parada pra borda do slot criando a ilusão de "QUASE DEU"
-                randomOffset = side === 1 ? (35 + Math.floor(Math.random() * 10)) : (-35 - Math.floor(Math.random() * 10)); 
-            }
-
-            // Desenha os slots perfeitos
+            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA
+            let randomOffset = Math.floor(Math.random() * 30) - 15; // Entre -15 e +15 (Muito longe da linha preta que fica no -45 e +45)
+            
+            // Renderiza o visual
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
                 if (colors[i] !== 'fire') slot.innerHTML = '<div class="inner-circle"></div>';
@@ -466,12 +462,12 @@
             }
 
             reel.style.transition = 'none'; 
-            // Começa no slot 10 para criar a esteira que vem lá de trás!
-            reel.style.transform = `translateX(-980px)`; 
+            // Inicia no slot 10 perfeitamente alinhado (10 * 98 + 45 = 1025)
+            reel.style.transform = `translateX(-1025px)`; 
             reel.offsetHeight; 
 
-            // LARGURA SLOT = 90 + GAP 8 = 98px
-            const moveDistance = -(targetIndex * 98) + randomOffset;
+            // CÁLCULO CIRÚRGICO DE DISTÂNCIA: SOMA +45 PARA CENTRALIZAR O BLOCO NO PONTEIRO!
+            const moveDistance = -(targetIndex * 98 + 45) + randomOffset;
 
             let lastTileIndex = -1;
             function trackTicks() {
@@ -479,8 +475,8 @@
                 const style = window.getComputedStyle(reel);
                 const matrix = window.DOMMatrix ? new DOMMatrix(style.transform) : new WebKitCSSMatrix(style.transform);
                 const currentX = matrix.m41; 
-                // Monitora o distanciamento físico em relação à origem do giro para bater o som na hora certa
-                const distancePassed = Math.abs(currentX - (-980));
+                
+                const distancePassed = Math.abs(currentX - (-1025));
                 const currentTileIndex = Math.floor(distancePassed / 98);
                 if (currentTileIndex !== lastTileIndex && currentTileIndex >= 0) { tocarSom('sfxTick'); lastTileIndex = currentTileIndex; }
                 requestAnimationFrame(trackTicks);
@@ -496,8 +492,9 @@
                 isSpinning = false;
                 document.getElementById('btnAction').classList.remove('disabled');
                 
-                resultHistory.unshift(resultColor);
-                if (resultHistory.length > 10) resultHistory.pop();
+                // ATUALIZA O HISTÓRICO
+                resultHistory.push(resultColor);
+                if (resultHistory.length > 9) resultHistory.shift();
                 updateHistoryBar();
 
                 if (isWin) {
