@@ -59,12 +59,11 @@
         /* GAME AREA */
         .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; position: relative; }
 
-        /* PAINEL DE HISTÓRICO SPRIBE STYLE */
-        .history-panel { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 10px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 15px; }
+        /* PAINEL DE HISTÓRICO ORIGINAL RESTAURADO */
+        .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 15px; }
         .history-bar::-webkit-scrollbar { display: none; }
         .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
-        .history-dot { width: 22px; height: 22px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.8); flex-shrink: 0; border: 2px solid rgba(255,255,255,0.6); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .history-dot.red { background: linear-gradient(135deg, var(--btn-red), var(--btn-red-dark)); }
         .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #777; }
         .history-dot.fire { background: linear-gradient(135deg, var(--btn-yellow), var(--btn-yellow-dark)); border-color: #fff; }
@@ -155,7 +154,7 @@
 
         <div class="board-header">
             <div class="board-badge">Padrão Premium</div>
-            <div class="next-multiplier" id="mult-view">Alvo: <span>2.00x</span></div>
+            <div class="next-multiplier" id="mult-view">Prêmio Alvo: <span>2.00x</span></div>
         </div>
 
         <div class="reel-container">
@@ -240,9 +239,9 @@
             }
         }
         
-        // Sensor Global: Tocou na tela? Acorda o Áudio (Resolve bug da aba minimizada)
-        window.addEventListener('click', forceAudioResume, { capture: true, passive: true });
-        window.addEventListener('touchstart', forceAudioResume, { capture: true, passive: true });
+        // Sensor Global de Toque para Acordar o Áudio
+        document.body.addEventListener('click', forceAudioResume, true);
+        document.body.addEventListener('touchstart', forceAudioResume, { passive: true, capture: true });
 
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
@@ -442,14 +441,17 @@
             // Cria a matriz de cores garantida
             let colors = generateReelColors(TOTAL_SLOTS);
 
-            // Acha o índice exato da cor desejada mais pro final da esteira
-            let targetIndex = 60;
+            // Acha um índice inicial aleatório pro giro ter variação absurda ("usar a rolé inteira")
+            let startIndex = 30 + Math.floor(Math.random() * 30); // Varia de 30 a 59
+            let targetIndex = startIndex;
+            
+            // Busca qual é o primeiro bloco da frente com a cor sorteada
             while(colors[targetIndex] !== resultColor && targetIndex < 75) {
                 targetIndex++;
             }
 
-            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA. Máximo 15px do centro!
-            let randomOffset = Math.floor(Math.random() * 30) - 15; 
+            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA. Sempre para no meio exato da cor!
+            let randomOffset = Math.floor(Math.random() * 20) - 10; 
             
             // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
