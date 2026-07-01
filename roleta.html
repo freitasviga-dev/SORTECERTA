@@ -63,10 +63,12 @@
         .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         .history-bar::-webkit-scrollbar { display: none; }
         .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
-        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .history-dot.red { background: linear-gradient(135deg, var(--red), var(--red-dark)); }
         .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #777; }
         .history-dot.green { background: linear-gradient(135deg, var(--green), var(--green-dark)); border-color: #fff; }
+
+        @keyframes popIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 
         /* ROLETA ARENA VISUAL LUXUOSA */
         .roulette-arena { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 25px 0; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: inset 0 5px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.4); overflow: hidden; }
@@ -125,7 +127,7 @@
         .balance-info { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; background: #0c0c0c; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .balance-info i { color: var(--gold); font-size: 16px; }
 
-        /* POP-UP COMPACTO DE VITÓRIA (CORRIGIDO PARA TEXTO MENOR) */
+        /* POP-UP COMPACTO DE VITÓRIA (TEXTO ENCURTADO E ELEGANTE) */
         .win-toast { position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
         .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
@@ -236,7 +238,6 @@
         let proporcaoRealNaMesa = 1.0;
         let caixaDaCasa = 0.00;
         let modoJogo = "normal";
-        let abandonouJogo = false; // TRAVA ANTI-FUGA PARA BURLAR O PAYOUT
 
         let audioLigado = false;
         let isSpinning = false;
@@ -267,22 +268,24 @@
 
         // ACORDADOR DE ÁUDIO FORÇADO PARA CELULAR
         function forceAudioResume() {
-            if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().then(() => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    gain.gain.value = 0;
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.01);
-                }).catch(() => {});
+            if (audioLigado && audioCtx) {
+                if (audioCtx.state === 'suspended' || audioCtx.state === 'interrupted') {
+                    audioCtx.resume().then(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        gain.gain.value = 0;
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.01);
+                    }).catch(() => {});
+                }
             }
         }
         
-        // SENSOR GLOBAL NA RAIZ: Tocou na tela após minimizar, o som acorda na mesma hora
-        ['click', 'touchstart', 'pointerdown'].forEach(evt => {
-            document.documentElement.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        // Sensor Global de Toque para Acordar o Áudio (Se o navegador mutar ao minimizar)
+        ['click', 'touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
         });
 
         function iniciarAudio() {
@@ -348,10 +351,21 @@
             iniciarAudio(); tocarSom('sfxClick');
         });
 
-        // O JOGO NÃO REEMBOLSA SE FECHAR A TELA OU VOLTAR APÓS GIRAR!
+        // O JOGO REEMBOLSA APENAS SE A ROLETA NÃO FOI GIRADA.
         async function lidarComSaidaAbrupta() {
-            abandonouJogo = true;
-            if (isSpinning) { isSpinning = false; }
+            if (!isSpinning) {
+                let totalMesa = bets.red + bets.green + bets.black;
+                if (totalMesa > 0) {
+                    bancaAtual += totalMesa;
+                    saldoRealAtual += (totalMesa * proporcaoRealNaMesa);
+                    
+                    await update(ref(db, `usuarios/${idDispositivo}`), {
+                        saldo: parseFloat(bancaAtual.toFixed(2)),
+                        saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+                    });
+                    bets = { red: 0, green: 0, black: 0 };
+                }
+            }
         }
 
         document.getElementById('btnBack').addEventListener('click', async () => {
@@ -403,6 +417,7 @@
 
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {};
+            // Ignora atualizações do Firebase durante o giro para não dar "spoiler" de saldo
             if (!isSpinning) {
                 bancaAtual = parseFloat(dados.saldo || 0);
                 saldoRealAtual = parseFloat(dados.saldo_real !== undefined ? dados.saldo_real : bancaAtual);
@@ -485,16 +500,48 @@
             document.getElementById('btnPlus').style.opacity = '0.5';
             msgPanel.classList.remove('show');
 
-            // SE NÃO FOR ADMIN, REGISTRA ROLLOVER E PROTEGE O CAIXA GLOBAL
+            let targetColor = determineRiggedOutcome(totalBet);
+
+            // PAGAMENTO INSTANTÂNEO NO BANCO ANTES DA ROLETA TERMINAR (BLINDA CONTRA FUGA)
+            let isWin = false; let winAmount = 0;
+            if (targetColor === 'red' && bets.red > 0) { winAmount = bets.red * 2; isWin = true; }
+            else if (targetColor === 'black' && bets.black > 0) { winAmount = bets.black * 2; isWin = true; }
+            else if (targetColor === 'green' && bets.green > 0) { winAmount = bets.green * 14; isWin = true; }
+
+            if (isWin) {
+                let winReal = winAmount * proporcaoRealNaMesa;
+                bancaAtual += winAmount;
+                saldoRealAtual += winReal;
+
+                let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
+                let u = snapU.val() || {};
+                let metaRo = parseFloat(u.rollover_meta || 0);
+                let atualRo = parseFloat(u.rollover_atual || 0);
+                
+                if (metaRo > 0 && atualRo >= metaRo) {
+                    saldoRealAtual = bancaAtual; 
+                }
+
+                await update(ref(db, `usuarios/${idDispositivo}`), {
+                    saldo: parseFloat(bancaAtual.toFixed(2)),
+                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+                });
+
+                if (modoJogo !== 'admin' && modoJogo !== 'live') {
+                    get(ref(db, 'sistema/caixa_global')).then(async snap => {
+                        let dbCaixa = parseFloat(snap.val() || 0);
+                        // Abate do caixa global APENAS o valor ganho, o valor apostado já foi inserido.
+                        await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - winReal).toFixed(2)));
+                    });
+                }
+            }
+
             if (modoJogo !== 'admin' && modoJogo !== 'live') {
                 await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaDaCasa + apostaRealTodaMesa).toFixed(2)));
-                
                 get(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual')).then(snap => {
                     set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), parseFloat((snap.val() || 0)) + totalBet);
                 });
             }
-
-            let targetColor = determineRiggedOutcome(totalBet);
 
             let targetIndex = 0;
             if(targetColor === 'red') { const reds = [1, 3, 5, 7, 9, 11, 13]; targetIndex = reds[Math.floor(Math.random() * reds.length)]; } 
@@ -523,7 +570,7 @@
                 wheelElement.style.transform = `rotate(${currentRotation}deg)`;
             }, 50);
 
-            setTimeout(() => { isSpinning = false; processPayout(targetColor); }, 4200);
+            setTimeout(() => { isSpinning = false; processPayoutUI(targetColor, isWin, winAmount); }, 4200);
         });
 
         function determineRiggedOutcome(totalBet) {
@@ -552,47 +599,13 @@
             if (pR <= pB && pR <= pG) return 'red'; if (pB <= pR && pB <= pG) return 'black'; return 'green';
         }
 
-        async function processPayout(color) {
-            // SE O CARA BURLOU O JOGO SAINDO NO MEIO DO GIRO, CORTA O PAGAMENTO AQUI.
-            if (abandonouJogo) return; 
-
+        // AGORA PROCESSA APENAS A INTERFACE, POIS O BANCO DE DADOS JÁ FOI ATUALIZADO
+        async function processPayoutUI(color, isWin, winAmount) {
             resultHistory.unshift(color);
             if(resultHistory.length > MAX_HISTORY) resultHistory.pop();
             updateHistoryBar();
 
-            let isWin = false; let winAmount = 0;
-
-            if (color === 'red' && bets.red > 0) { winAmount = bets.red * 2; isWin = true; }
-            else if (color === 'black' && bets.black > 0) { winAmount = bets.black * 2; isWin = true; }
-            else if (color === 'green' && bets.green > 0) { winAmount = bets.green * 14; isWin = true; }
-
             if (isWin) {
-                let winReal = winAmount * proporcaoRealNaMesa;
-                
-                bancaAtual += winAmount;
-                saldoRealAtual += winReal;
-
-                let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
-                let u = snapU.val() || {};
-                let metaRo = parseFloat(u.rollover_meta || 0);
-                let atualRo = parseFloat(u.rollover_atual || 0);
-                
-                if (metaRo > 0 && atualRo >= metaRo) {
-                    saldoRealAtual = bancaAtual;
-                }
-
-                await update(ref(db, `usuarios/${idDispositivo}`), {
-                    saldo: parseFloat(bancaAtual.toFixed(2)),
-                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
-                });
-
-                if (modoJogo !== 'admin' && modoJogo !== 'live') {
-                    get(ref(db, 'sistema/caixa_global')).then(async snap => {
-                        let dbCaixa = parseFloat(snap.val() || 0);
-                        await set(ref(db, 'sistema/caixa_global'), parseFloat((dbCaixa - winReal).toFixed(2)));
-                    });
-                }
-
                 tocarSom('sfxWin');
                 document.getElementById('winAmount').innerText = "R$ " + winAmount.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 document.getElementById('winToast').classList.add('show');
