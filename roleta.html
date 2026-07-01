@@ -13,8 +13,8 @@
         (function() {
             if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
             if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
-            window.addEventListener('pageshow', function(event) { if (event.persisted) { window.location.reload(true); } });
         })();
+        window.addEventListener('pageshow', function(event) { if (event.persisted) { window.location.reload(true); } });
     </script>
     
     <title>Roleta VIP | SorteCerta Pro</title>
@@ -63,12 +63,10 @@
         .history-bar { width: 100%; display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         .history-bar::-webkit-scrollbar { display: none; }
         .history-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase; margin-right: 5px; flex-shrink: 0; }
-        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .history-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex-shrink: 0; }
         .history-dot.red { background: linear-gradient(135deg, var(--red), var(--red-dark)); }
         .history-dot.black { background: linear-gradient(135deg, #444, #111); border-color: #777; }
         .history-dot.green { background: linear-gradient(135deg, var(--green), var(--green-dark)); border-color: #fff; }
-
-        @keyframes popIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 
         /* ROLETA ARENA VISUAL LUXUOSA */
         .roulette-arena { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 25px 0; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: inset 0 5px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.4); overflow: hidden; }
@@ -123,11 +121,11 @@
         .footer-info { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; }
         .game-name { font-size: 10px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* PAINEL DE SALDO ESTILO VIP IGUAL A IMAGEM */
+        /* PAINEL DE SALDO TOTALMENTE DOURADO VIP */
         .balance-info { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; background: #0c0c0c; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .balance-info i { color: var(--gold); font-size: 16px; }
 
-        /* POP-UP COMPACTO DE VITÓRIA */
+        /* POP-UP COMPACTO DE VITÓRIA (CORRIGIDO PARA TEXTO MENOR) */
         .win-toast { position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
         .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
@@ -154,7 +152,7 @@
 
     <div class="game-area">
         <div class="win-toast" id="winToast">
-            <span>LUCRO TOTAL DA RODADA</span>
+            <span>LUCRO TOTAL:</span>
             <div id="winAmount">R$ 0,00</div>
         </div>
 
@@ -238,6 +236,7 @@
         let proporcaoRealNaMesa = 1.0;
         let caixaDaCasa = 0.00;
         let modoJogo = "normal";
+        let abandonouJogo = false; // TRAVA ANTI-FUGA PARA BURLAR O PAYOUT
 
         let audioLigado = false;
         let isSpinning = false;
@@ -281,9 +280,10 @@
             }
         }
         
-        // Sensor Global: Qualquer clique/toque na tela tenta acordar o áudio
-        document.addEventListener('click', forceAudioResume, { capture: true });
-        document.addEventListener('touchstart', forceAudioResume, { capture: true, passive: true });
+        // SENSOR GLOBAL NA RAIZ: Tocou na tela após minimizar, o som acorda na mesma hora
+        ['click', 'touchstart', 'pointerdown'].forEach(evt => {
+            document.documentElement.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        });
 
         function iniciarAudio() {
             if (!audioCtx) { audioCtx = new AudioContext(); }
@@ -348,8 +348,9 @@
             iniciarAudio(); tocarSom('sfxClick');
         });
 
-        // O JOGO NÃO REEMBOLSA SE FECHAR A TELA
+        // O JOGO NÃO REEMBOLSA SE FECHAR A TELA OU VOLTAR APÓS GIRAR!
         async function lidarComSaidaAbrupta() {
+            abandonouJogo = true;
             if (isSpinning) { isSpinning = false; }
         }
 
@@ -360,11 +361,6 @@
         });
         
         window.addEventListener('pagehide', lidarComSaidaAbrupta);
-        
-        // Remove a ação no visibilitychange para não bugar o iOS. O áudio acorda no toque na tela.
-        window.addEventListener('visibilitychange', function() { 
-            // Vazio de propósito para não travar o AudioContext do celular.
-        });
 
         btnAudio.addEventListener('click', () => {
             iniciarAudio(); audioLigado = !audioLigado; 
@@ -557,6 +553,9 @@
         }
 
         async function processPayout(color) {
+            // SE O CARA BURLOU O JOGO SAINDO NO MEIO DO GIRO, CORTA O PAGAMENTO AQUI.
+            if (abandonouJogo) return; 
+
             resultHistory.unshift(color);
             if(resultHistory.length > MAX_HISTORY) resultHistory.pop();
             updateHistoryBar();
