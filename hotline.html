@@ -232,16 +232,26 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
-        // ACORDADOR DE ÁUDIO FORÇADO PARA CELULAR
+        // ACORDADOR DE ÁUDIO FORÇADO (O segredo pro som não morrer no celular)
         function forceAudioResume() {
             if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().catch(() => {});
+                audioCtx.resume().then(() => {
+                    // Bipe mudo para destrancar a placa de som no iOS/Android
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = 0;
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.01);
+                }).catch(() => {});
             }
         }
         
-        // Sensor Global de Toque para Acordar o Áudio
-        document.body.addEventListener('click', forceAudioResume, true);
-        document.body.addEventListener('touchstart', forceAudioResume, { passive: true, capture: true });
+        // Sensor Global: Qualquer clique/toque na tela tenta acordar o áudio
+        ['mousedown', 'touchstart', 'touchend', 'click'].forEach(evt => {
+            window.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        });
 
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
@@ -315,10 +325,10 @@
         async function lidarComSaidaAbrupta() { if (isSpinning) { isSpinning = false; } }
         
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); });
+        
+        // Remove a suspensão manual que bloqueava o áudio no iOS
         window.addEventListener('visibilitychange', function() { 
-            if (document.hidden) {
-                if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
-            } else {
+            if (!document.hidden) {
                 forceAudioResume();
             }
         });
