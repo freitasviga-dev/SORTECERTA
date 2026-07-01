@@ -334,12 +334,13 @@
             if(audioLigado) { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick'); } else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
         });
 
-        document.getElementById('displayAposta').addEventListener('click', () => {
+        // VINCULANDO FUNÇÕES NO WINDOW PARA BOTÕES FUNCIONAREM DENTRO DO MÓDULO
+        window.abrirInputAposta = function() {
             if(isSpinning) return; iniciarAudio(); let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
             if(novoValor !== null) { let parsed = parseFloat(novoValor.replace(',', '.')); if(!isNaN(parsed) && parsed >= 0.10) { apostaAtual = Math.min(parsed, 500.00); document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); tocarSom('sfxClick'); } else { mostrarToast("Valor inválido."); } }
-        });
+        }
 
-        function mudarAposta(direcao) {
+        window.mudarAposta = function(direcao) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
@@ -351,15 +352,15 @@
             
             const multView = document.getElementById('mult-view');
             if (color === 'fire') {
-                multView.innerHTML = 'Alvo: <span>32.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>32.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #f1c40f, #b8860b)';
                 multView.style.color = '#000';
             } else if (color === 'red') {
-                multView.innerHTML = 'Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #e74c3c, #961d12)';
                 multView.style.color = '#fff';
             } else if (color === 'black') {
-                multView.innerHTML = 'Alvo: <span>2.00x</span>';
+                multView.innerHTML = 'Prêmio Alvo: <span>2.00x</span>';
                 multView.style.background = 'linear-gradient(135deg, #2c3e50, #111)';
                 multView.style.color = '#fff';
             }
@@ -438,21 +439,34 @@
         function spinReel(resultColor, isWin) {
             reel.innerHTML = ''; const TOTAL_SLOTS = 80; 
             
-            // Cria a matriz de cores garantida
-            let colors = generateReelColors(TOTAL_SLOTS);
+            let colors = [];
+            let rbCounter = Math.floor(Math.random() * 2); 
 
-            // Acha um índice inicial aleatório pro giro ter variação absurda ("usar a rolé inteira")
-            let startIndex = 30 + Math.floor(Math.random() * 30); // Varia de 30 a 59
-            let targetIndex = startIndex;
-            
-            // Busca qual é o primeiro bloco da frente com a cor sorteada
+            // GERA A ESTEIRA INQUEBRÁVEL (V,P,V,P) COM AMARELOS EMBUTIDOS NO MEIO
+            for(let i=0; i<TOTAL_SLOTS; i++) {
+                if (i === 15 || i === 45 || i === 75) {
+                    colors.push('fire');
+                } else {
+                    colors.push(rbCounter % 2 === 0 ? 'red' : 'black');
+                    rbCounter++;
+                }
+            }
+
+            // Acha o índice do resultado certo mais pro final da esteira
+            let targetIndex = 60;
             while(colors[targetIndex] !== resultColor && targetIndex < 75) {
                 targetIndex++;
             }
 
-            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA. Sempre para no meio exato da cor!
-            let randomOffset = Math.floor(Math.random() * 20) - 10; 
+            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA. Máximo 15px do centro!
+            let randomOffset = Math.floor(Math.random() * 30) - 15; 
             
+            if (!isWin) {
+                const side = Math.random() > 0.5 ? 1 : -1; 
+                // Empurra a parada pra borda do slot criando a ilusão de "QUASE DEU"
+                randomOffset = side === 1 ? (35 + Math.floor(Math.random() * 10)) : (-35 - Math.floor(Math.random() * 10)); 
+            }
+
             // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
