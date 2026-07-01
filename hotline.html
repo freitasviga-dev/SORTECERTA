@@ -166,25 +166,25 @@
 
     <div class="controls-wrapper">
         <div class="action-row">
-            <div class="btn-choice red btn-3d active" id="btn-red" onclick="selectColor('red')">
+            <div class="btn-choice red btn-3d active" id="btn-red">
                 VERMELHO <span>2.00x</span>
             </div>
-            <div class="btn-choice fire btn-3d" id="btn-fire" onclick="selectColor('fire')">
+            <div class="btn-choice fire btn-3d" id="btn-fire">
                 AMARELO <span>32.00x</span>
             </div>
-            <div class="btn-choice black btn-3d" id="btn-black" onclick="selectColor('black')">
+            <div class="btn-choice black btn-3d" id="btn-black">
                 PRETO <span>2.00x</span>
             </div>
         </div>
 
         <div class="bet-input-row">
             <div class="bet-label">Aposta</div>
-            <button class="bet-adjust btn-3d" id="btnMinus" onclick="mudarAposta(-1)"><i class="fa-solid fa-minus"></i></button>
-            <div class="bet-display" id="displayAposta" onclick="abrirInputAposta()">R$ 1,00</div>
-            <button class="bet-adjust btn-3d" id="btnPlus" onclick="mudarAposta(1)"><i class="fa-solid fa-plus"></i></button>
+            <button class="bet-adjust btn-3d" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+            <div class="bet-display" id="displayAposta">R$ 1,00</div>
+            <button class="bet-adjust btn-3d" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
         </div>
 
-        <button class="bet-button btn-3d" id="btnAction" onclick="cliqueBotaoApostar()">
+        <button class="bet-button btn-3d" id="btnAction">
             <i class="fa-solid fa-play"></i> APOSTAR
         </button>
 
@@ -235,13 +235,23 @@
         // ACORDADOR DE ÁUDIO FORÇADO PARA CELULAR
         function forceAudioResume() {
             if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().catch(() => {});
+                audioCtx.resume().then(() => {
+                    // Bipe mudo para destrancar a placa de som no iOS/Android
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = 0;
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.01);
+                }).catch(() => {});
             }
         }
         
-        // Sensor Global de Toque para Acordar o Áudio
-        document.body.addEventListener('click', forceAudioResume, true);
-        document.body.addEventListener('touchstart', forceAudioResume, { passive: true, capture: true });
+        // Sensor Global de Toque para Acordar o Áudio (Se o navegador mutar ao minimizar)
+        ['click', 'touchstart', 'touchend', 'mousedown'].forEach(evt => {
+            window.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        });
 
         function iniciarAudio() { 
             if (!audioCtx) audioCtx = new AudioContext(); 
@@ -334,18 +344,17 @@
             if(audioLigado) { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick'); } else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
         });
 
-        // VINCULANDO FUNÇÕES NO WINDOW PARA BOTÕES FUNCIONAREM DENTRO DO MÓDULO
-        window.abrirInputAposta = function() {
+        function abrirInputAposta() {
             if(isSpinning) return; iniciarAudio(); let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
             if(novoValor !== null) { let parsed = parseFloat(novoValor.replace(',', '.')); if(!isNaN(parsed) && parsed >= 0.10) { apostaAtual = Math.min(parsed, 500.00); document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); tocarSom('sfxClick'); } else { mostrarToast("Valor inválido."); } }
         }
 
-        window.mudarAposta = function(direcao) {
+        function mudarAposta(direcao) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) { indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta]; document.getElementById('displayAposta').innerText = "R$ " + apostaAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
         }
 
-        window.selectColor = function(color) {
+        function selectColor(color) {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick'); selectedColor = color;
             ['red', 'black', 'fire'].forEach(c => document.getElementById(`btn-${c}`).classList.remove('active'));
             document.getElementById(`btn-${color}`).classList.add('active');
@@ -365,6 +374,15 @@
                 multView.style.color = '#fff';
             }
         }
+
+        // VINCULANDO OS BOTÕES DE FORMA SEGURA DENTRO DO MODULE
+        document.getElementById('btn-red').addEventListener('click', () => selectColor('red'));
+        document.getElementById('btn-fire').addEventListener('click', () => selectColor('fire'));
+        document.getElementById('btn-black').addEventListener('click', () => selectColor('black'));
+        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
+        document.getElementById('displayAposta').addEventListener('click', abrirInputAposta);
+        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
 
         function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
@@ -392,7 +410,7 @@
             reel.style.transform = `translateX(-1025px)`; 
         }
 
-        window.cliqueBotaoApostar = async function() {
+        async function cliqueBotaoApostar() {
             if(isSpinning) return; iniciarAudio(); tocarSom('sfxClick');
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return; }
 
@@ -458,15 +476,9 @@
                 targetIndex++;
             }
 
-            // OFFSET SEGURO: A ROlETA NUNCA MAIS PARA NA DIVISA. Máximo 15px do centro!
-            let randomOffset = Math.floor(Math.random() * 30) - 15; 
+            // O PINO FICA TRAVADO EXATAMENTE NO MEIO DO BLOCO SEMPRE (OFFSET ZERO)
+            let randomOffset = 0; 
             
-            if (!isWin) {
-                const side = Math.random() > 0.5 ? 1 : -1; 
-                // Empurra a parada pra borda do slot criando a ilusão de "QUASE DEU"
-                randomOffset = side === 1 ? (35 + Math.floor(Math.random() * 10)) : (-35 - Math.floor(Math.random() * 10)); 
-            }
-
             // Desenha os slots perfeitos
             for(let i=0; i<TOTAL_SLOTS; i++) {
                 const slot = document.createElement('div'); slot.className = `slot ${colors[i]}`;
