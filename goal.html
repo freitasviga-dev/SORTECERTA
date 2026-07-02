@@ -9,26 +9,52 @@
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Clear-Site-Data" content="cache">
     
+    <script>
+        (function() {
+            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for (let registration of registrations) registration.unregister(); }); }
+        })();
+        window.addEventListener('pageshow', function(event) { if (event.persisted) { window.location.reload(true); } });
+    </script>
+    
     <title>Goal VIP | SorteCerta Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
+        :root {
+            /* TEMA PREMIUM DARK INDIGO VIP 👑 */
+            --bg-top: #2a0a3a; 
+            --bg-bottom: #0a0210;
+            --panel-bg: #14051c;
+            --gold: #f1c40f; --gold-dark: #b8860b;
+            --red: #e74c3c; --red-dark: #c0392b;
+            --black: #1a1a1a; --black-light: #2c3e50;
+            --green: #00e676; --green-dark: #00b359;
+            --text-light: #ffffff;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; }
+        html { height: -webkit-fill-available; overscroll-behavior: none; }
         
         body { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 0%, #1e3c72 0%, #0a1930 100%);
-            color: #ffffff; display: flex; flex-direction: column; overflow: hidden;
+            background: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--text-light); display: flex; flex-direction: column; overflow: hidden;
         }
 
         .btn-3d { transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease; cursor: pointer; }
-        .btn-3d:active { transform: translateY(4px) !important; box-shadow: none !important; margin-top: 4px; }
+        .btn-3d:active:not(.disabled) { transform: translateY(4px) !important; box-shadow: none !important; margin-top: 4px; border-bottom-width: 0px !important;}
 
-        /* HEADER */
+        /* TELA INICIAL (DESBLOQUEIO DE ÁUDIO) */
+        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05020a; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; }
+        #startScreen h2 { color: var(--gold); text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; font-size: 26px; text-shadow: 0 0 20px rgba(241,196,15,0.5); display: flex; align-items: center; gap: 10px; }
+        .btn-start { background: linear-gradient(180deg, var(--green), var(--green-dark)); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.5), 0 8px 20px rgba(0, 230, 118, 0.4); font-size: 16px; letter-spacing: 1px; }
+
+        /* HEADER VIP */
         .header-bar { height: 50px; flex-shrink: 0; padding: 0 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; padding-top: env(safe-area-inset-top); z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .btn-back { color: #fff; font-size: 20px; padding: 5px; opacity: 0.8; }
-        .logo-text { font-size: 15px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-        .logo-text i { color: #f1c40f; font-size: 13px; }
+        .logo-text { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.6); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .logo-text i { color: var(--gold); font-size: 14px; }
         .btn-top { color: #fff; font-size: 18px; padding: 5px; opacity: 0.8; }
 
         /* GAME AREA RESPONSIVA */
@@ -36,96 +62,88 @@
         
         .board-header { width: 100%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         .board-select { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .next-multiplier { background: linear-gradient(135deg, #f1c40f, #b8860b); color: #000; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4), inset 0 2px 2px rgba(255,255,255,0.4); transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .next-multiplier { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 900; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4), inset 0 2px 2px rgba(255,255,255,0.4); transition: 0.3s; display: flex; align-items: center; gap: 5px; }
 
         /* GRID GOAL */
-        .grid-container { width: 100%; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); box-shadow: inset 0 5px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.4); overflow-x: auto; scrollbar-width: none; flex-shrink: 1; }
+        .grid-container { width: 100%; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 10px 30px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5); overflow-x: auto; scrollbar-width: none; flex-shrink: 1; }
         .grid-container::-webkit-scrollbar { display: none; }
         .grid { display: grid; gap: 8px; }
 
-        /* TILES 3D PROFUNDIDADE */
+        /* TILES 3D PROFUNDIDADE (Estilo Dark Indigo VIP) */
         .tile {
-            background: linear-gradient(180deg, #1e458a 0%, #112a5e 100%); border-radius: 10px; position: relative;
-            box-shadow: inset 0 2px 2px rgba(255,255,255,0.15), inset 0 -4px 0 rgba(0,0,0,0.4), 0 5px 8px rgba(0,0,0,0.5);
-            border-bottom: 4px solid #081533; display: flex; justify-content: center; align-items: center; 
-            transition: all 0.15s ease; opacity: 0.4; pointer-events: none; aspect-ratio: 1/1;
+            background: linear-gradient(180deg, #3d1455 0%, #1d072b 100%); border-radius: 10px; position: relative;
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.15), inset 0 -4px 0 rgba(0,0,0,0.6), 0 5px 8px rgba(0,0,0,0.5);
+            border-bottom: 4px solid #0d0214; display: flex; justify-content: center; align-items: center; 
+            transition: all 0.15s ease; opacity: 0.5; pointer-events: none; aspect-ratio: 1/1;
         }
         
         .tile.active-col {
             opacity: 1; pointer-events: auto; cursor: pointer;
-            border-color: #b8860b; 
-            box-shadow: inset 0 2px 2px rgba(255,255,255,0.3), inset 0 -4px 0 rgba(0,0,0,0.4), 0 0 15px rgba(241, 196, 15, 0.6);
+            border-color: var(--gold-dark); border-bottom-color: var(--gold-dark);
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.6), 0 0 20px rgba(241, 196, 15, 0.5);
             animation: pulseTile 1.5s infinite;
         }
         @keyframes pulseTile { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.2); } }
 
-        .tile.active-col:active { transform: translateY(4px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); border-bottom-width: 0px; }
+        .tile.active-col:active { transform: translateY(4px); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.4); border-bottom-width: 0px; }
 
         .tile.opened {
-            background: #0b1a3a; box-shadow: inset 0 4px 10px rgba(0,0,0,0.7); 
+            background: #0a0210; box-shadow: inset 0 4px 15px rgba(0,0,0,0.9); 
             transform: translateY(4px); border-bottom-width: 0px; cursor: default; opacity: 1; animation: none; pointer-events: none;
         }
         
         .tile.safe { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .tile.safe::before { content: '⚽'; font-size: min(6vw, 28px); filter: drop-shadow(0 0 15px rgba(0, 230, 118, 0.8)); }
         
-        .tile.bomb { background: radial-gradient(circle, #e74c3c, #961d12); box-shadow: inset 0 4px 10px rgba(0,0,0,0.8); animation: shake 0.4s ease-in-out; opacity: 1;}
+        .tile.bomb { background: radial-gradient(circle, var(--red), var(--red-dark)); box-shadow: inset 0 4px 10px rgba(0,0,0,0.8); animation: shake 0.4s ease-in-out; opacity: 1;}
         .tile.bomb::before { content: '💣'; font-size: min(6vw, 30px); filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)); }
         
         .tile.bomb-reveal { opacity: 0.6; background: #5c1818; box-shadow: inset 0 4px 10px rgba(0,0,0,0.8); animation: none; transform: translateY(4px); border-bottom-width: 0px; }
         .tile.bomb-reveal::before { content: '💣'; font-size: min(5vw, 24px); opacity: 0.9; }
 
         /* PAINEL DE CONTROLE COMPACTO E FIXO */
-        .controls-wrapper { flex-shrink: 0; width: 100%; background: #071226; border-top: 2px solid #143570; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        .controls-wrapper { flex-shrink: 0; width: 100%; background: var(--panel-bg); border-top: 2px solid #230833; padding: 10px 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         .action-row { display: flex; gap: 10px; }
         .btn-secondary { flex: 1; background: linear-gradient(180deg, #1c2b4a, #0d162b); color: #ccc; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 0 rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-bottom: none; }
-        .btn-secondary.auto-active { color: #000; background: linear-gradient(180deg, #f1c40f, #b8860b); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #7a5805; border: none; }
+        .btn-secondary.auto-active { color: #000; background: linear-gradient(180deg, var(--gold), var(--gold-dark)); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #7a5805; border: none; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-        .bet-label { font-size: 10px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
-        .bet-display { font-size: 15px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .bet-label { font-size: 11px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: linear-gradient(180deg, #1c3a76, #0d214a); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #071229; cursor: pointer; transition: 0.1s; }
+        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 15px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; border-bottom: none; }
         .bet-adjust:active { transform: translateY(4px); box-shadow: none; }
 
-        .bet-button { width: 100%; background: linear-gradient(180deg, #00e676, #00b359) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; }
+        .bet-button { width: 100%; background: linear-gradient(180deg, var(--green), var(--green-dark)) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; border-bottom: none; }
         .bet-button:active:not(.disabled) { transform: translateY(5px); box-shadow: none !important; }
-        .bet-button.cashout { background: linear-gradient(180deg, #f1c40f, #d35400) !important; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.4) !important; color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important; }
-        .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; }
+        .bet-button.cashout { background: linear-gradient(180deg, var(--gold), #d35400) !important; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.4) !important; color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important; border-bottom: none; }
+        .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; border-bottom: none; }
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; }
-        .game-name { font-size: 10px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-info { font-size: 13px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .balance-info i { color: #00e676; font-size: 11px; }
+        .game-name { font-size: 11px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* PAINEL DE SALDO TOTALMENTE DOURADO VIP */
+        .balance-info { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; background: #0c0c0c; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .balance-info i { color: var(--gold); font-size: 16px; }
 
-        .auto-spin-menu { position: absolute; bottom: 135px; right: 15px; background: #0a0a0a; border: 1px solid #b8860b; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; width: 110px; }
+        .auto-spin-menu { position: absolute; bottom: 145px; right: 15px; background: #0a0a0a; border: 1px solid var(--gold-dark); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; width: 110px; }
         .auto-spin-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .auto-btn-option { background: linear-gradient(180deg, #222, #111); border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; font-size: 13px; text-transform: uppercase; box-shadow: 0 2px 0 #000; }
-        .auto-btn-option:active { background: linear-gradient(180deg, #f1c40f, #b8860b); color: #000; box-shadow: none; transform: translateY(2px); border-color: transparent; }
+        .auto-btn-option:active { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #000; box-shadow: none; transform: translateY(2px); border-color: transparent; }
 
-        .win-toast { position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, #00e676, #00b359); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; text-transform: uppercase; border: 2px solid #fff; }
+        .win-toast { position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
-        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; letter-spacing: 1px; }
+        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .win-toast #winAmount { font-size: 20px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
 
         .system-toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 90px; }
-
-        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050a14; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; }
-        #startScreen h2 { color: #f1c40f; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; font-size: 26px; text-shadow: 0 0 20px rgba(241,196,15,0.5); display: flex; align-items: center; gap: 10px; }
-        .btn-start { background: linear-gradient(180deg, #00e676, #00b359); color: #000; padding: 15px 40px; border-radius: 30px; font-weight: 900; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.5), 0 8px 20px rgba(0, 230, 118, 0.4); font-size: 14px; letter-spacing: 1px; }
 
         @keyframes popIn { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-6px); } }
     </style>
 </head>
 <body>
-
-    <script>
-        (function() {
-            if ('caches' in window) { caches.keys().then(function(names) { for (let name of names) caches.delete(name); }); }
-            if ('navigator' in window && 'serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(r) { for (let reg of r) reg.unregister(); }); }
-        })();
-    </script>
 
     <div id="startScreen">
         <h2><i class="fa-solid fa-futbol"></i> GOAL VIP</h2>
@@ -134,7 +152,7 @@
 
     <div class="header-bar">
         <div class="btn-back btn-3d" id="btnBack"><i class="fa-solid fa-chevron-left"></i></div>
-        <div class="logo-text"><i class="fa-solid fa-futbol" style="color: #f1c40f;"></i> GOAL VIP</div>
+        <div class="logo-text"><i class="fa-solid fa-futbol" style="color: var(--gold);"></i> GOAL VIP</div>
         <div class="top-actions">
             <div class="btn-top btn-3d" id="btnAudio"><i class="fa-solid fa-volume-xmark"></i></div>
         </div>
@@ -151,8 +169,7 @@
         </div>
 
         <div class="grid-container">
-            <div class="grid" id="grid">
-                </div>
+            <div class="grid" id="grid"></div>
         </div>
     </div>
 
@@ -174,7 +191,7 @@
         </button>
 
         <div class="footer-info">
-            <div class="game-name">ORIGINAL <i class="fa-solid fa-futbol" style="margin-left: 5px; opacity: 0.5; color: #f1c40f;"></i></div>
+            <div class="game-name">ORIGINAL <i class="fa-solid fa-futbol" style="margin-left: 5px; opacity: 0.5; color: var(--gold);"></i></div>
             <div class="balance-info">
                 <i class="fa-solid fa-wallet"></i>
                 <span id="displaySaldo">R$ 0,00</span>
@@ -182,7 +199,7 @@
         </div>
 
         <div class="auto-spin-menu" id="menuAuto">
-            <div style="color: #f1c40f; font-size: 11px; font-weight: 900; text-align: center; margin-bottom: 5px; letter-spacing: 1px;">RODADAS</div>
+            <div style="color: var(--gold); font-size: 11px; font-weight: 900; text-align: center; margin-bottom: 5px; letter-spacing: 1px;">RODADAS</div>
             <div class="auto-btn-option btn-3d" data-spins="10">10</div>
             <div class="auto-btn-option btn-3d" data-spins="30">30</div>
             <div class="auto-btn-option btn-3d" data-spins="50">50</div>
@@ -191,19 +208,15 @@
     </div>
 
     <div class="win-toast" id="winToast">
-        <span id="winTitle">LUCRO TOTAL DA RODADA</span>
+        <span id="winTitle">LUCRO TOTAL:</span>
         <div id="winAmount">R$ 0,00</div>
     </div>
     
     <div class="system-toast" id="toastMsg">Mensagem do Sistema</div>
 
     <script type="module">
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) { window.location.reload(true); }
-        });
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // FIREBASE OFUSCADO
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
@@ -214,8 +227,12 @@
         if (!idDispositivo) { window.location.href = 'login.html'; }
 
         // VARIÁVEIS GLOBAIS E RTP ISOLADO
-        const CONFIG_RTP = 0.97; // RTP fácil de ajustar (97%)
+        const CONFIG_RTP = 0.95; 
         let bancaAtual = 0; 
+        let saldoRealAtual = 0.00;
+        let proporcaoRealNaMesa = 1.0;
+        let caixaDaCasa = 0.00;
+
         let modoJogador = 'normal'; 
         let audioLigado = false;
         let isGaming = false;
@@ -233,13 +250,35 @@
         const apostasPermitidas = [1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00, 200.00, 500.00];
         let indexAposta = 0; let apostaAtual = apostasPermitidas[indexAposta];
 
-        // 🎵 MOTOR DE ÁUDIO NATIVO
+        // 🎵 MOTOR DE ÁUDIO BLINDADO
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
+        let audioCtx = null;
+
+        function forceAudioResume() {
+            if (audioLigado && audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().then(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = 0;
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.01);
+                }).catch(() => {});
+            }
+        }
+
+        // Sensores Globais de Ativação
+        ['click', 'touchstart', 'touchend', 'mousedown', 'keydown'].forEach(evt => {
+            document.documentElement.addEventListener(evt, forceAudioResume, { capture: true, passive: true });
+        });
+
+        function iniciarAudio() {
+            if (!audioCtx) { audioCtx = new AudioContext(); }
+            forceAudioResume();
+        }
 
         const tocarSom = (tipo) => {
-            if(!audioLigado) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if(!audioLigado || !audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
             const t = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
@@ -281,8 +320,7 @@
             if (docEl.requestFullscreen) { docEl.requestFullscreen().catch(e => {}); }
             else if (docEl.webkitRequestFullscreen) { docEl.webkitRequestFullscreen().catch(e => {}); }
 
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-            tocarSom('sfxClick');
+            iniciarAudio(); tocarSom('sfxClick');
         });
 
         document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
@@ -299,7 +337,7 @@
         });
 
         window.abrirInputAposta = function() {
-            if(isGaming || isAutoModeActive) return;
+            if(isGaming || isAutoModeActive) return; iniciarAudio();
             let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
             if(novoValor !== null) {
                 let parsed = parseFloat(novoValor.replace(',', '.'));
@@ -312,6 +350,7 @@
         };
 
         function toggleAudio() {
+            iniciarAudio();
             audioLigado = !audioLigado; 
             const btn = document.getElementById('btnAudio');
             if(audioLigado) { 
@@ -321,41 +360,60 @@
             }
         }
 
+        // REEMBOLSO INTELIGENTE DE FUGA / QUEDA DE NET
+        async function lidarComSaidaAbrupta() {
+            if (isGaming) {
+                isGaming = false;
+                
+                // Se ele andou alguma casa, salva o lucro, se não, devolve só a aposta
+                let valorRetorno = currentActiveCol > 0 ? (apostaAtual * currentMultiplier) : apostaAtual;
+                let valorRetornoReal = valorRetorno * proporcaoRealNaMesa;
+
+                bancaAtual += valorRetorno;
+                saldoRealAtual += valorRetornoReal;
+
+                await update(ref(db, `usuarios/${idDispositivo}`), {
+                    saldo: parseFloat(bancaAtual.toFixed(2)),
+                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+                });
+                
+                if (modoJogador !== 'admin' && modoJogador !== 'live') {
+                    const snap = await get(ref(db, 'sistema/caixa_global'));
+                    let caixaAtual = parseFloat(snap.val() || 0);
+                    // O Caixa Devolve O Valor Real do Saque Fuga
+                    await set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - valorRetornoReal).toFixed(2)));
+                }
+            }
+        }
+
         function voltarParaLobby() {
             tocarSom('sfxClick'); pararAutoJogo(); lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
 
-        function lidarComSaidaAbrupta() {
-            if (isGaming) {
-                isGaming = false;
-                let valorRetorno = currentActiveCol > 0 ? (apostaAtual * currentMultiplier) : apostaAtual;
-                set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual + valorRetorno).toFixed(2)));
-                
-                if (modoJogador !== 'admin' && modoJogador !== 'live') {
-                    get(ref(db, 'sistema/caixa_global')).then(snap => {
-                        let caixaAtual = parseFloat(snap.val() || 0);
-                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - valorRetorno).toFixed(2)));
-                    });
-                }
-            }
-        }
-
         window.addEventListener('pagehide', () => { lidarComSaidaAbrupta(); pararAutoJogo(); });
-        document.addEventListener('visibilitychange', function() { if (document.hidden) { lidarComSaidaAbrupta(); pararAutoJogo(); } });
+        document.addEventListener('visibilitychange', function() { 
+            if (document.hidden) { lidarComSaidaAbrupta(); pararAutoJogo(); } 
+            else { forceAudioResume(); }
+        });
 
         function updateSaldoDisplay(valor) { document.getElementById('displaySaldo').innerText = "R$ " + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
         onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
             const dados = snapshot.val() || {}; 
-            bancaAtual = parseFloat(dados.saldo || 0); 
-            modoJogador = dados.modo || 'normal'; 
-            if(!isGaming) updateSaldoDisplay(bancaAtual);
+            if(!isGaming) {
+                bancaAtual = parseFloat(dados.saldo || 0); 
+                saldoRealAtual = parseFloat(dados.saldo_real !== undefined ? dados.saldo_real : bancaAtual);
+                modoJogador = dados.modo || 'normal'; 
+                updateSaldoDisplay(bancaAtual);
+            }
         });
+        
+        onValue(ref(db, 'sistema/caixa_global'), (snapshot) => { caixaDaCasa = parseFloat(snapshot.val() || 0); });
 
         function mudarAposta(direcao) {
-            if(isGaming || isAutoModeActive) return;
+            if(isGaming || isAutoModeActive) return; iniciarAudio();
             let novoIndex = indexAposta + direcao;
             if(novoIndex >= 0 && novoIndex < apostasPermitidas.length) {
                 indexAposta = novoIndex; apostaAtual = apostasPermitidas[indexAposta];
@@ -367,7 +425,7 @@
         // AUTO JOGO
         function toggleMenuAuto() {
             if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
-            tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
+            iniciarAudio(); tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
         }
 
         function iniciarAutoJogo(qtd) {
@@ -463,14 +521,14 @@
                 }
             }
             currentMultiplier = 1.00;
-            atualizarMultiplicadorPreview(1); // CORREÇÃO MULTIPLICADOR RESET
+            atualizarMultiplicadorPreview(1); 
             const btn = document.getElementById('btnAction');
             btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
         }
 
-        function cliqueBotaoApostar() {
+        async function cliqueBotaoApostar() {
             if(isAutoModeActive) return;
-            tocarSom('sfxClick');
+            iniciarAudio(); tocarSom('sfxClick');
             if (isGaming) {
                 if (currentActiveCol === 0) return;
                 cashOut();
@@ -479,8 +537,13 @@
             }
         }
 
-        function iniciarApostaBackend() {
+        async function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
+
+            // SEPARAÇÃO DO REAL E BÔNUS
+            proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
+            if(proporcaoRealNaMesa > 1.0) proporcaoRealNaMesa = 1.0;
+            let apostaReal = apostaAtual * proporcaoRealNaMesa;
 
             isGaming = true; currentActiveCol = 0; currentMultiplier = 1.00;
             document.getElementById('board-size').disabled = true;
@@ -492,18 +555,22 @@
             btn.classList.add('cashout'); 
             btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
 
-            updateSaldoDisplay(bancaAtual - apostaAtual);
+            bancaAtual -= apostaAtual;
+            saldoRealAtual -= apostaReal;
+            updateSaldoDisplay(bancaAtual);
             
-            set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat((bancaAtual - apostaAtual).toFixed(2)));
+            await update(ref(db, `usuarios/${idDispositivo}`), {
+                saldo: parseFloat(bancaAtual.toFixed(2)),
+                saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+            });
             
-            // TRAVA ADMIN E ROLLOVER
+            // CAIXA GLOBAL REGISTRA APENAS DINHEIRO REAL
             if (modoJogador !== 'admin' && modoJogador !== 'live') {
-                get(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual')).then(snap => {
-                    set(ref(db, 'usuarios/' + idDispositivo + '/rollover_atual'), parseFloat((snap.val() || 0)) + apostaAtual);
+                get(ref(db, `usuarios/${idDispositivo}/rollover_atual`)).then(snap => {
+                    set(ref(db, `usuarios/${idDispositivo}/rollover_atual`), parseFloat((snap.val() || 0)) + apostaAtual);
                 });
-                
                 get(ref(db, 'sistema/caixa_global')).then(snap => {
-                    set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaAtual).toFixed(2)));
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((parseFloat(snap.val() || 0) + apostaReal).toFixed(2)));
                 });
             }
 
@@ -514,12 +581,12 @@
             tiles.forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
 
             updateActiveColumnUI(); 
-            atualizarMultiplicadorPreview(1); // FIXO: 1º PASSO
+            atualizarMultiplicadorPreview(1);
             return true;
         }
 
         function selectRandomTile() {
-            if (!isGaming || isAutoModeActive) return; tocarSom('sfxClick');
+            if (!isGaming || isAutoModeActive) return; tocarSom('sfxClick'); iniciarAudio();
             const activeTiles = Array.from(document.querySelectorAll('.tile')).filter(t => parseInt(t.dataset.col) === currentActiveCol);
             if (activeTiles.length > 0) {
                 const rndRow = Math.floor(Math.random() * currentRowCount);
@@ -530,16 +597,33 @@
 
         function handleTileClick(r, c, tileElement) {
             if (!isGaming || c !== currentActiveCol) return;
+            iniciarAudio();
 
-            if (modoJogador === 'influenciador' && bombsPositions[c] === r) {
+            let isBomb = (bombsPositions[c] === r);
+
+            // DESVIO PARA VIP
+            if (isBomb && (modoJogador === 'admin' || modoJogador === 'live' || modoJogador === 'influenciador')) {
                 let linhasLivres = [];
                 for(let i = 0; i < currentRowCount; i++) { if(i !== r) linhasLivres.push(i); }
                 bombsPositions[c] = linhasLivres[Math.floor(Math.random() * linhasLivres.length)];
+                isBomb = false;
+            }
+
+            // ANTI-QUEBRA: VERIFICA SE O PRÊMIO REAL QUEBRA O CAIXA
+            if (!isBomb && modoJogador !== 'admin' && modoJogador !== 'live' && modoJogador !== 'influenciador') {
+                let nextMult = _0xMath(currentRowCount, currentActiveCol + 1);
+                let potentialWinReal = (apostaAtual * nextMult) * proporcaoRealNaMesa;
+                let availableFunds = caixaDaCasa * CONFIG_RTP;
+                
+                if (potentialWinReal > availableFunds) {
+                    isBomb = true;
+                    bombsPositions[c] = r; // Força a bomba onde ele clicou!
+                }
             }
 
             tileElement.classList.add('opened');
 
-            if (bombsPositions[c] === r) {
+            if (isBomb) {
                 isGaming = false;
                 tocarSom('sfxBomb'); tileElement.classList.add('bomb'); 
                 endGame(false);
@@ -555,7 +639,7 @@
                     const btn = document.getElementById('btnAction');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
                     updateActiveColumnUI(); 
-                    atualizarMultiplicadorPreview(currentActiveCol + 1); // ATUALIZA PRÓXIMO
+                    atualizarMultiplicadorPreview(currentActiveCol + 1);
                 }
             }
         }
@@ -563,23 +647,44 @@
         async function cashOut(isGoal = false) {
             isGaming = false; 
             const lucro = apostaAtual * currentMultiplier;
-            const novoSaldo = bancaAtual + lucro;
+            const lucroReal = lucro * proporcaoRealNaMesa;
             
-            updateSaldoDisplay(novoSaldo);
-            await set(ref(db, `usuarios/${idDispositivo}/saldo`), parseFloat(novoSaldo.toFixed(2)));
+            bancaAtual += lucro;
+            saldoRealAtual += lucroReal;
+
+            // BLOQUEIO DE SAQUE COM BÔNUS
+            let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
+            let u = snapU.val() || {};
+            let metaRo = parseFloat(u.rollover_meta || 0);
+            let atualRo = parseFloat(u.rollover_atual || 0);
+            if (metaRo > 0 && atualRo >= metaRo) {
+                saldoRealAtual = bancaAtual; // Converte tudo pra real
+            }
+
+            updateSaldoDisplay(bancaAtual);
             
-            if (modoJogador !== 'admin' && modoJogador !== 'live') {
+            await update(ref(db, `usuarios/${idDispositivo}`), {
+                saldo: parseFloat(bancaAtual.toFixed(2)),
+                saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+            });
+            
+            if (modoJogador !== 'admin' && modoJogo !== 'live') {
                 get(ref(db, 'sistema/caixa_global')).then(snap => {
                     let caixaAtual = parseFloat(snap.val() || 0);
-                    set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucro).toFixed(2)));
+                    // Abate só o dinheiro real
+                    set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucroReal).toFixed(2)));
                 });
             }
 
             tocarSom('sfxWin');
-            const toast = document.getElementById('winToast');
-            document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL DA RODADA";
-            document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500);
+            document.getElementById('winToast').classList.remove('show');
+            setTimeout(() => {
+                const toast = document.getElementById('winToast');
+                document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL:";
+                document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                toast.classList.add('show'); 
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }, 100);
 
             endGame(true, true);
         }
@@ -598,7 +703,6 @@
                 }
             });
 
-            // CORREÇÃO DO MULTIPLICADOR AO FINALIZAR (Sempre volta para o passo 1)
             atualizarMultiplicadorPreview(1);
 
             const btn = document.getElementById('btnAction');
