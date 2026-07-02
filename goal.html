@@ -57,7 +57,7 @@
         /* SELECT COM A SETINHA */
         .select-wrapper { position: relative; display: inline-block; }
         .select-wrapper::after { content: '\25BC'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #fff; font-size: 10px; pointer-events: none; }
-        .board-select { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 28px 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .board-select { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom: 3px solid #000; padding: 6px 28px 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer;}
         
         .next-multiplier { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 900; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4), inset 0 2px 2px rgba(255,255,255,0.4); transition: 0.3s; display: flex; align-items: center; gap: 5px; }
 
@@ -106,19 +106,20 @@
         .btn-secondary.auto-active { color: #000; background: linear-gradient(180deg, var(--gold), var(--gold-dark)); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #7a5805; border: none; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-        .bet-label { font-size: 10px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
-        .bet-display { font-size: 15px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .bet-label { font-size: 11px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; border-bottom: none;}
+        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 15px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; border-bottom: none;}
         .bet-adjust:active { transform: translateY(4px); box-shadow: none; }
 
         /* BOTAO APOSTAR / SACAR (Estilo VIP) */
-        .bet-button { width: 100%; background: linear-gradient(180deg, var(--green), var(--green-dark)); border: none; border-radius: 12px; padding: 15px; color: #000; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4); display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.1s; border-bottom: none;}
+        .bet-button { width: 100%; background: linear-gradient(180deg, var(--green), var(--green-dark)) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; border-bottom: none;}
+        .bet-button:active:not(.disabled) { transform: translateY(5px); box-shadow: none !important; }
         .bet-button.cashout { background: linear-gradient(180deg, var(--gold), #d35400) !important; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.4) !important; color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important; border-bottom: none;}
         .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; border-bottom: none;}
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; }
-        .game-name { font-size: 10px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-name { font-size: 11px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* PAINEL DE SALDO TOTALMENTE DOURADO VIP */
         .balance-info { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; background: #0c0c0c; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
@@ -129,11 +130,11 @@
         .auto-btn-option { background: linear-gradient(180deg, #222, #111); border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; font-size: 13px; text-transform: uppercase; box-shadow: 0 2px 0 #000; }
         .auto-btn-option:active { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #000; box-shadow: none; transform: translateY(2px); border-color: transparent; }
 
-        /* POP-UP COMPACTO DE VITÓRIA (CORRIGIDO PARA TEXTO MENOR) */
-        .win-toast { position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; }
+        /* POP-UP COMPACTO DE VITÓRIA - POSIÇÃO AJUSTADA ABAIXO DO HEADER */
+        .win-toast { position: fixed; top: calc(65px + env(safe-area-inset-top)); left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
-        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
-        .win-toast #winAmount { font-size: 18px; font-weight: 900; color: #000; }
+        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .win-toast #winAmount { font-size: 20px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
 
         .system-toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
         .system-toast.show { opacity: 1; top: 90px; }
@@ -166,7 +167,7 @@
 
     <div class="game-area">
         <div class="win-toast" id="winToast">
-            <span>LUCRO TOTAL:</span>
+            <span id="winTitle">LUCRO TOTAL:</span>
             <div id="winAmount">R$ 0,00</div>
         </div>
 
@@ -424,7 +425,7 @@
         document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
         document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
-        // AUTO JOGO
+        // AUTO JOGO - Reduzido o delay absurdo de início!
         function toggleMenuAuto() {
             if(isGaming || isAutoModeActive) { tocarSom('sfxClick'); pararAutoJogo(); return; }
             iniciarAudio(); tocarSom('sfxClick'); document.getElementById('menuAuto').classList.toggle('show');
@@ -463,7 +464,7 @@
             if (!isGaming) {
                 if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); pararAutoJogo(); return; }
                 const apostaIniciada = iniciarApostaBackend();
-                if (apostaIniciada) { autoTimeoutId = setTimeout(fazerJogadaAuto, 1000); } else { pararAutoJogo(); }
+                if (apostaIniciada) { autoTimeoutId = setTimeout(fazerJogadaAuto, 600); } else { pararAutoJogo(); }
             }
         }
 
@@ -477,8 +478,8 @@
                 
                 if (tile) {
                     handleTileClick(rndRow, currentActiveCol, tile);
-                    if (isGaming) { autoTimeoutId = setTimeout(fazerJogadaAuto, 800); } 
-                    else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 2500); }
+                    if (isGaming) { autoTimeoutId = setTimeout(fazerJogadaAuto, 600); } 
+                    else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 1000); } // Delay do bot corrigido!
                 }
             }
         }
@@ -534,7 +535,7 @@
         }
         document.getElementById('board-size').addEventListener('change', () => { tocarSom('sfxClick'); window.resetGameUI(); });
 
-        async function cliqueBotaoApostar() {
+        function cliqueBotaoApostar() {
             if(isAutoModeActive) return;
             iniciarAudio(); tocarSom('sfxClick');
             if (isGaming) {
@@ -546,7 +547,7 @@
         }
         document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
 
-        async function iniciarApostaBackend() {
+        function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
 
             // SEPARAÇÃO DO REAL E BÔNUS
@@ -555,6 +556,8 @@
             let apostaReal = apostaAtual * proporcaoRealNaMesa;
 
             isGaming = true; currentActiveCol = 0; currentMultiplier = 1.00;
+            
+            // FIM DO DELAY: A Interface avança na hora, sem esperar o Firebase!
             document.getElementById('board-size').disabled = true;
             document.getElementById('btnMinus').style.opacity = '0.5'; document.getElementById('btnPlus').style.opacity = '0.5';
             const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
@@ -567,8 +570,18 @@
             bancaAtual -= apostaAtual;
             saldoRealAtual -= apostaReal;
             updateSaldoDisplay(bancaAtual);
-            
-            await update(ref(db, `usuarios/${idDispositivo}`), {
+
+            bombsPositions = [];
+            for (let c = 0; c < currentColCount; c++) { bombsPositions.push(Math.floor(Math.random() * currentRowCount)); }
+
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
+
+            updateActiveColumnUI(); 
+            atualizarMultiplicadorPreview(1);
+
+            // Grava os dados da jogada em segundo plano
+            update(ref(db, `usuarios/${idDispositivo}`), {
                 saldo: parseFloat(bancaAtual.toFixed(2)),
                 saldo_real: parseFloat(saldoRealAtual.toFixed(2))
             });
@@ -582,14 +595,6 @@
                 });
             }
 
-            bombsPositions = [];
-            for (let c = 0; c < currentColCount; c++) { bombsPositions.push(Math.floor(Math.random() * currentRowCount)); }
-
-            const tiles = document.querySelectorAll('.tile');
-            tiles.forEach(tile => { tile.className = 'tile'; tile.innerHTML = ''; });
-
-            updateActiveColumnUI(); 
-            atualizarMultiplicadorPreview(1);
             return true;
         }
 
@@ -640,9 +645,9 @@
                 currentActiveCol++;
                 currentMultiplier = _0xMath(currentRowCount, currentActiveCol);
                 
-                // O JOGADOR COMPLETOU TODO O CAMPO (GOAL MÁXIMO)
                 if (currentActiveCol >= currentColCount) {
-                    cashOut(true); 
+                    // O JOGADOR COMPLETOU TODO O CAMPO (GOAL MÁXIMO) - SACA AUTOMÁTICO
+                    cashOut(); 
                 } else {
                     const btn = document.getElementById('btnAction');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
@@ -652,8 +657,8 @@
             }
         }
 
-        async function cashOut(isGoal = false) {
-            if(!isGaming && !isGoal) return; // Trava contra duplo clique
+        function cashOut() {
+            if(!isGaming) return;
             isGaming = false; 
             
             const lucro = apostaAtual * currentMultiplier;
@@ -662,20 +667,36 @@
             bancaAtual += lucro;
             saldoRealAtual += lucroReal;
 
-            let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
-            let u = snapU.val() || {};
-            let metaRo = parseFloat(u.rollover_meta || 0);
-            let atualRo = parseFloat(u.rollover_atual || 0);
-            if (metaRo > 0 && atualRo >= metaRo) {
-                saldoRealAtual = bancaAtual; 
-            }
-
             updateSaldoDisplay(bancaAtual);
-            
-            await update(ref(db, `usuarios/${idDispositivo}`), {
-                saldo: parseFloat(bancaAtual.toFixed(2)),
-                saldo_real: parseFloat(saldoRealAtual.toFixed(2))
-            });
+
+            // MOSTRA O TOAST DE VITÓRIA INSTANTANEAMENTE (Fim do Delay!)
+            tocarSom('sfxWin');
+            document.getElementById('winToast').classList.remove('show');
+            setTimeout(() => {
+                const toast = document.getElementById('winToast');
+                document.getElementById('winTitle').innerText = "LUCRO TOTAL:";
+                document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                toast.classList.add('show'); 
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }, 50);
+
+            endGame(true, true);
+
+            // PROCESSA O BANCO DE DADOS EM SEGUNDO PLANO
+            (async () => {
+                let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
+                let u = snapU.val() || {};
+                let metaRo = parseFloat(u.rollover_meta || 0);
+                let atualRo = parseFloat(u.rollover_atual || 0);
+                if (metaRo > 0 && atualRo >= metaRo) {
+                    saldoRealAtual = bancaAtual; 
+                }
+                
+                update(ref(db, `usuarios/${idDispositivo}`), {
+                    saldo: parseFloat(bancaAtual.toFixed(2)),
+                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+                });
+            })();
             
             if (modoJogador !== 'admin' && modoJogador !== 'live') {
                 get(ref(db, 'sistema/caixa_global')).then(snap => {
@@ -683,19 +704,6 @@
                     set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - lucroReal).toFixed(2)));
                 });
             }
-
-            // Exibe Toast de Vitória
-            tocarSom('sfxWin');
-            document.getElementById('winToast').classList.remove('show');
-            setTimeout(() => {
-                const toast = document.getElementById('winToast');
-                document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL:";
-                document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                toast.classList.add('show'); 
-                setTimeout(() => toast.classList.remove('show'), 2500);
-            }, 100);
-
-            endGame(true, true);
         }
 
         function endGame(won, cashedOut = false) {
