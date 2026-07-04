@@ -115,6 +115,9 @@
         /* BOTAO APOSTAR / SACAR (Estilo VIP) */
         .bet-button { width: 100%; background: linear-gradient(180deg, var(--green), var(--green-dark)) !important; border: none; border-radius: 12px; padding: 15px; color: #000 !important; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #006633, 0 8px 15px rgba(0, 230, 118, 0.4) !important; display: flex; justify-content: center; align-items: center; gap: 10px; text-shadow: none !important; transition: all 0.1s; border-bottom: none;}
         .bet-button:active:not(.disabled) { transform: translateY(5px); box-shadow: none !important; }
+        
+        /* ESTADOS DO BOTÃO PRINCIPAL */
+        .bet-button.playing { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #aaa !important; pointer-events: none; border-bottom: none;}
         .bet-button.cashout { background: linear-gradient(180deg, var(--gold), #d35400) !important; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #8a3a00, 0 8px 15px rgba(243, 156, 18, 0.4) !important; color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important; border-bottom: none;}
         .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; border-bottom: none;}
 
@@ -130,7 +133,7 @@
         .auto-btn-option { background: linear-gradient(180deg, #222, #111); border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; font-size: 13px; text-transform: uppercase; box-shadow: 0 2px 0 #000; }
         .auto-btn-option:active { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #000; box-shadow: none; transform: translateY(2px); border-color: transparent; }
 
-        /* POP-UP COMPACTO DE VITÓRIA - POSIÇÃO AJUSTADA ABAIXO DO HEADER */
+        /* POP-UP COMPACTO DE VITÓRIA (CORRIGIDO PARA TEXTO MENOR) */
         .win-toast { position: fixed; top: calc(65px + env(safe-area-inset-top)); left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
         .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
@@ -445,13 +448,18 @@
             clearTimeout(autoTimeoutId);
             
             const btn = document.getElementById('btnAction');
-            btn.classList.remove('disabled'); 
+            btn.classList.remove('disabled', 'playing'); 
             
             if (!isGaming) {
                 btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
             } else {
                 if(currentActiveCol > 0) {
+                    btn.classList.add('cashout');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
+                } else {
+                    // Se não andou, mostra o botão Jogando bloqueado
+                    btn.classList.add('playing'); 
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> JOGANDO...`;
                 }
             }
         }
@@ -531,7 +539,7 @@
             currentMultiplier = 1.00;
             atualizarMultiplicadorPreview(1); 
             const btn = document.getElementById('btnAction');
-            btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
+            btn.classList.remove('cashout', 'playing'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
         }
         document.getElementById('board-size').addEventListener('change', () => { tocarSom('sfxClick'); window.resetGameUI(); });
 
@@ -563,9 +571,11 @@
             const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
 
             const btn = document.getElementById('btnAction');
-            btn.classList.remove('disabled'); 
-            btn.classList.add('cashout'); 
-            btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual).toFixed(2).replace('.',',')})`;
+            btn.classList.remove('disabled', 'cashout'); 
+            
+            // BOTÃO NEUTRO - OBRIGA A CLICAR NO GRID ANTES DE SACAR
+            btn.classList.add('playing'); 
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> JOGANDO...`;
 
             bancaAtual -= apostaAtual;
             saldoRealAtual -= apostaReal;
@@ -650,6 +660,8 @@
                     cashOut(); 
                 } else {
                     const btn = document.getElementById('btnAction');
+                    btn.classList.remove('playing');
+                    btn.classList.add('cashout');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
                     updateActiveColumnUI(); 
                     atualizarMultiplicadorPreview(currentActiveCol + 1);
@@ -669,7 +681,7 @@
 
             updateSaldoDisplay(bancaAtual);
 
-            // MOSTRA O TOAST DE VITÓRIA INSTANTANEAMENTE (Fim do Delay!)
+            // MOSTRA O TOAST DE VITÓRIA INSTANTANEAMENTE
             tocarSom('sfxWin');
             document.getElementById('winToast').classList.remove('show');
             setTimeout(() => {
@@ -724,9 +736,10 @@
 
             const btn = document.getElementById('btnAction');
             if(!isAutoModeActive) {
-                btn.classList.remove('cashout', 'disabled'); 
+                btn.classList.remove('cashout', 'playing', 'disabled'); 
                 btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
             } else {
+                btn.classList.remove('cashout', 'playing');
                 btn.classList.add('disabled');
             }
         }
