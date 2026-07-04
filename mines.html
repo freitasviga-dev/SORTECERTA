@@ -67,7 +67,7 @@
         .tile.opened::after { display: none; }
         
         .tile.gem { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .tile.gem::before { content: '👑'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 1)); } /* Brilho Maximo */
+        .tile.gem::before { content: '👑'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 1)); }
         
         .tile.bomb { background: radial-gradient(circle, var(--red), var(--red-dark)); box-shadow: inset 0 4px 10px rgba(0,0,0,0.8); animation: shake 0.4s ease-in-out; }
         .tile.bomb::before { content: '💣'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)); }
@@ -81,10 +81,10 @@
         .btn-secondary.auto-active { color: #000; background: linear-gradient(180deg, var(--gold), var(--gold-dark)); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #7a5805; border: none; }
 
         .bet-input-row { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-        .bet-label { font-size: 10px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
-        .bet-display { font-size: 15px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .bet-label { font-size: 11px; color: #888; font-weight: 800; padding-left: 15px; text-transform: uppercase; pointer-events: none; letter-spacing: 1px; }
+        .bet-display { font-size: 16px; font-weight: 900; color: #fff; text-align: center; flex: 1; cursor: pointer; padding: 4px 0; border-radius: 10px; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .bet-display:active { background: rgba(255,255,255,0.1); }
-        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; border-bottom: none;}
+        .bet-adjust { background: linear-gradient(180deg, #3d1455, #1d072b); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 15px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 0 #0d0214; cursor: pointer; transition: 0.1s; border-bottom: none;}
         .bet-adjust:active { transform: translateY(4px); box-shadow: none; }
 
         /* BOTÃO APOSTAR / SACAR (Estilo VIP) */
@@ -110,7 +110,7 @@
         /* POP-UP COMPACTO DE VITÓRIA (TEXTO ENCURTADO E ELEGANTE) */
         .win-toast { position: fixed; top: calc(65px + env(safe-area-inset-top)); left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
-        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
+        .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
         .win-toast #winAmount { font-size: 20px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
 
         .system-toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: none; opacity: 0; transition: 0.3s; z-index: 1000; border: 1px solid #ff5252; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
@@ -156,8 +156,7 @@
             <div class="next-multiplier"><i class="fa-solid fa-bolt"></i> <span id="nextMultDisplay">1.00x</span></div>
         </div>
 
-        <div class="mines-grid" id="grid">
-            </div>
+        <div class="mines-grid" id="grid"></div>
     </div>
 
     <div class="controls-wrapper">
@@ -205,6 +204,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // FIREBASE OFUSCADO
         const _0x1a2b=["\x41\x49\x7a\x61\x53\x79\x42\x4f\x50\x37\x54\x66\x48\x6a\x41\x32\x6a\x6a\x77\x4a\x76\x57\x61\x62\x37\x32\x5a\x6b\x30\x6a\x66\x77\x35\x55\x39\x6f\x48\x69\x6f","\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d","\x73\x6f\x72\x74\x65\x63\x65\x72\x74\x61\x2d\x37\x35\x62\x37\x37"];
         const app = initializeApp({ apiKey: _0x1a2b[0], databaseURL: _0x1a2b[1], projectId: _0x1a2b[2] });
         const db = getDatabase(app);
@@ -274,7 +274,7 @@
                 gainNode.gain.setValueAtTime(0, t); gainNode.gain.linearRampToValueAtTime(0.3, t + 0.02); gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
                 osc.start(t); osc.stop(t + 0.3);
             } else if (tipo === 'sfxBomb') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(20, t + 0.4);
+                osc.type = 'square'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(20, t + 0.4);
                 gainNode.gain.setValueAtTime(0, t); gainNode.gain.linearRampToValueAtTime(0.4, t + 0.02); gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
                 osc.start(t); osc.stop(t + 0.4);
             } else if (tipo === 'sfxWin') {
@@ -303,20 +303,6 @@
             iniciarAudio(); tocarSom('sfxClick');
         });
 
-        // LISTENERS DE INTERFACE
-        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
-        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
-        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
-        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
-        document.getElementById('minesCount').addEventListener('change', () => { tocarSom('sfxClick'); atualizarMultiplicadorPreview(); });
-        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
-        document.getElementById('btnRandom').addEventListener('click', clickAleatorioUser);
-        
-        document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
-        document.querySelectorAll('.auto-btn-option').forEach(btn => {
-            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
-        });
-
         window.abrirInputAposta = function() {
             if(isGaming || isAutoModeActive) return; iniciarAudio();
             let novoValor = prompt("Digite o valor da aposta (Máx: R$ 500,00):", apostaAtual);
@@ -338,36 +324,42 @@
             else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
         }
 
+        // REEMBOLSO INTELIGENTE DE QUEDA DE NET / SAÍDA ABRUPTA
+        async function lidarComSaidaAbrupta() {
+            if (isGaming) {
+                isGaming = false;
+                
+                // Paga automaticamente onde ele parou (seja 0 minas ou 10 minas)
+                let valorRetorno = apostaAtual * currentMultiplier;
+                let valorRetornoReal = valorRetorno * proporcaoRealNaMesa;
+
+                bancaAtual += valorRetorno;
+                saldoRealAtual += valorRetornoReal;
+
+                // Salva no banco o saldo protegido
+                await update(ref(db, `usuarios/${idDispositivo}`), {
+                    saldo: parseFloat(bancaAtual.toFixed(2)),
+                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
+                }); 
+                
+                // Desconta o prêmio real pago do caixa da casa
+                if(modoJogador !== 'admin' && modoJogador !== 'live') {
+                    get(ref(db, 'sistema/caixa_global')).then(snap => {
+                        let caixaAtual = parseFloat(snap.val() || 0);
+                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - valorRetornoReal).toFixed(2)));
+                    });
+                }
+            }
+        }
+
         async function voltarParaLobby() {
             tocarSom('sfxClick'); pararAutoJogo(); await lidarComSaidaAbrupta();
             if (window.parent && window.parent !== window) { window.parent.postMessage("fecharIframe", "*"); } 
             else { window.location.href = 'index.html'; }
         }
 
-        // PROTEÇÃO: Devolve aposta real se fechar o app ANTES de abrir a 1ª casa
-        async function lidarComSaidaAbrupta() {
-            if (isGaming && openedTiles === 0) {
-                isGaming = false;
-                let apostaReal = apostaAtual * proporcaoRealNaMesa;
-                bancaAtual += apostaAtual;
-                saldoRealAtual += apostaReal;
-                
-                await update(ref(db, `usuarios/${idDispositivo}`), {
-                    saldo: parseFloat(bancaAtual.toFixed(2)),
-                    saldo_real: parseFloat(saldoRealAtual.toFixed(2))
-                }); 
-                
-                if(modoJogador !== 'admin' && modoJogador !== 'live') {
-                    get(ref(db, 'sistema/caixa_global')).then(snap => {
-                        let caixaAtual = parseFloat(snap.val() || 0);
-                        set(ref(db, 'sistema/caixa_global'), parseFloat((caixaAtual - apostaReal).toFixed(2)));
-                    });
-                }
-            } else if (isGaming && openedTiles > 0) {
-                isGaming = false; // Fuga no meio do jogo = Perde a aposta para a casa.
-            }
-        }
-
+        document.getElementById('btnBack').addEventListener('click', voltarParaLobby);
+        document.getElementById('btnAudio').addEventListener('click', toggleAudio);
         window.addEventListener('pagehide', function() { lidarComSaidaAbrupta(); pararAutoJogo(); });
         document.addEventListener('visibilitychange', function() { 
             if (document.hidden) { lidarComSaidaAbrupta(); pararAutoJogo(); }
@@ -397,6 +389,8 @@
                 tocarSom('sfxClick');
             }
         }
+        document.getElementById('btnMinus').addEventListener('click', () => mudarAposta(-1));
+        document.getElementById('btnPlus').addEventListener('click', () => mudarAposta(1));
 
         // ------------------ SISTEMA AUTO JOGO ------------------ //
         function toggleMenuAuto() {
@@ -417,19 +411,10 @@
             document.getElementById('btnAuto').innerHTML = '<i class="fa-solid fa-rotate"></i> Auto Jogo';
             clearTimeout(autoTimeoutId);
             
-            const btn = document.getElementById('btnAction');
-            btn.classList.remove('disabled', 'playing'); 
-            
             if (!isGaming) {
-                btn.classList.remove('cashout'); btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
-            } else {
-                if(openedTiles > 0) {
-                    btn.classList.add('cashout');
-                    btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
-                } else {
-                    btn.classList.add('playing'); 
-                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> JOGANDO...`;
-                }
+                const btn = document.getElementById('btnAction');
+                btn.classList.remove('disabled', 'cashout', 'playing');
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> APOSTAR`;
             }
         }
 
@@ -463,6 +448,11 @@
             }
         }
 
+        document.getElementById('btnAuto').addEventListener('click', toggleMenuAuto);
+        document.querySelectorAll('.auto-btn-option').forEach(btn => {
+            btn.addEventListener('click', function() { tocarSom('sfxClick'); iniciarAutoJogo(parseInt(this.dataset.spins)); });
+        });
+
         // MATEMÁTICA RTP
         function _0xMath(a, b) {
             if(b === 0) return 1.00; let p = 1;
@@ -490,11 +480,12 @@
             if(isAutoModeActive) return; 
             iniciarAudio(); tocarSom('sfxClick');
             if (isGaming) { 
-                if (openedTiles === 0) return; // TRAVA DE CLIQUE
+                if (openedTiles === 0) return; // TRAVA DE CLIQUE: Obriga jogar
                 finalizarJogoComVitoria(); 
             } 
             else { iniciarApostaBackend(); }
         }
+        document.getElementById('btnAction').addEventListener('click', cliqueBotaoApostar);
 
         function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
@@ -591,7 +582,7 @@
                 
                 let valorSaque = (apostaAtual * currentMultiplier).toFixed(2);
                 
-                // LIBERA O BOTÃO DE SACAR AGORA QUE ELE ANDOU!
+                // LIBERA O BOTÃO DE SACAR AGORA QUE ELE ABRIU A PRIMEIRA MINA!
                 const btn = document.getElementById('btnAction');
                 btn.classList.remove('playing');
                 btn.classList.add('cashout');
@@ -617,6 +608,7 @@
                 cliqueNoBloco(parseInt(randomTile.dataset.index));
             }
         }
+        document.getElementById('btnRandom').addEventListener('click', clickAleatorioUser);
 
         function endGame(won) {
             document.getElementById('minesCount').disabled = false;
@@ -645,12 +637,12 @@
         async function finalizarJogoComVitoria() {
             isGaming = false;
             let lucro = apostaAtual * currentMultiplier;
-            let lucroReal = lucro * proporcaoRealNaMesa; // Extrai a parte do dinheiro real
+            let lucroReal = lucro * proporcaoRealNaMesa; 
             
             bancaAtual += lucro;
             saldoRealAtual += lucroReal;
 
-            // CHECK ROLLOVER (Dinheiro do bônus vira real se bater meta)
+            // CHECK ROLLOVER
             let snapshot = await get(ref(db, `usuarios/${idDispositivo}`));
             let u = snapshot.val() || {};
             let metaRo = parseFloat(u.rollover_meta || 0); let atualRo = parseFloat(u.rollover_atual || 0);
