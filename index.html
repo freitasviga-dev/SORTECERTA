@@ -15,23 +15,23 @@
     
     <style>
         :root {
-            --bg-main: #0a0a0c;
-            --bg-card: #15151a;
-            --gold: #f1c40f;
-            --gold-dark: #b8860b;
-            --green: #00e676;
-            --green-dark: #00b359;
-            --red: #ff1744;
+            /* TEMA PREMIUM DARK INDIGO VIP 👑 */
+            --bg-top: #1a0b2e; 
+            --bg-bottom: #05020a;
+            --panel-bg: #0d041a;
+            --gold: #f1c40f; --gold-dark: #b8860b;
+            --green: #00e676; --green-dark: #00b359;
+            --red: #ff1744; --red-dark: #c0392b;
             --text-main: #ffffff;
             --text-muted: #8e8e99;
+            --border-light: rgba(255, 255, 255, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body { 
-            background-color: var(--bg-main); 
-            background-image: radial-gradient(circle at 50% -10%, #201a08 0%, var(--bg-main) 60%);
-            color: var(--text-main); padding-bottom: 100px; overflow-x: hidden; 
+            background: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--text-main); padding-bottom: 100px; overflow-x: hidden; min-height: 100vh;
         }
 
         /* --- APP SHELL (IFRAME) --- */
@@ -45,173 +45,168 @@
         /* --- MANUTENÇÃO ABSOLUTA --- */
         #telaManutencao {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.98); 
-            z-index: 99999999; 
-            display: none; flex-direction: column; align-items: center; 
-            justify-content: center; color: #fff; text-align: center; 
-            backdrop-filter: blur(15px);
+            background: rgba(5, 2, 10, 0.98); 
+            z-index: 99999999; display: none; flex-direction: column; align-items: center; 
+            justify-content: center; color: #fff; text-align: center; backdrop-filter: blur(15px);
         }
-        #telaManutencao i { font-size: 75px; color: var(--red); margin-bottom: 25px; animation: pulseRed 1s infinite alternate; }
+        #telaManutencao i { font-size: 75px; color: var(--red); margin-bottom: 25px; animation: pulseRed 1s infinite alternate; filter: drop-shadow(0 0 20px rgba(255,23,68,0.5));}
         #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 15px rgba(241,196,15,0.4); }
-        #telaManutencao p { color: var(--text-muted); font-size: 15px; max-width: 85%; font-weight: 500; }
+        #telaManutencao p { color: var(--text-muted); font-size: 15px; max-width: 85%; font-weight: 600; }
 
         @keyframes pulseRed { from { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,23,68,0.5)); } to { transform: scale(1.1); filter: drop-shadow(0 0 25px rgba(255,23,68,0.8)); } }
 
         /* --- HEADER 3D BLINDADO ANTI-QUEBRA --- */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; 
-            background: rgba(15, 15, 18, 0.85); backdrop-filter: blur(25px); 
+            background: rgba(13, 4, 26, 0.85); backdrop-filter: blur(25px); 
             z-index: 1000; display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--border-light);
             padding-top: calc(10px + env(safe-area-inset-top));
         }
         
-        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; margin-left: 5px; }
-        .brand-logo i { color: var(--gold); font-size: 18px; margin-bottom: 2px; filter: drop-shadow(0 2px 5px rgba(241,196,15,0.4)); }
-        .brand-logo span { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 1px; line-height: 1; }
+        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+        .brand-logo i { color: var(--gold); font-size: 16px; margin-bottom: 2px; filter: drop-shadow(0 2px 5px rgba(241,196,15,0.4)); }
+        .brand-logo span { font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 1px; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
         .user-panel { 
             display: flex; align-items: center; gap: 8px; 
-            background: rgba(0,0,0,0.6); padding: 4px; 
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); 
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
             max-width: 70%;
         }
-        .balance-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding-left: 8px; }
-        .balance-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
-        /* A mágica anti-quebra do Saldo! */
-        .balance { 
-            font-weight: 900; color: var(--green); font-size: 13px; 
-            white-space: nowrap; max-width: 85px; overflow: hidden; text-overflow: ellipsis; 
-            text-shadow: 0 0 8px rgba(0,230,118,0.3); line-height: 1;
-        }
         
-        .header-actions { display: flex; gap: 4px; }
+        /* CARTEIRA ESTILO FOTO VIP */
+        .balance-box {
+            background: #0c0c0c; border: 1px solid rgba(255,255,255,0.05); 
+            padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .balance { 
+            font-weight: 900; color: #fff; font-size: 15px; 
+            white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis; 
+            line-height: 1; display: flex; align-items: center; gap: 6px;
+        }
+        .balance i { color: var(--gold); font-size: 14px; }
+        
+        .header-actions { display: flex; gap: 6px; }
         .btn-hd {
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 9px; font-weight: 900; border: none; cursor: pointer; transition: all 0.1s;
-            padding: 6px 10px; text-transform: uppercase; letter-spacing: 0.5px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 900; border: none; cursor: pointer; transition: all 0.1s;
+            padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.5);
         }
-        .btn-hd.sacar { 
-            background: rgba(241, 196, 15, 0.05); color: var(--gold); border: 1px solid var(--gold); 
-        }
-        .btn-hd.depositar { 
-            background: linear-gradient(135deg, #00e676, #00b359); color: #000; 
-            border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 0 10px rgba(0,230,118,0.5); 
-            animation: glowGreen 2s infinite alternate;
-        }
-        .btn-hd:active { transform: scale(0.95); }
-
-        @keyframes glowGreen { 
-            from { box-shadow: 0 0 5px rgba(0,230,118,0.4); } 
-            to { box-shadow: 0 0 15px rgba(0,230,118,0.8); } 
-        }
+        .btn-hd.sacar { background: linear-gradient(180deg, #1c233a, #0a0e1c); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-hd.depositar { background: linear-gradient(180deg, var(--green), var(--green-dark)); color: #000; box-shadow: 0 4px 0 #006633, 0 0 15px rgba(0,230,118,0.3); }
+        .btn-hd:active { transform: translateY(4px); box-shadow: none !important; margin-bottom: -4px;}
 
         .btn-login-header {
             background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #000; font-weight: 900; padding: 10px 20px; border-radius: 20px;
-            font-size: 12px; text-transform: uppercase; box-shadow: 0 4px 0 #7a5805, 0 5px 15px rgba(241, 196, 15, 0.3); 
-            cursor: pointer; transition: 0.1s;
+            color: #000; font-weight: 900; padding: 10px 20px; border-radius: 14px;
+            font-size: 12px; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #7a5805, 0 5px 15px rgba(241, 196, 15, 0.3); 
+            cursor: pointer; transition: 0.1s; border: none;
         }
+        .btn-login-header:active { transform: translateY(5px); box-shadow: none; margin-bottom: -5px;}
 
         .container { max-width: 600px; margin: 90px auto 0; padding: 15px; }
 
         /* --- HERO BANNER 3D PREMIUM --- */
         .hero-banner {
-            width: 100%; border-radius: 20px; background: linear-gradient(145deg, #181820 0%, #0d0d12 100%);
-            padding: 25px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.05);
+            width: 100%; border-radius: 20px; background: linear-gradient(145deg, #2b1145 0%, #0d041a 100%);
+            padding: 30px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.1);
             border: 1px solid rgba(241, 196, 15, 0.15); display: flex; flex-direction: column; justify-content: center;
         }
-        .hero-banner::after { content: '👑'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.04; transform: rotate(-15deg); filter: drop-shadow(0 0 20px var(--gold)); }
-        .hero-banner h1 { font-size: 24px; color: var(--gold); margin-bottom: 8px; z-index: 2; font-weight: 900; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4); }
-        .hero-banner p { font-size: 13px; color: #a1a1aa; margin-bottom: 20px; z-index: 2; max-width: 75%; font-weight: 500; line-height: 1.4; }
+        .hero-banner::after { content: '👑'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.05; transform: rotate(-15deg); filter: drop-shadow(0 0 20px var(--gold)); }
+        .hero-banner h1 { font-size: 24px; color: var(--gold); margin-bottom: 10px; z-index: 2; font-weight: 900; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4); }
+        .hero-banner p { font-size: 13px; color: #ccc; margin-bottom: 20px; z-index: 2; max-width: 75%; font-weight: 500; line-height: 1.5; }
         .btn-hero { 
-            background: rgba(255,255,255,0.9); color: #000; padding: 10px 20px; border-radius: 30px; 
-            font-weight: 900; z-index: 2; width: max-content; font-size: 12px; 
-            box-shadow: 0 4px 0 #a1a1aa, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; cursor: pointer;
+            background: linear-gradient(180deg, #fff, #ccc); color: #000; padding: 12px 25px; border-radius: 14px; 
+            font-weight: 900; z-index: 2; width: max-content; font-size: 12px; text-transform: uppercase;
+            box-shadow: inset 0 2px 2px #fff, 0 5px 0 #777, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; cursor: pointer; border: none;
         }
-        .btn-hero:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .btn-hero:active { transform: translateY(5px); box-shadow: none; margin-bottom: -5px;}
 
-        /* --- CATEGORIAS EM PÍLULAS (FUNCIONAIS) --- */
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 15px; }
+        /* --- CATEGORIAS EM PÍLULAS (FUNCIONAIS E 3D) --- */
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; margin-bottom: 15px; }
         .categories::-webkit-scrollbar { display: none; }
         .cat-btn { 
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); 
-            padding: 10px 18px; border-radius: 30px; font-size: 12px; font-weight: 800; white-space: nowrap; 
-            display: flex; align-items: center; gap: 8px; transition: 0.2s; 
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.3); cursor: pointer;
+            background: linear-gradient(180deg, #1c0e3a, #0d041a); border: 1px solid var(--border-light); color: var(--text-muted); 
+            padding: 12px 20px; border-radius: 12px; font-size: 11px; font-weight: 900; white-space: nowrap; 
+            display: flex; align-items: center; gap: 8px; transition: 0.1s; text-transform: uppercase;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 0 #05020a; cursor: pointer;
         }
-        .cat-btn.active { background: rgba(241, 196, 15, 0.1); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(241, 196, 15, 0.15), inset 0 1px 2px rgba(241, 196, 15, 0.3); }
+        .cat-btn:active { transform: translateY(4px); box-shadow: none; margin-bottom: -4px;}
+        .cat-btn.active { background: linear-gradient(180deg, rgba(241, 196, 15, 0.2), rgba(241, 196, 15, 0.05)); color: var(--gold); border-color: var(--gold); box-shadow: 0 4px 0 #7a5805, 0 0 15px rgba(241, 196, 15, 0.2); }
+        .cat-btn.active:active { transform: translateY(4px); box-shadow: none; margin-bottom: -4px;}
 
         /* --- GRID DE JOGOS 3D PERFEITO --- */
-        .section-title { font-size: 14px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
-        .section-title i { color: var(--gold); font-size: 16px; filter: drop-shadow(0 0 5px rgba(241,196,15,0.5)); }
+        .section-title { font-size: 15px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
+        .section-title i { color: var(--gold); font-size: 18px; filter: drop-shadow(0 0 5px rgba(241,196,15,0.5)); }
         
         .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
         
         .game-card { 
-            background: linear-gradient(180deg, #1f1f27 0%, #121218 100%); 
-            border-radius: 16px; padding: 5px; position: relative; 
+            background: linear-gradient(180deg, #1c0e3a 0%, #0d041a 100%); 
+            border-radius: 16px; padding: 6px; position: relative; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.08); 
-            border: 1px solid rgba(0,0,0,0.8); cursor: pointer; transition: 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--border-light); border-bottom: 4px solid #05020a; /* Profundidade 3D */
+            cursor: pointer; transition: 0.1s;
         }
-        .game-card:active { transform: scale(0.94) translateY(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); }
+        .game-card:active { transform: translateY(4px); border-bottom-width: 0px; margin-bottom: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); }
         
         .game-cover { 
-            width: 100%; height: 120px; border-radius: 12px; display: flex; align-items: center; 
-            justify-content: center; font-size: 55px; position: relative; 
-            box-shadow: inset 0 -15px 30px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.15);
-            overflow: hidden;
+            width: 100%; height: 130px; border-radius: 12px; display: flex; align-items: center; 
+            justify-content: center; font-size: 60px; position: relative; 
+            box-shadow: inset 0 -15px 30px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.15);
+            overflow: hidden; border: 1px solid rgba(0,0,0,0.5);
         }
-        .game-cover i, .game-cover span { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8)); }
+        .game-cover i, .game-cover span { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.9)); }
         
-        .gc-mines { background: radial-gradient(circle at 50% 20%, #2a113a, #08020d); }
+        /* Capas com gradientes profundos */
+        .gc-mines { background: radial-gradient(circle at 50% 20%, #3d1455, #150524); }
         .gc-goal { background: radial-gradient(circle at 50% 20%, #103c1c, #031206); }
         .gc-roleta { background: radial-gradient(circle at 50% 20%, #680404, #1a0000); }
         .gc-plinko { background: radial-gradient(circle at 50% 20%, #153c82, #041021); }
         .gc-hotline { background: radial-gradient(circle at 50% 20%, #d85400, #361500); }
         .gc-dice { background: radial-gradient(circle at 50% 20%, #0d7a64, #021a15); }
-        .gc-hilo { background: radial-gradient(circle at 50% 20%, #202020, #000000); }
+        .gc-hilo { background: radial-gradient(circle at 50% 20%, #202020, #050505); }
 
-        .game-info { padding: 12px 5px 5px; text-align: center; }
-        .game-name { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 2px; letter-spacing: -0.3px; }
-        .game-provider { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .game-info { padding: 12px 5px 6px; text-align: center; }
+        .game-name { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+        .game-provider { font-size: 10px; color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
         
         .badge { 
-            position: absolute; top: -6px; right: -6px; color: #fff; font-size: 9px; padding: 4px 8px; 
+            position: absolute; top: -6px; right: -6px; color: #fff; font-size: 9px; padding: 5px 10px; 
             border-radius: 12px; font-weight: 900; letter-spacing: 0.5px; z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6); text-transform: uppercase;
         }
-        .badge.rtp { background: linear-gradient(45deg, #ff1744, #d50000); border: 1px solid #ff5252; }
-        .badge.novo { background: linear-gradient(45deg, #00e676, #00b359); color: #000; border: 1px solid #69f0ae; }
-        .badge.vip { background: linear-gradient(45deg, #f1c40f, #b8860b); color: #000; border: 1px solid #ffe57f; }
-        .badge.hot { background: linear-gradient(45deg, #ff9100, #ff6d00); border: 1px solid #ffd740; }
+        .badge.rtp { background: linear-gradient(45deg, var(--red), var(--red-dark)); border: 1px solid #ff5252; }
+        .badge.novo { background: linear-gradient(45deg, var(--green), var(--green-dark)); color: #000; border: 1px solid #69f0ae; }
+        .badge.vip { background: linear-gradient(45deg, var(--gold), var(--gold-dark)); color: #000; border: 1px solid #ffe57f; }
+        .badge.hot { background: linear-gradient(45deg, #ff9100, #e65100); border: 1px solid #ffd740; }
 
         /* --- PROVA SOCIAL (POPUP DE GANHOS REGULADO) --- */
         .live-win-popup {
-            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(180deg, #111116, #0a0a0c); border: 1px solid var(--green-dark); 
-            border-radius: 50px; padding: 8px 18px; display: flex; align-items: center; gap: 12px; opacity: 0;
+            position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(180deg, #180b29, #0d041a); border: 1px solid rgba(0,230,118,0.4); 
+            border-radius: 50px; padding: 10px 20px; display: flex; align-items: center; gap: 12px; opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
             box-shadow: 0 10px 30px rgba(0, 230, 118, 0.2), inset 0 2px 5px rgba(255,255,255,0.05); 
             width: max-content; max-width: 90%;
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .live-win-icon { background: linear-gradient(135deg, #00e676, #00b359); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 0 10px rgba(0,230,118,0.5); }
-        .live-win-text { font-size: 11px; color: #a1a1aa; line-height: 1.4; }
-        .live-win-amount { color: var(--green); font-weight: 900; font-size: 13px; text-shadow: 0 0 5px rgba(0,230,118,0.4); }
+        .live-win-icon { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 10px rgba(0,230,118,0.5); }
+        .live-win-text { font-size: 12px; color: #ccc; line-height: 1.4; font-weight: 500;}
+        .live-win-amount { color: var(--green); font-weight: 900; font-size: 14px; text-shadow: 0 0 5px rgba(0,230,118,0.4); }
 
         /* --- MENU INFERIOR LOBBY / CONTA --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-evenly;
-            padding: 10px 0; z-index: 1000; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            background: rgba(13, 4, 26, 0.95); backdrop-filter: blur(20px); 
+            border-top: 1px solid var(--border-light); display: flex; justify-content: space-evenly;
+            padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
             box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 5px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; text-decoration: none;}
         .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
         .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-3px); }
@@ -238,7 +233,7 @@
             <span>SORTECERTA</span>
         </div>
         <div id="userPanelContainer">
-            <div class="btn-login-header btn-3d" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</div>
+            <button class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</button>
         </div>
     </nav>
 
@@ -247,7 +242,7 @@
         <div class="hero-banner">
             <h1>Multiplicadores VIP</h1>
             <p>Aposte com inteligência, controle os seus riscos e garanta os melhores lucros nos jogos originais.</p>
-            <div class="btn-hero btn-3d" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</div>
+            <button class="btn-hero" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</button>
         </div>
 
         <!-- CATEGORIAS PÍLULAS (FILTRAGEM ATIVA) -->
@@ -311,15 +306,15 @@
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
-            <span id="winUser" style="font-weight: bold; color: #fff;">***7279</span> acabou de ganhar<br>
-            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold);">Mines</span>
+            <span id="winUser" style="font-weight: 900; color: #fff;">***7279</span> acabou de ganhar<br>
+            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold); font-weight: 800;">Mines</span>
         </div>
     </div>
 
     <!-- MENU INFERIOR LOBBY E CONTA -->
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="window.fecharJogo();"><i class="fa-solid fa-gamepad"></i><span>Lobby</span></div>
-        <div class="nav-item game-link" data-game="perfil.html"><i class="fa-solid fa-user-astronaut"></i><span>Conta</span></div>
+        <a class="nav-item active" onclick="window.fecharJogo();"><i class="fa-solid fa-gamepad"></i><span>Lobby</span></a>
+        <a href="perfil.html" class="nav-item"><i class="fa-solid fa-user-astronaut"></i><span>Conta</span></a>
     </nav>
 
     <script type="module">
@@ -348,13 +343,12 @@
             if(event.data === "fecharIframe") { window.fecharJogo(); }
         });
 
-        // MONTAGEM DO PAINEL DO USUÁRIO ANTI-QUEBRA
+        // MONTAGEM DO PAINEL DO USUÁRIO VIP E ANTI-QUEBRA
         if (idDispositivo) {
             document.getElementById('userPanelContainer').innerHTML = `
                 <div class="user-panel">
                     <div class="balance-box">
-                        <span class="balance-label">Saldo</span>
-                        <span class="balance" id="displaySaldo">R$ 0,00</span>
+                        <span class="balance" id="displaySaldo"><i class="fa-solid fa-wallet"></i> R$ 0,00</span>
                     </div>
                     <div class="header-actions">
                         <button class="btn-hd sacar" onclick="window.location.href='saque.html'">SACAR</button>
@@ -374,7 +368,7 @@
                 const dados = snapshot.val();
                 const saldo = dados.saldo || 0;
                 const saldoDisplay = document.getElementById('displaySaldo');
-                if(saldoDisplay) saldoDisplay.innerText = "R$ " + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                if(saldoDisplay) saldoDisplay.innerHTML = `<i class="fa-solid fa-wallet"></i> R$ ` + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             });
 
             document.querySelectorAll('.game-link').forEach(link => {
