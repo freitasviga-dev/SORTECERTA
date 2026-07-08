@@ -67,7 +67,7 @@
         .tile.opened::after { display: none; }
         
         .tile.gem { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .tile.gem::before { content: '👑'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 1)); }
+        .tile.gem::before { content: '👑'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 20px rgba(241, 196, 15, 1)); } /* Brilho Maximo */
         
         .tile.bomb { background: radial-gradient(circle, var(--red), var(--red-dark)); box-shadow: inset 0 4px 10px rgba(0,0,0,0.8); animation: shake 0.4s ease-in-out; }
         .tile.bomb::before { content: '💣'; font-size: min(6.5vw, 30px); filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)); }
@@ -161,7 +161,7 @@
 
     <div class="controls-wrapper">
         <div class="action-row">
-            <div class="btn-secondary btn-3d" id="btnRandom"><i class="fa-solid fa-shuffle"></i> Aleatório</div>
+            <div class="btn-secondary btn-3d" id="btnRandom" style="opacity: 0.5; pointer-events: none;"><i class="fa-solid fa-shuffle"></i> Aleatório</div>
             <div class="btn-secondary btn-3d" id="btnAuto"><i class="fa-solid fa-rotate"></i> Auto Jogo</div>
         </div>
 
@@ -590,6 +590,7 @@
                 
                 document.getElementById('nextMultDisplay').innerText = nextMultiplier.toFixed(2) + "x";
 
+                // QUANDO CHEGA NO LIMITE DE GEMAS, ELE SACA AUTOMATICO.
                 if(openedTiles === (25 - minas)) { finalizarJogoComVitoria(); }
             }
         }
@@ -642,7 +643,7 @@
             bancaAtual += lucro;
             saldoRealAtual += lucroReal;
 
-            // CHECK ROLLOVER
+            // CHECK ROLLOVER (Dinheiro do bônus vira real se bater meta)
             let snapshot = await get(ref(db, `usuarios/${idDispositivo}`));
             let u = snapshot.val() || {};
             let metaRo = parseFloat(u.rollover_meta || 0); let atualRo = parseFloat(u.rollover_atual || 0);
@@ -664,6 +665,7 @@
 
             tocarSom('sfxWin');
 
+            // PUXA O TOAST AGORA QUANDO SACAR!!
             document.getElementById('winToast').classList.remove('show');
             setTimeout(() => {
                 const toast = document.getElementById('winToast');
