@@ -122,7 +122,7 @@
         .bet-button.disabled { background: linear-gradient(180deg, #444, #222) !important; box-shadow: 0 5px 0 #111 !important; color: #888 !important; pointer-events: none; border-bottom: none;}
 
         .footer-info { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; }
-        .game-name { font-size: 11px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-name { font-size: 10px; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* PAINEL DE SALDO TOTALMENTE DOURADO VIP */
         .balance-info { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; background: #0c0c0c; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
@@ -133,7 +133,7 @@
         .auto-btn-option { background: linear-gradient(180deg, #222, #111); border: 1px solid #333; color: #fff; padding: 8px 0; border-radius: 8px; font-weight: 900; text-align: center; cursor: pointer; font-size: 13px; text-transform: uppercase; box-shadow: 0 2px 0 #000; }
         .auto-btn-option:active { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #000; box-shadow: none; transform: translateY(2px); border-color: transparent; }
 
-        /* POP-UP COMPACTO DE VITÓRIA (CORRIGIDO PARA TEXTO MENOR) */
+        /* POP-UP COMPACTO DE VITÓRIA */
         .win-toast { position: fixed; top: calc(65px + env(safe-area-inset-top)); left: 50%; transform: translate(-50%, -20px) scale(0.9); background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 900; font-size: 18px; box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5), inset 0 2px 5px rgba(255,255,255,0.5); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff; }
         .win-toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
         .win-toast span { font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.6); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
@@ -326,17 +326,16 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        // DESBLOQUEIO DE TELA + FULLSCREEN API
         document.getElementById('startScreen').addEventListener('click', function() {
-            this.style.opacity = '0';
-            setTimeout(() => { this.style.display = 'none'; }, 300);
+            this.style.opacity = '0'; setTimeout(() => { this.style.display = 'none'; }, 300);
             audioLigado = true;
             document.getElementById('btnAudio').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             document.getElementById('btnAudio').style.color = '#fff';
 
             let docEl = document.documentElement;
-            if (docEl.requestFullscreen) { docEl.requestFullscreen().catch(e => {}); }
-            else if (docEl.webkitRequestFullscreen) { docEl.webkitRequestFullscreen().catch(e => {}); }
-
+            if (docEl.requestFullscreen) docEl.requestFullscreen().catch(e => {});
+            
             iniciarAudio(); tocarSom('sfxClick');
         });
 
@@ -357,11 +356,8 @@
             iniciarAudio();
             audioLigado = !audioLigado; 
             const btn = document.getElementById('btnAudio');
-            if(audioLigado) { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick');
-            } else { 
-                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; 
-            }
+            if(audioLigado) { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>'; btn.style.color = '#fff'; tocarSom('sfxClick'); } 
+            else { btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>'; btn.style.color = '#888'; }
         }
 
         // REEMBOLSO INTELIGENTE DE FUGA / QUEDA DE NET
@@ -369,6 +365,8 @@
             if (isGaming) {
                 isGaming = false;
                 
+                // Se currentActiveCol é 0 (apostou e não andou), devolve só apostaAtual
+                // Se currentActiveCol > 0, devolve o multiplicador exato onde ele parou.
                 let valorRetorno = currentActiveCol > 0 ? (apostaAtual * currentMultiplier) : apostaAtual;
                 let valorRetornoReal = valorRetorno * proporcaoRealNaMesa;
 
@@ -457,7 +455,7 @@
                     btn.classList.add('cashout');
                     btn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> SACAR (R$ ${(apostaAtual * currentMultiplier).toFixed(2).replace('.',',')})`;
                 } else {
-                    // Se não andou, mostra o botão Jogando bloqueado
+                    // A TRAVA: SE NÃO JOGOU NADA, NÃO PODE SACAR!
                     btn.classList.add('playing'); 
                     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> JOGANDO...`;
                 }
@@ -487,7 +485,7 @@
                 if (tile) {
                     handleTileClick(rndRow, currentActiveCol, tile);
                     if (isGaming) { autoTimeoutId = setTimeout(fazerJogadaAuto, 600); } 
-                    else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 1000); } // Delay do bot corrigido!
+                    else { girosAutoRestantes--; autoTimeoutId = setTimeout(processarAutoJogo, 1000); } 
                 }
             }
         }
@@ -547,7 +545,7 @@
             if(isAutoModeActive) return;
             iniciarAudio(); tocarSom('sfxClick');
             if (isGaming) {
-                if (currentActiveCol === 0) return;
+                if (currentActiveCol === 0) return; // TRAVA DE CLIQUE ANTI-ROUBO
                 cashOut();
             } else {
                 iniciarApostaBackend();
@@ -558,14 +556,12 @@
         function iniciarApostaBackend() {
             if(bancaAtual < apostaAtual) { mostrarToast("Saldo insuficiente."); return false; }
 
-            // SEPARAÇÃO DO REAL E BÔNUS
             proporcaoRealNaMesa = bancaAtual > 0 ? (saldoRealAtual / bancaAtual) : 1.0;
             if(proporcaoRealNaMesa > 1.0) proporcaoRealNaMesa = 1.0;
             let apostaReal = apostaAtual * proporcaoRealNaMesa;
 
             isGaming = true; currentActiveCol = 0; currentMultiplier = 1.00;
             
-            // FIM DO DELAY: A Interface avança na hora, sem esperar o Firebase!
             document.getElementById('board-size').disabled = true;
             document.getElementById('btnMinus').style.opacity = '0.5'; document.getElementById('btnPlus').style.opacity = '0.5';
             const btnRnd = document.getElementById('btnRandom'); btnRnd.style.opacity = '1'; btnRnd.style.pointerEvents = 'auto';
@@ -590,7 +586,6 @@
             updateActiveColumnUI(); 
             atualizarMultiplicadorPreview(1);
 
-            // Grava os dados da jogada em segundo plano
             update(ref(db, `usuarios/${idDispositivo}`), {
                 saldo: parseFloat(bancaAtual.toFixed(2)),
                 saldo_real: parseFloat(saldoRealAtual.toFixed(2))
@@ -632,7 +627,6 @@
                 isBomb = false;
             }
 
-            // ANTI-QUEBRA
             if (!isBomb && modoJogador !== 'admin' && modoJogador !== 'live' && modoJogador !== 'influenciador') {
                 let nextMult = _0xMath(currentRowCount, currentActiveCol + 1);
                 let potentialWinReal = (apostaAtual * nextMult) * proporcaoRealNaMesa;
@@ -656,9 +650,9 @@
                 currentMultiplier = _0xMath(currentRowCount, currentActiveCol);
                 
                 if (currentActiveCol >= currentColCount) {
-                    // O JOGADOR COMPLETOU TODO O CAMPO (GOAL MÁXIMO) - SACA AUTOMÁTICO
-                    cashOut(); 
+                    cashOut(true); 
                 } else {
+                    // ELE JOGOU! AGORA LIBERA O SAQUE LINDÃO NA TELA
                     const btn = document.getElementById('btnAction');
                     btn.classList.remove('playing');
                     btn.classList.add('cashout');
@@ -669,8 +663,8 @@
             }
         }
 
-        function cashOut() {
-            if(!isGaming) return;
+        function cashOut(isGoal = false) {
+            if(!isGaming && !isGoal) return;
             isGaming = false; 
             
             const lucro = apostaAtual * currentMultiplier;
@@ -681,12 +675,11 @@
 
             updateSaldoDisplay(bancaAtual);
 
-            // MOSTRA O TOAST DE VITÓRIA INSTANTANEAMENTE
             tocarSom('sfxWin');
             document.getElementById('winToast').classList.remove('show');
             setTimeout(() => {
                 const toast = document.getElementById('winToast');
-                document.getElementById('winTitle').innerText = "LUCRO TOTAL:";
+                document.getElementById('winTitle').innerText = isGoal ? "GOOOOOAL!" : "LUCRO TOTAL:";
                 document.getElementById('winAmount').innerText = "R$ " + lucro.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 toast.classList.add('show'); 
                 setTimeout(() => toast.classList.remove('show'), 2500);
@@ -694,7 +687,6 @@
 
             endGame(true, true);
 
-            // PROCESSA O BANCO DE DADOS EM SEGUNDO PLANO
             (async () => {
                 let snapU = await get(ref(db, `usuarios/${idDispositivo}`));
                 let u = snapU.val() || {};
