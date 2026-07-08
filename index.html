@@ -15,22 +15,27 @@
     
     <style>
         :root {
-            /* TEMA PREMIUM DARK INDIGO VIP 👑 */
-            --bg-top: #1a0b2e; 
-            --bg-bottom: #05020a;
-            --panel-bg: #0d041a;
-            --gold: #f1c40f; --gold-dark: #b8860b;
-            --green: #00e676; --green-dark: #00b359;
-            --red: #ff1744; --red-dark: #c0392b;
+            /* TEMA LUXO ABSOLUTO - DARK INDIGO & NEON GOLD */
+            --bg-base: #0b0514;
+            --bg-card: #160a29;
+            --bg-card-hover: #1e0d38;
+            --gold: #f1c40f;
+            --gold-bright: #ffdf00;
+            --green: #00e676;
+            --green-bright: #33ff99;
+            --red: #ff1744;
             --text-main: #ffffff;
             --text-muted: #8e8e99;
-            --border-light: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body { 
-            background: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            background-color: var(--bg-base); 
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(26, 11, 46, 1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(241, 196, 15, 0.03) 0%, transparent 50%);
             color: var(--text-main); padding-bottom: 100px; overflow-x: hidden; min-height: 100vh;
         }
 
@@ -45,171 +50,197 @@
         /* --- MANUTENÇÃO ABSOLUTA --- */
         #telaManutencao {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 2, 10, 0.98); 
+            background: rgba(11, 5, 20, 0.98); 
             z-index: 99999999; display: none; flex-direction: column; align-items: center; 
-            justify-content: center; color: #fff; text-align: center; backdrop-filter: blur(15px);
+            justify-content: center; color: #fff; text-align: center; backdrop-filter: blur(20px);
         }
-        #telaManutencao i { font-size: 75px; color: var(--red); margin-bottom: 25px; animation: pulseRed 1s infinite alternate; filter: drop-shadow(0 0 20px rgba(255,23,68,0.5));}
-        #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 15px rgba(241,196,15,0.4); }
-        #telaManutencao p { color: var(--text-muted); font-size: 15px; max-width: 85%; font-weight: 600; }
+        #telaManutencao i { font-size: 70px; color: var(--red); margin-bottom: 25px; animation: pulseRed 1s infinite alternate; filter: drop-shadow(0 0 20px rgba(255,23,68,0.6));}
+        #telaManutencao h2 { color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+        #telaManutencao p { color: var(--text-muted); font-size: 14px; max-width: 80%; font-weight: 500; line-height: 1.5; }
 
-        @keyframes pulseRed { from { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,23,68,0.5)); } to { transform: scale(1.1); filter: drop-shadow(0 0 25px rgba(255,23,68,0.8)); } }
+        @keyframes pulseRed { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-        /* --- HEADER 3D BLINDADO ANTI-QUEBRA --- */
+        /* --- HEADER 3D PREMIUM (CORRIGIDA) --- */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; 
-            background: rgba(13, 4, 26, 0.85); backdrop-filter: blur(25px); 
+            background: rgba(11, 5, 20, 0.85); backdrop-filter: blur(20px); 
             z-index: 1000; display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.8);
-            border-bottom: 1px solid var(--border-light);
-            padding-top: calc(10px + env(safe-area-inset-top));
+            padding: 12px 15px; box-shadow: 0 4px 30px rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--glass-border);
+            padding-top: calc(12px + env(safe-area-inset-top));
+            gap: 10px; /* Garante que os itens não se esmaguem */
         }
         
-        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
-        .brand-logo i { color: var(--gold); font-size: 16px; margin-bottom: 2px; filter: drop-shadow(0 2px 5px rgba(241,196,15,0.4)); }
-        .brand-logo span { font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 1px; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .brand-logo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; flex-shrink: 0; }
+        .brand-logo-top { display: flex; align-items: center; gap: 5px; }
+        .brand-logo i { color: var(--gold); font-size: 18px; filter: drop-shadow(0 2px 8px rgba(241,196,15,0.6)); }
+        .brand-logo span { font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
         
         .user-panel { 
-            display: flex; align-items: center; gap: 8px; 
-            max-width: 70%;
+            display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-grow: 1;
         }
         
-        /* CARTEIRA ESTILO FOTO VIP */
+        /* SALDO BLINDADO CONTRA CORTES */
         .balance-box {
-            background: #0c0c0c; border: 1px solid rgba(255,255,255,0.05); 
-            padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+            background: #000; border: 1px solid rgba(255,255,255,0.1); 
+            padding: 8px 12px; border-radius: 30px; display: flex; align-items: center; gap: 6px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); flex-shrink: 1; min-width: 0;
         }
         .balance { 
-            font-weight: 900; color: #fff; font-size: 15px; 
-            white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis; 
-            line-height: 1; display: flex; align-items: center; gap: 6px;
+            font-weight: 900; color: #fff; font-size: 13px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            display: flex; align-items: center; gap: 4px; letter-spacing: 0.5px;
         }
         .balance i { color: var(--gold); font-size: 14px; }
         
-        .header-actions { display: flex; gap: 6px; }
+        .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
         .btn-hd {
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 900; border: none; cursor: pointer; transition: all 0.1s;
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 900; border: none; cursor: pointer; transition: 0.1s;
             padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.5px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.5);
         }
-        .btn-hd.sacar { background: linear-gradient(180deg, #1c233a, #0a0e1c); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); }
-        .btn-hd.depositar { background: linear-gradient(180deg, var(--green), var(--green-dark)); color: #000; box-shadow: 0 4px 0 #006633, 0 0 15px rgba(0,230,118,0.3); }
-        .btn-hd:active { transform: translateY(4px); box-shadow: none !important; margin-bottom: -4px;}
+        .btn-hd.sacar { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-hd.sacar:active { background: rgba(255,255,255,0.1); }
+        
+        .btn-hd.depositar { 
+            background: linear-gradient(135deg, var(--green), var(--green-bright)); color: #000; 
+            box-shadow: 0 0 15px rgba(0,230,118,0.3); font-weight: 900;
+        }
+        .btn-hd.depositar:active { transform: scale(0.95); box-shadow: none; }
 
         .btn-login-header {
-            background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #000; font-weight: 900; padding: 10px 20px; border-radius: 14px;
-            font-size: 12px; text-transform: uppercase; box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), 0 5px 0 #7a5805, 0 5px 15px rgba(241, 196, 15, 0.3); 
-            cursor: pointer; transition: 0.1s; border: none;
+            background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+            color: #000; font-weight: 900; padding: 10px 24px; border-radius: 30px;
+            font-size: 12px; text-transform: uppercase; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3); 
+            cursor: pointer; border: none;
         }
-        .btn-login-header:active { transform: translateY(5px); box-shadow: none; margin-bottom: -5px;}
 
-        .container { max-width: 600px; margin: 90px auto 0; padding: 15px; }
+        .container { max-width: 600px; margin: 95px auto 0; padding: 0 15px; }
 
-        /* --- HERO BANNER 3D PREMIUM --- */
+        /* --- HERO BANNER CINETICO --- */
         .hero-banner {
-            width: 100%; border-radius: 20px; background: linear-gradient(145deg, #2b1145 0%, #0d041a 100%);
-            padding: 30px 20px; position: relative; overflow: hidden; margin-bottom: 25px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.1);
-            border: 1px solid rgba(241, 196, 15, 0.15); display: flex; flex-direction: column; justify-content: center;
+            width: 100%; border-radius: 24px; 
+            background: linear-gradient(135deg, #2b1154 0%, #110524 100%);
+            padding: 30px 25px; position: relative; overflow: hidden; margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.1);
+            border: 1px solid rgba(155, 81, 224, 0.3); display: flex; flex-direction: column; justify-content: center;
         }
-        .hero-banner::after { content: '👑'; position: absolute; right: -15px; bottom: -25px; font-size: 140px; opacity: 0.05; transform: rotate(-15deg); filter: drop-shadow(0 0 20px var(--gold)); }
-        .hero-banner h1 { font-size: 24px; color: var(--gold); margin-bottom: 10px; z-index: 2; font-weight: 900; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4); }
-        .hero-banner p { font-size: 13px; color: #ccc; margin-bottom: 20px; z-index: 2; max-width: 75%; font-weight: 500; line-height: 1.5; }
-        .btn-hero { 
-            background: linear-gradient(180deg, #fff, #ccc); color: #000; padding: 12px 25px; border-radius: 14px; 
-            font-weight: 900; z-index: 2; width: max-content; font-size: 12px; text-transform: uppercase;
-            box-shadow: inset 0 2px 2px #fff, 0 5px 0 #777, 0 10px 20px rgba(0,0,0,0.5); transition: 0.1s; cursor: pointer; border: none;
+        .hero-banner::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(241,196,15,0.05) 0%, transparent 60%);
+            animation: rotateGlow 15s linear infinite; pointer-events: none;
         }
-        .btn-hero:active { transform: translateY(5px); box-shadow: none; margin-bottom: -5px;}
+        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
 
-        /* --- CATEGORIAS EM PÍLULAS (FUNCIONAIS E 3D) --- */
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; margin-bottom: 15px; }
+        .hero-banner::after { content: '👑'; position: absolute; right: -20px; bottom: -30px; font-size: 150px; opacity: 0.05; transform: rotate(-15deg); pointer-events: none; }
+        .hero-banner h1 { font-size: 26px; color: var(--gold-bright); margin-bottom: 10px; z-index: 2; font-weight: 900; text-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); line-height: 1.1;}
+        .hero-banner p { font-size: 13px; color: #d1c4e8; margin-bottom: 25px; z-index: 2; max-width: 80%; font-weight: 500; line-height: 1.5; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
+        
+        .btn-hero { 
+            background: linear-gradient(180deg, #ffffff, #e0e0e0); color: #000; padding: 14px 28px; border-radius: 16px; 
+            font-weight: 900; z-index: 2; width: max-content; font-size: 13px; text-transform: uppercase;
+            box-shadow: 0 6px 0 #999, 0 15px 20px rgba(0,0,0,0.5); border: none; transition: 0.1s;
+        }
+        .btn-hero:active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
+
+        /* --- PÍLULAS DE CATEGORIA 3D --- */
+        .categories { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 20px; }
         .categories::-webkit-scrollbar { display: none; }
         .cat-btn { 
-            background: linear-gradient(180deg, #1c0e3a, #0d041a); border: 1px solid var(--border-light); color: var(--text-muted); 
-            padding: 12px 20px; border-radius: 12px; font-size: 11px; font-weight: 900; white-space: nowrap; 
-            display: flex; align-items: center; gap: 8px; transition: 0.1s; text-transform: uppercase;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 0 #05020a; cursor: pointer;
+            background: #110524; border: 1px solid var(--glass-border); color: #8e8e99; 
+            padding: 14px 22px; border-radius: 16px; font-size: 11px; font-weight: 900; white-space: nowrap; 
+            display: flex; align-items: center; gap: 8px; transition: 0.2s; text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; letter-spacing: 0.5px;
         }
-        .cat-btn:active { transform: translateY(4px); box-shadow: none; margin-bottom: -4px;}
-        .cat-btn.active { background: linear-gradient(180deg, rgba(241, 196, 15, 0.2), rgba(241, 196, 15, 0.05)); color: var(--gold); border-color: var(--gold); box-shadow: 0 4px 0 #7a5805, 0 0 15px rgba(241, 196, 15, 0.2); }
-        .cat-btn.active:active { transform: translateY(4px); box-shadow: none; margin-bottom: -4px;}
+        .cat-btn.active { 
+            background: rgba(241, 196, 15, 0.1); color: var(--gold-bright); border-color: var(--gold); 
+            box-shadow: inset 0 0 15px rgba(241,196,15,0.1), 0 0 15px rgba(241, 196, 15, 0.2); 
+        }
 
-        /* --- GRID DE JOGOS 3D PERFEITO --- */
-        .section-title { font-size: 15px; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); }
-        .section-title i { color: var(--gold); font-size: 18px; filter: drop-shadow(0 0 5px rgba(241,196,15,0.5)); }
+        /* --- SESSÃO CASSINO --- */
+        .section-title { font-size: 15px; font-weight: 900; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+        .section-title i { color: var(--gold); font-size: 18px; filter: drop-shadow(0 0 8px rgba(241,196,15,0.6)); }
         
-        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        /* --- GAME CARDS (A MÁGICA DO 3D) --- */
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 40px; }
         
         .game-card { 
-            background: linear-gradient(180deg, #1c0e3a 0%, #0d041a 100%); 
-            border-radius: 16px; padding: 6px; position: relative; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.08); 
-            border: 1px solid var(--border-light); border-bottom: 4px solid #05020a; /* Profundidade 3D */
-            cursor: pointer; transition: 0.1s;
+            background: var(--bg-card); border-radius: 20px; padding: 6px; position: relative; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.05); 
+            border: 1px solid var(--glass-border); border-bottom: 5px solid #06020d; /* Efeito de botão físico */
+            cursor: pointer; transition: 0.1s; display: flex; flex-direction: column;
         }
-        .game-card:active { transform: translateY(4px); border-bottom-width: 0px; margin-bottom: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); }
+        .game-card:active { transform: translateY(5px); border-bottom-width: 0px; margin-bottom: 5px; box-shadow: 0 5px 10px rgba(0,0,0,0.8); }
         
         .game-cover { 
-            width: 100%; height: 130px; border-radius: 12px; display: flex; align-items: center; 
-            justify-content: center; font-size: 60px; position: relative; 
-            box-shadow: inset 0 -15px 30px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.15);
-            overflow: hidden; border: 1px solid rgba(0,0,0,0.5);
+            width: 100%; height: 140px; border-radius: 14px; display: flex; align-items: center; 
+            justify-content: center; position: relative; overflow: hidden; 
+            box-shadow: inset 0 -20px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.1);
+            border: 1px solid rgba(0,0,0,0.5);
         }
-        .game-cover i, .game-cover span { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.9)); }
         
-        /* Capas com gradientes profundos */
-        .gc-mines { background: radial-gradient(circle at 50% 20%, #3d1455, #150524); }
-        .gc-goal { background: radial-gradient(circle at 50% 20%, #103c1c, #031206); }
-        .gc-roleta { background: radial-gradient(circle at 50% 20%, #680404, #1a0000); }
-        .gc-plinko { background: radial-gradient(circle at 50% 20%, #153c82, #041021); }
-        .gc-hotline { background: radial-gradient(circle at 50% 20%, #d85400, #361500); }
-        .gc-dice { background: radial-gradient(circle at 50% 20%, #0d7a64, #021a15); }
-        .gc-hilo { background: radial-gradient(circle at 50% 20%, #202020, #050505); }
+        /* Renderização 3D dos Emojis */
+        .game-icon-3d {
+            font-size: 65px; line-height: 1;
+            filter: drop-shadow(0px 15px 15px rgba(0,0,0,0.8)) drop-shadow(0px -2px 10px rgba(255,255,255,0.2));
+            animation: floatObj 4s ease-in-out infinite; transform: translateY(-5px);
+        }
+        @keyframes floatObj {
+            0%, 100% { transform: translateY(-5px) scale(1); filter: drop-shadow(0px 15px 15px rgba(0,0,0,0.8)); }
+            50% { transform: translateY(5px) scale(0.98); filter: drop-shadow(0px 5px 10px rgba(0,0,0,0.9)); }
+        }
 
-        .game-info { padding: 12px 5px 6px; text-align: center; }
-        .game-name { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
-        .game-provider { font-size: 10px; color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        /* Gradientes Profundos para cada jogo */
+        .gc-mines { background: radial-gradient(circle at 50% 30%, #4a1d6e, #110524); }
+        .gc-goal { background: radial-gradient(circle at 50% 30%, #1b5e20, #041408); }
+        .gc-roleta { background: radial-gradient(circle at 50% 30%, #8e0000, #220000); }
+        .gc-plinko { background: radial-gradient(circle at 50% 30%, #1e5cb3, #05142b); }
+        .gc-hotline { background: radial-gradient(circle at 50% 30%, #e65100, #3e1600); }
+        .gc-dice { background: radial-gradient(circle at 50% 30%, #00897b, #002420); }
+        .gc-hilo { background: radial-gradient(circle at 50% 30%, #3a3a3c, #0a0a0a); }
+
+        .game-info { padding: 15px 5px 10px; text-align: center; }
+        .game-name { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 4px; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
+        .game-provider { font-size: 10px; color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;}
         
+        /* Badges Corrigidas - Dentro do Card */
         .badge { 
-            position: absolute; top: -6px; right: -6px; color: #fff; font-size: 9px; padding: 5px 10px; 
+            position: absolute; top: 10px; right: 10px; color: #fff; font-size: 9px; padding: 5px 10px; 
             border-radius: 12px; font-weight: 900; letter-spacing: 0.5px; z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6); text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase;
         }
         .badge.rtp { background: linear-gradient(45deg, var(--red), var(--red-dark)); border: 1px solid #ff5252; }
         .badge.novo { background: linear-gradient(45deg, var(--green), var(--green-dark)); color: #000; border: 1px solid #69f0ae; }
         .badge.vip { background: linear-gradient(45deg, var(--gold), var(--gold-dark)); color: #000; border: 1px solid #ffe57f; }
         .badge.hot { background: linear-gradient(45deg, #ff9100, #e65100); border: 1px solid #ffd740; }
 
-        /* --- PROVA SOCIAL (POPUP DE GANHOS REGULADO) --- */
+        /* --- PROVA SOCIAL (POPUP) --- */
         .live-win-popup {
             position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(180deg, #180b29, #0d041a); border: 1px solid rgba(0,230,118,0.4); 
-            border-radius: 50px; padding: 10px 20px; display: flex; align-items: center; gap: 12px; opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
+            background: linear-gradient(135deg, rgba(22, 10, 41, 0.95), rgba(11, 5, 20, 0.95)); 
+            border: 1px solid rgba(0,230,118,0.4); border-radius: 50px; padding: 8px 20px 8px 8px; 
+            display: flex; align-items: center; gap: 12px; opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; 
             box-shadow: 0 10px 30px rgba(0, 230, 118, 0.2), inset 0 2px 5px rgba(255,255,255,0.05); 
-            width: max-content; max-width: 90%;
+            width: max-content; max-width: 90%; backdrop-filter: blur(10px);
         }
         .live-win-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .live-win-icon { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 10px rgba(0,230,118,0.5); }
-        .live-win-text { font-size: 12px; color: #ccc; line-height: 1.4; font-weight: 500;}
-        .live-win-amount { color: var(--green); font-weight: 900; font-size: 14px; text-shadow: 0 0 5px rgba(0,230,118,0.4); }
+        .live-win-icon { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #000; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 15px rgba(0,230,118,0.5); }
+        .live-win-text { font-size: 11px; color: #ccc; line-height: 1.4; font-weight: 500;}
+        .live-win-amount { color: var(--green-bright); font-weight: 900; font-size: 14px; text-shadow: 0 0 8px rgba(0,230,118,0.5); }
 
         /* --- MENU INFERIOR LOBBY / CONTA --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: rgba(13, 4, 26, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid var(--border-light); display: flex; justify-content: space-evenly;
+            background: rgba(11, 5, 20, 0.95); backdrop-filter: blur(25px); 
+            border-top: 1px solid var(--glass-border); display: flex; justify-content: space-evenly;
             padding: 12px 0; z-index: 1000; padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 900; gap: 6px; transition: 0.2s; width: 40%; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; text-decoration: none;}
         .nav-item i { font-size: 24px; transition: 0.2s; }
         .nav-item.active { color: var(--gold); }
-        .nav-item.active i { filter: drop-shadow(0 0 10px rgba(241,196,15,0.5)); transform: translateY(-3px); }
+        .nav-item.active i { filter: drop-shadow(0 0 15px rgba(241,196,15,0.6)); transform: translateY(-3px); }
     </style>
 </head>
 <body>
@@ -223,17 +254,19 @@
     <div id="telaManutencao">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <h2>SISTEMA EM MANUTENÇÃO</h2>
-        <p>Aprimorando motores gráficos. Seus fundos estão seguros.</p>
+        <p>Aprimorando motores gráficos e segurança. Seus fundos estão seguros.</p>
     </div>
 
     <!-- NAVBAR PREMIUM ANTI-QUEBRA -->
     <nav class="navbar">
         <div class="brand-logo">
-            <i class="fa-solid fa-crown"></i>
-            <span>SORTECERTA</span>
+            <div class="brand-logo-top">
+                <i class="fa-solid fa-crown"></i>
+                <span>SORTECERTA</span>
+            </div>
         </div>
-        <div id="userPanelContainer">
-            <button class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user"></i> ENTRAR</button>
+        <div id="userPanelContainer" style="display:flex; justify-content:flex-end; flex-grow:1;">
+            <button class="btn-login-header" onclick="window.location.href='login.html'"><i class="fa-solid fa-user" style="margin-right:5px;"></i> ENTRAR</button>
         </div>
     </nav>
 
@@ -245,69 +278,104 @@
             <button class="btn-hero" onclick="document.querySelector('.games-grid').scrollIntoView({behavior: 'smooth'});">Ver Catálogo</button>
         </div>
 
-        <!-- CATEGORIAS PÍLULAS (FILTRAGEM ATIVA) -->
+        <!-- CATEGORIAS PÍLULAS -->
         <div class="categories">
-            <div class="cat-btn active" data-filter="all"><i class="fa-solid fa-fire" style="color:var(--gold)"></i> Originals</div>
+            <div class="cat-btn active" data-filter="all"><i class="fa-solid fa-fire" style="color:var(--gold-bright)"></i> Originals</div>
             <div class="cat-btn" data-filter="instantaneos"><i class="fa-solid fa-bolt"></i> Instantâneos</div>
             <div class="cat-btn" data-filter="conversao"><i class="fa-solid fa-trophy"></i> Alta Conversão</div>
         </div>
 
         <h2 class="section-title"><i class="fa-solid fa-gem"></i> Cassino Originals VIP</h2>
         
-        <!-- GRID DE JOGOS COM TAGS DE FILTRO -->
+        <!-- GRID DE JOGOS COM TAGS DE FILTRO E EFEITO 3D -->
         <div class="games-grid">
             
             <div class="game-card game-link" data-category="instantaneos" data-game="mines.html">
-                <div class="badge rtp">99% RTP</div>
-                <div class="game-cover gc-mines"><span>💣</span></div>
-                <div class="game-info"><div class="game-name">Mines</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-mines">
+                    <div class="badge rtp">99% RTP</div>
+                    <span class="game-icon-3d">💣</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Mines</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
             
             <div class="game-card game-link" data-category="conversao" data-game="goal.html">
-                <div class="badge novo">NOVO</div>
-                <div class="game-cover gc-goal"><span>⚽</span></div>
-                <div class="game-info"><div class="game-name">Goal</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-goal">
+                    <div class="badge novo">NOVO</div>
+                    <span class="game-icon-3d">⚽</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Goal</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
             <div class="game-card game-link" data-category="conversao" data-game="roleta.html">
-                <div class="badge vip">VIP</div>
-                <div class="game-cover gc-roleta"><span>🎰</span></div>
-                <div class="game-info"><div class="game-name">Roleta Imperial</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-roleta">
+                    <div class="badge vip">VIP</div>
+                    <span class="game-icon-3d">🎰</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Roleta Imperial</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
             <div class="game-card game-link" data-category="instantaneos" data-game="plinko.html">
-                <div class="badge hot">HOT</div>
-                <div class="game-cover gc-plinko"><span>🔺</span></div>
-                <div class="game-info"><div class="game-name">Plinko</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-plinko">
+                    <div class="badge hot">HOT</div>
+                    <span class="game-icon-3d">🔺</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Plinko</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
             <div class="game-card game-link" data-category="instantaneos" data-game="hotline.html">
-                <div class="badge novo">NOVO</div>
-                <div class="game-cover gc-hotline"><span>🔥</span></div>
-                <div class="game-info"><div class="game-name">Hotline</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-hotline">
+                    <div class="badge novo">NOVO</div>
+                    <span class="game-icon-3d">🔥</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Hotline</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
             <div class="game-card game-link" data-category="instantaneos" data-game="dice.html">
-                <div class="badge rtp">98% RTP</div>
-                <div class="game-cover gc-dice"><span>🎲</span></div>
-                <div class="game-info"><div class="game-name">Dice</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-dice">
+                    <div class="badge rtp">98% RTP</div>
+                    <span class="game-icon-3d">🎲</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">Dice</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
             <div class="game-card game-link" data-category="conversao" data-game="hilo.html">
-                <div class="badge vip">VIP</div>
-                <div class="game-cover gc-hilo"><span>🃏</span></div>
-                <div class="game-info"><div class="game-name">HILO</div><div class="game-provider">ORIGINAL</div></div>
+                <div class="game-cover gc-hilo">
+                    <div class="badge vip">VIP</div>
+                    <span class="game-icon-3d">🃏</span>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">HILO</div>
+                    <div class="game-provider">ORIGINAL</div>
+                </div>
             </div>
 
         </div>
     </div>
 
-    <!-- PROVA SOCIAL MATEMÁTICA (NÚMEROS ÚNICOS) -->
+    <!-- PROVA SOCIAL MATEMÁTICA -->
     <div class="live-win-popup" id="liveWin">
         <div class="live-win-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="live-win-text">
             <span id="winUser" style="font-weight: 900; color: #fff;">***7279</span> acabou de ganhar<br>
-            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold); font-weight: 800;">Mines</span>
+            <span class="live-win-amount" id="winAmount">R$ 500,00</span> no <span id="winGame" style="color: var(--gold-bright); font-weight: 800;">Mines</span>
         </div>
     </div>
 
@@ -343,7 +411,7 @@
             if(event.data === "fecharIframe") { window.fecharJogo(); }
         });
 
-        // MONTAGEM DO PAINEL DO USUÁRIO VIP E ANTI-QUEBRA
+        // MONTAGEM DO PAINEL DO USUÁRIO VIP
         if (idDispositivo) {
             document.getElementById('userPanelContainer').innerHTML = `
                 <div class="user-panel">
@@ -357,7 +425,6 @@
                 </div>`;
                 
             onValue(ref(db, 'usuarios/' + idDispositivo), (snapshot) => {
-                // A EXPULSÃO EM TEMPO REAL ACONTECE AQUI:
                 if (!snapshot.exists()) {
                     alert("Acesso permanentemente bloqueado por violação dos Termos de Serviço.");
                     localStorage.removeItem('usuario_tracker_id');
@@ -397,7 +464,7 @@
             if (isManutencao) { 
                 tela.style.display = 'flex'; 
                 document.body.style.overflow = 'hidden'; 
-                window.fecharJogo(); // Expulsa da tela na hora!
+                window.fecharJogo(); 
             } 
             else { 
                 tela.style.display = 'none'; 
@@ -405,7 +472,7 @@
             }
         });
 
-        // FILTRO DE CATEGORIAS AO VIVO (Instantâneos vs Alta Conversão)
+        // FILTRO DE CATEGORIAS
         document.querySelectorAll('.cat-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -415,7 +482,7 @@
                 document.querySelectorAll('.game-card').forEach(card => {
                     const category = card.getAttribute('data-category');
                     if (filter === 'all' || (category && category.includes(filter))) {
-                        card.style.display = 'block';
+                        card.style.display = 'flex';
                     } else {
                         card.style.display = 'none';
                     }
@@ -424,26 +491,19 @@
         });
 
         // PROVA SOCIAL MATEMÁTICA (Nunca repete padrão, valor ou número exato)
-        const jogosFake = ["Mines", "Goal", "Roleta Imperial", "Plinko", "Hotline", "Dice", "HILO"];
+        const jogosFake = ["Mines", "Goal", "Roleta", "Plinko", "Hotline", "Dice"];
         
         function mostrarGanhoFalso() {
             const popup = document.getElementById('liveWin');
-            
-            // Gera um número de 4 dígitos (Ex: ***7279)
             const randomNum = Math.floor(1000 + Math.random() * 9000);
             document.getElementById('winUser').innerText = "***" + randomNum;
-            
-            // Jogo aleatório da casa
             document.getElementById('winGame').innerText = jogosFake[Math.floor(Math.random() * jogosFake.length)];
-            
-            // Valor picado sem arredondamento falso (Ex: R$ 527,43)
             const randomAmount = (Math.random() * (1500 - 50) + 50);
             document.getElementById('winAmount').innerText = "R$ " + randomAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             
             popup.classList.add('show'); 
             setTimeout(() => { popup.classList.remove('show'); }, 4000);
         }
-        // Tempo sempre variado para não parecer robô
         setInterval(mostrarGanhoFalso, Math.floor(Math.random() * (12000 - 6000 + 1) + 6000));
     </script>
 </body>
